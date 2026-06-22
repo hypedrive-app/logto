@@ -267,6 +267,16 @@ export class SignInExperienceValidator {
     return this.signInExperienceDataCache;
   }
 
+  /**
+   * Whether a new user can sign up with the given identifier, i.e. registration is enabled and the
+   * identifier is a primary sign-up identifier.
+   */
+  public async isSignUpIdentifierEnabled(identifier: SignInIdentifier): Promise<boolean> {
+    const { signInMode, signUp } = await this.getSignInExperienceData();
+
+    return signInMode !== SignInMode.SignIn && signUp.identifiers.includes(identifier);
+  }
+
   public async getMandatoryUserProfileBySignUpMethods(): Promise<Set<MissingProfile>> {
     const {
       signUp: { identifiers, password, secondaryIdentifiers = [] },

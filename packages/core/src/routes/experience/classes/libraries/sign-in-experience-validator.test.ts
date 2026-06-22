@@ -37,6 +37,16 @@ const ssoConnectors = {
 
 const mockTenant = new MockTenant(undefined, { signInExperiences }, undefined, { ssoConnectors });
 
+const buildValidatorWithSignUp = (signInMode: SignInMode, identifiers: SignInIdentifier[]) => {
+  signInExperiences.findDefaultSignInExperience.mockResolvedValueOnce({
+    ...mockSignInExperience,
+    signInMode,
+    signUp: { ...mockSignInExperience.signUp, identifiers },
+  });
+
+  return new SignInExperienceValidator(mockTenant.libraries, mockTenant.queries);
+};
+
 const passwordVerificationRecords = Object.fromEntries(
   Object.values(SignInIdentifier).map((identifier) => [
     identifier,
@@ -784,6 +794,34 @@ describe('SignInExperienceValidator', () => {
         const result = await signInExperienceValidator.getMandatoryUserProfileBySignUpMethods();
         expect(result).toEqual(expected);
       });
+    });
+  });
+
+  describe('isSignUpIdentifierEnabled', () => {
+    it('returns true when the identifier is a primary sign-up identifier and register is enabled', async () => {
+      const validator = buildValidatorWithSignUp(SignInMode.SignInAndRegister, [
+        SignInIdentifier.Email,
+      ]);
+
+      await expect(validator.isSignUpIdentifierEnabled(SignInIdentifier.Email)).resolves.toBe(true);
+    });
+
+    it('returns false when the identifier is not a primary sign-up identifier', async () => {
+      const validator = buildValidatorWithSignUp(SignInMode.SignInAndRegister, [
+        SignInIdentifier.Email,
+      ]);
+
+      await expect(validator.isSignUpIdentifierEnabled(SignInIdentifier.Phone)).resolves.toBe(
+        false
+      );
+    });
+
+    it('returns false when registration is disabled, even if the identifier is listed', async () => {
+      const validator = buildValidatorWithSignUp(SignInMode.SignIn, [SignInIdentifier.Email]);
+
+      await expect(validator.isSignUpIdentifierEnabled(SignInIdentifier.Email)).resolves.toBe(
+        false
+      );
     });
   });
 });

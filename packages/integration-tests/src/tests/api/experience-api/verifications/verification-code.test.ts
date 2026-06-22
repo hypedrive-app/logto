@@ -1,5 +1,10 @@
 import { ConnectorType, TemplateType } from '@logto/connector-kit';
-import { AlternativeSignUpIdentifier, InteractionEvent, SignInIdentifier } from '@logto/schemas';
+import {
+  AlternativeSignUpIdentifier,
+  InteractionEvent,
+  SignInIdentifier,
+  SignInMode,
+} from '@logto/schemas';
 
 import { deleteUser } from '#src/api/admin-user.js';
 import { updateSignInExperience } from '#src/api/sign-in-experience.js';
@@ -14,11 +19,27 @@ import {
   successfullyVerifyVerificationCode,
 } from '#src/helpers/experience/verification-code.js';
 import { createUserByAdmin, expectRejects, readConnectorMessage } from '#src/helpers/index.js';
+import { defaultSignInSignUpConfigs } from '#src/helpers/sign-in-experience.js';
 import { generateEmail, generatePassword, generatePhone, generateUsername } from '#src/utils.js';
 
 describe('Verification code verification APIs', () => {
   beforeAll(async () => {
     await clearConnectorsByTypes([ConnectorType.Email, ConnectorType.Sms]);
+    // These cases send sign-in codes to fresh, unregistered recipients. Email and phone must be
+    // sign-up identifiers so the dev-gated delivery suppression (a sign-in code to an unknown
+    // recipient when sign-up via that identifier is disabled) does not skip these sends.
+    await updateSignInExperience({
+      signInMode: SignInMode.SignInAndRegister,
+      signUp: {
+        identifiers: [SignInIdentifier.Email, SignInIdentifier.Phone],
+        password: false,
+        verify: true,
+      },
+    });
+  });
+
+  afterAll(async () => {
+    await updateSignInExperience(defaultSignInSignUpConfigs);
   });
 
   const identifierTypes = [SignInIdentifier.Email, SignInIdentifier.Phone] as const;
