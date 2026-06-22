@@ -1,5 +1,67 @@
 # Change Log
 
+## 1.41.0
+
+### Minor Changes
+
+- d41082bd7d: add app-level access control for applications
+
+  Add a new application access control feature that allows administrators to restrict user access to applications. When enabled, users who do not have permission to access an application will see an access denied error message when they attempt to sign in or access the application. This feature can be configured in the Console Security settings.
+
+  Supported custom control rules include:
+
+  - User IDs
+  - User roles
+  - Organizations
+  - Organization roles
+
+  Refer to the documentation for more details: https://docs.logto.io/integrate-logto/app-level-access-control
+
+- c2016a044c: add a configurable per-tenant password expiration policy
+
+  Operators can enable password expiration from Console → Security → Password policy and set the number of days a password stays valid. When a password reaches the end of its valid period — or is manually expired for a specific user — the end user is forced through the forgot-password flow on their next password sign-in before they can continue. Users signing in via SSO or passkey are not affected.
+
+  - **Console**: a new "Password expiration" card with an enable toggle and a valid-period (days) input, an inline reminder when sign-up requires no contact identifier to guarantee password recovery, and a per-user "Expire password" action on the user details page.
+  - **Core / API**: the policy is stored on the sign-in experience (`passwordExpiration`) and enforced after password verification. `PATCH /api/users/:userId/password/expiration` lets admins manually expire a user's password, and deleting the last forgot-password connector is rejected while the policy is enabled.
+  - **Experience**: an expired password prompts the user to reset it via the configured recovery method before sign-in completes.
+
+  Legacy users without a recorded password-change date are anchored to the timestamp the policy was enabled, so they get a full valid period instead of being expired immediately.
+
+- 67b99bba85: add per-tenant username policy enforcement and mirror preferred_username from username by default
+
+  The sign-in experience now stores a per-tenant username policy (case sensitivity, length bounds, and allowed character types) that is enforced on end-user username writes: experience sign-up and profile fulfillment, the account API, and `/me`. Admin (Management API) writes keep the always-on baseline rules only.
+
+  Switching usernames to case-insensitive is guarded: `PATCH /api/sign-in-exp` is rejected with a 409 while usernames that differ only by case exist, and the new `GET /api/sign-in-exp/username-policy/case-sensitivity-conflicts` endpoint reports such conflicts.
+
+  For deployments using the legacy `CASE_SENSITIVE_USERNAME` environment variable: the effective case sensitivity is the per-tenant policy AND-combined with the env var, so usernames are treated case-insensitively if either is false. Existing `CASE_SENSITIVE_USERNAME=false` setups keep their behavior — the env var acts as a runtime override that forces case-insensitive handling for every tenant, and the per-tenant policy cannot re-enable case sensitivity while it is set. The env var is deprecated and slated for removal in the next major; migrate by unsetting it and configuring `usernamePolicy.caseSensitive` per tenant instead.
+
+  The OIDC `preferred_username` claim now falls back to the user's `username` when `profile.preferredUsername` is unset, so standards-compliant clients receive a usable value out of the box.
+
+- eb45edbe34: allow customizing verification code settings
+
+  Admins can configure the verification code expiration duration and maximum retry attempts in Console Security settings.
+
+### Patch Changes
+
+- 72820ac41e: prevent theme flash in sign-in experience and account center
+
+  Sign-in experience and account center now apply tenant theme, platform, and brand color before the app hydrates, reducing flashes of the wrong theme during initial page load.
+
+- Updated dependencies [e7b6e9de16]
+- Updated dependencies [d41082bd7d]
+- Updated dependencies [c2016a044c]
+- Updated dependencies [b7386a5113]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [e1fadfb1ac]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [a88413689b]
+  - @logto/connector-kit@5.1.0
+  - @logto/phrases-experience@1.14.0
+  - @logto/phrases@1.29.0
+  - @logto/core-kit@2.11.0
+  - @logto/shared@3.4.1
+
 ## 1.40.1
 
 ### Patch Changes

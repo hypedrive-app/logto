@@ -1,5 +1,57 @@
 # Change Log
 
+## 1.38.0
+
+### Minor Changes
+
+- d41082bd7d: add app-level access control for applications
+
+  Add a new application access control feature that allows administrators to restrict user access to applications. When enabled, users who do not have permission to access an application will see an access denied error message when they attempt to sign in or access the application. This feature can be configured in the Console Security settings.
+
+  Supported custom control rules include:
+
+  - User IDs
+  - User roles
+  - Organizations
+  - Organization roles
+
+  Refer to the documentation for more details: https://docs.logto.io/integrate-logto/app-level-access-control
+
+- 3d38ae2074: add account center session management
+
+  Users can now configure and use the account center Sessions page to review active sessions and connected third-party applications.
+
+- c1ff0c1142: release account center profile page, custom profile fields at sign-up, and experience/account avatar upload from dev feature gates
+
+  The collect-user-profile sign-up flow now respects the explicit `signUpProfileFields` list instead of always showing the full catalog. The account center profile page and avatar upload endpoints are no longer gated behind a dev feature flag.
+
+- c2016a044c: add a configurable per-tenant password expiration policy
+
+  Operators can enable password expiration from Console → Security → Password policy and set the number of days a password stays valid. When a password reaches the end of its valid period — or is manually expired for a specific user — the end user is forced through the forgot-password flow on their next password sign-in before they can continue. Users signing in via SSO or passkey are not affected.
+
+  - **Console**: a new "Password expiration" card with an enable toggle and a valid-period (days) input, an inline reminder when sign-up requires no contact identifier to guarantee password recovery, and a per-user "Expire password" action on the user details page.
+  - **Core / API**: the policy is stored on the sign-in experience (`passwordExpiration`) and enforced after password verification. `PATCH /api/users/:userId/password/expiration` lets admins manually expire a user's password, and deleting the last forgot-password connector is rejected while the policy is enabled.
+  - **Experience**: an expired password prompts the user to reset it via the configured recovery method before sign-in completes.
+
+  Legacy users without a recorded password-change date are anchored to the timestamp the policy was enabled, so they get a full valid period instead of being expired immediately.
+
+- 67b99bba85: add username policy management to the sign-in experience advanced options
+
+  Operators can configure the tenant username policy — case sensitivity, length bounds, and allowed character types — from Console → Sign-in experience → Sign-up and sign-in → Advanced options. Switching to case-insensitive proactively detects existing usernames that differ only by case and blocks the save until the conflicts are resolved.
+
+- eb45edbe34: allow customizing verification code settings
+
+  Admins can configure the verification code expiration duration and maximum retry attempts in Console Security settings.
+
+### Patch Changes
+
+- 92560f6b2e: fix Console username update returning 401 by redirecting to Account Center
+
+  The Account API requires identity verification for username changes, which the
+  Console profile page does not implement. Redirect username editing to the
+  Account Center's `/account/username` page (same pattern as MFA) where the full
+  verification flow is already implemented.
+
 ## 1.37.0
 
 ### Minor Changes

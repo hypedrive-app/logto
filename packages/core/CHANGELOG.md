@@ -1,5 +1,111 @@
 # Change Log
 
+## 1.41.0
+
+### Minor Changes
+
+- a923dcbdc: Make `POST /api/applications/:applicationId/roles` idempotent: role IDs already attached to the application are silently ignored instead of causing the request to fail with `422 application.role_exists`. The response is now `201` with body `{ roleIds, addedRoleIds }`, matching the response shape of `POST /api/users/:userId/roles`.
+
+  Closes #8900.
+
+- d41082bd7d: add app-level access control for applications
+
+  Add a new application access control feature that allows administrators to restrict user access to applications. When enabled, users who do not have permission to access an application will see an access denied error message when they attempt to sign in or access the application. This feature can be configured in the Console Security settings.
+
+  Supported custom control rules include:
+
+  - User IDs
+  - User roles
+  - Organizations
+  - Organization roles
+
+  Refer to the documentation for more details: https://docs.logto.io/integrate-logto/app-level-access-control
+
+- c1ff0c1142: release account center profile page, custom profile fields at sign-up, and experience/account avatar upload from dev feature gates
+
+  The collect-user-profile sign-up flow now respects the explicit `signUpProfileFields` list instead of always showing the full catalog. The account center profile page and avatar upload endpoints are no longer gated behind a dev feature flag.
+
+- c2016a044c: add a configurable per-tenant password expiration policy
+
+  Operators can enable password expiration from Console → Security → Password policy and set the number of days a password stays valid. When a password reaches the end of its valid period — or is manually expired for a specific user — the end user is forced through the forgot-password flow on their next password sign-in before they can continue. Users signing in via SSO or passkey are not affected.
+
+  - **Console**: a new "Password expiration" card with an enable toggle and a valid-period (days) input, an inline reminder when sign-up requires no contact identifier to guarantee password recovery, and a per-user "Expire password" action on the user details page.
+  - **Core / API**: the policy is stored on the sign-in experience (`passwordExpiration`) and enforced after password verification. `PATCH /api/users/:userId/password/expiration` lets admins manually expire a user's password, and deleting the last forgot-password connector is rejected while the policy is enabled.
+  - **Experience**: an expired password prompts the user to reset it via the configured recovery method before sign-in completes.
+
+  Legacy users without a recorded password-change date are anchored to the timestamp the policy was enabled, so they get a full valid period instead of being expired immediately.
+
+- 67b99bba85: add per-tenant username policy enforcement and mirror preferred_username from username by default
+
+  The sign-in experience now stores a per-tenant username policy (case sensitivity, length bounds, and allowed character types) that is enforced on end-user username writes: experience sign-up and profile fulfillment, the account API, and `/me`. Admin (Management API) writes keep the always-on baseline rules only.
+
+  Switching usernames to case-insensitive is guarded: `PATCH /api/sign-in-exp` is rejected with a 409 while usernames that differ only by case exist, and the new `GET /api/sign-in-exp/username-policy/case-sensitivity-conflicts` endpoint reports such conflicts.
+
+  For deployments using the legacy `CASE_SENSITIVE_USERNAME` environment variable: the effective case sensitivity is the per-tenant policy AND-combined with the env var, so usernames are treated case-insensitively if either is false. Existing `CASE_SENSITIVE_USERNAME=false` setups keep their behavior — the env var acts as a runtime override that forces case-insensitive handling for every tenant, and the per-tenant policy cannot re-enable case sensitivity while it is set. The env var is deprecated and slated for removal in the next major; migrate by unsetting it and configuring `usernamePolicy.caseSensitive` per tenant instead.
+
+  The OIDC `preferred_username` claim now falls back to the user's `username` when `profile.preferredUsername` is unset, so standards-compliant clients receive a usable value out of the box.
+
+- eb45edbe34: allow customizing verification code settings
+
+  Admins can configure the verification code expiration duration and maximum retry attempts in Console Security settings.
+
+### Patch Changes
+
+- 209fa0a5cb: escape HTML attribute values in the SAML IdP auto-submit form
+
+  When Logto acts as a SAML IdP, the auto-submit form posted to the SP's ACS interpolated `SAMLResponse`, `RelayState` and the action URL into HTML attributes without escaping. If a value contained a double quote, the browser truncated the attribute at that quote.
+
+  This broke SPs that send a JSON string as `RelayState`: the SP received only `{` instead of the full value, losing the post-login context. The values are now HTML-escaped, so quotes and other markup characters round-trip intact (this also closes a reflected-markup injection vector in the interstitial page).
+
+  In addition, the form action URL is now restricted to the `http`/`https` schemes before rendering. Escaping the attribute value alone does not neutralize a scriptable scheme such as `javascript:`, which the browser would execute on submission, so such URLs are now rejected.
+
+- 37999f7fce: fix a flash of built-in styles on the hosted sign-in experience when custom CSS is configured
+
+  Custom CSS was injected on the client via react-helmet, which mutates `<head>` asynchronously after the page had already painted with the built-in styles. The server-rendered experience HTML now inlines the configured custom CSS into `<head>`, so it is part of the cascade on the first paint. The `</style>` sequence in custom CSS is escaped so it cannot terminate the style element early, and the SSR data embedded in the inline `<script>` is now serialized with HTML-significant characters escaped to prevent script breakout.
+
+- 9de40208e2: fix identifier-lockout sentinel misfiring because `count(*)` was treated as a string
+
+  Postgres returns `count(*)` as a bigint that Slonik surfaces as a string. The sentinel added `1` to this value to decide whether to lock an identifier, so `'10' + 1` evaluated to `'101'` and the failed-attempt threshold (default 100) tripped far too early — roughly at 10 failed attempts. The count is now coerced to a number so the threshold is compared numerically.
+
+- 9847dfd134: fix one-time token consent handling for switch-account sign-in flows
+- c98403862a: reject null bytes in OIDC request bodies and strip them from audit logs so malformed input returns a clean 400 instead of a 500
+
+  A null byte (`U+0000`) in an `application/x-www-form-urlencoded` body sent to `/oidc/token` previously surfaced as a `500 Internal Server Error`. The actual cause was the audit log insert: PostgreSQL rejects null bytes in `jsonb` (error `22P05`), and because the insert runs in a `finally` block, that failure masked the original clean error. The OIDC body parser now rejects null bytes with a `400 invalid_request`, and audit log payloads are sanitized of null bytes before insert as defense in depth.
+
+  Closes #8990.
+
+- 72820ac41e: prevent theme flash in sign-in experience and account center
+
+  Sign-in experience and account center now apply tenant theme, platform, and brand color before the app hydrates, reducing flashes of the wrong theme during initial page load.
+
+- 17c52384b: allow linking social identities in account center without password, email, or phone when the user has no legacy security verification methods
+- Updated dependencies [e7b6e9de16]
+- Updated dependencies [92560f6b2e]
+- Updated dependencies [d41082bd7d]
+- Updated dependencies [3d38ae2074]
+- Updated dependencies [c1ff0c1142]
+- Updated dependencies [c2016a044c]
+- Updated dependencies [72820ac41e]
+- Updated dependencies [b7386a5113]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [e1fadfb1ac]
+- Updated dependencies [67b99bba85]
+- Updated dependencies [a88413689b]
+- Updated dependencies [eb45edbe34]
+  - @logto/connector-kit@5.1.0
+  - @logto/console@1.38.0
+  - @logto/experience@1.20.0
+  - @logto/phrases-experience@1.14.0
+  - @logto/phrases@1.29.0
+  - @logto/schemas@1.41.0
+  - @logto/account@0.5.0
+  - @logto/core-kit@2.11.0
+  - @logto/shared@3.4.1
+  - @logto/cli@1.41.0
+  - @logto/demo-app@1.5.0
+  - @logto/device-demo-app@0.1.0
+
 ## 1.40.1
 
 ### Patch Changes
