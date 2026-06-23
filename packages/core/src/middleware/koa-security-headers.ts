@@ -155,6 +155,8 @@ const createSecurityHeaderSettings = (tenantId: string): SecurityHeaderSettings 
     'https://recaptcha.net/recaptcha/',
     'https://www.gstatic.com/recaptcha/',
     'https://www.gstatic.cn/recaptcha/',
+    // Allow the keyless IP-geolocation lookup used to pre-select the phone country.
+    'https://api.country.is',
     ...developmentOrigins,
   ];
 
