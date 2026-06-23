@@ -161,6 +161,19 @@
     min-height: 100dvh;
     overflow-x: clip;
   }
+
+  /* iOS safe-area fix: on mobile the auth surface is FULL-BLEED (the card uses
+     bg-elevated and stretches edge-to-edge), but html/body paint the canvas color
+     (--bg). iOS extends html/body into the notch + home-indicator strips, so those
+     strips showed the canvas — a mismatched grey bar above/below the white card.
+     Paint the page itself with the elevated surface on mobile so the safe-area
+     strips blend seamlessly into the card. Desktop keeps --bg (the card floats on
+     the canvas there, which is correct). */
+  body.mobile,
+  body.mobile html,
+  html:has(body.mobile) {
+    background: var(--bg-elevated);
+  }
   *, *::before, *::after { box-sizing: border-box; }
   h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: inherit; font-size: inherit; }
   p, ul, ol { margin: 0; padding: 0; }

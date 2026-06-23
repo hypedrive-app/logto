@@ -1,11 +1,18 @@
-import { AgreeToTermsPolicy, experience, ExtraParamsKey, SignInMode } from '@logto/schemas';
-import { useCallback, useContext } from 'react';
+import {
+  AgreeToTermsPolicy,
+  experience,
+  ExtraParamsKey,
+  SignInIdentifier,
+  SignInMode,
+} from '@logto/schemas';
+import { useCallback, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
 import LandingPageLayout from '@/Layout/LandingPageLayout';
 import SingleSignOnFormModeContextProvider from '@/Providers/SingleSignOnFormModeContextProvider';
 import SingleSignOnFormModeContext from '@/Providers/SingleSignOnFormModeContextProvider/SingleSignOnFormModeContext';
+import ContinueWithPhoneButton from '@/components/Button/ContinueWithPhoneButton';
 import Divider from '@/components/Divider';
 import GoogleOneTap from '@/components/GoogleOneTap';
 import IdentifierRegisterForm from '@/components/IdentifierRegisterForm';
@@ -88,13 +95,32 @@ const RegisterFooter = () => {
         )
       }
       {
-        // Social sign-in methods
-        signUpMethods.length > 0 && socialConnectors.length > 0 && (
-          <>
-            <Divider label="description.or" className="mb-4" />
-            <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
-          </>
-        )
+        // Alternate sign-up methods — social providers and/or a dedicated
+        // "Continue with phone" button (mirrors the sign-in page). Phone gets its own
+        // button so the primary field stays an unambiguous email/username entry.
+        (() => {
+          const hasPhone = signUpMethods.includes(SignInIdentifier.Phone);
+          const hasSocial = socialConnectors.length > 0;
+          const hasNonPhoneInline = signUpMethods.some(
+            (identifier) => identifier !== SignInIdentifier.Phone
+          );
+
+          if (!(hasSocial || (hasPhone && hasNonPhoneInline))) {
+            return null;
+          }
+
+          return (
+            <>
+              <Divider label="description.or" className="mb-4" />
+              {hasSocial && (
+                <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
+              )}
+              {hasPhone && hasNonPhoneInline && (
+                <ContinueWithPhoneButton mode="register" className="mb-4" />
+              )}
+            </>
+          );
+        })()
       }
     </>
   );
@@ -104,6 +130,13 @@ const Register = () => {
   const { signUpMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
   const { isMobile } = usePlatform();
+
+  // Drop phone from the inline field (it's surfaced as a "Continue with phone" button in
+  // RegisterFooter) unless phone is the only method, so the field is never empty.
+  const inlineSignUpMethods = useMemo(() => {
+    const nonPhone = signUpMethods.filter((identifier) => identifier !== SignInIdentifier.Phone);
+    return nonPhone.length > 0 ? nonPhone : signUpMethods;
+  }, [signUpMethods]);
 
   if (!signInMode) {
     return <ErrorPage />;
@@ -117,11 +150,11 @@ const Register = () => {
     <LandingPageLayout title="description.create_your_account">
       <GoogleOneTap context="signup" />
       <SingleSignOnFormModeContextProvider>
-        {signUpMethods.length > 0 && (
+        {inlineSignUpMethods.length > 0 && (
           // Autofocus on desktop only (avoid forcing the keyboard open on mobile).
           <IdentifierRegisterForm
             autoFocus={!isMobile}
-            signUpMethods={signUpMethods}
+            signUpMethods={inlineSignUpMethods}
             className="mb-4"
           />
         )}

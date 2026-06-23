@@ -1,4 +1,10 @@
-import { AgreeToTermsPolicy, experience, ExtraParamsKey, SignInMode } from '@logto/schemas';
+import {
+  AgreeToTermsPolicy,
+  experience,
+  ExtraParamsKey,
+  SignInIdentifier,
+  SignInMode,
+} from '@logto/schemas';
 import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useSearchParams } from 'react-router-dom';
@@ -9,6 +15,7 @@ import LandingPageLayout from '@/Layout/LandingPageLayout';
 import SingleSignOnFormModeContextProvider from '@/Providers/SingleSignOnFormModeContextProvider';
 import SingleSignOnFormModeContext from '@/Providers/SingleSignOnFormModeContextProvider/SingleSignOnFormModeContext';
 import WebAuthnContextProvider from '@/Providers/WebAuthnContextProvider';
+import ContinueWithPhoneButton from '@/components/Button/ContinueWithPhoneButton';
 import PasskeySignInButton from '@/components/Button/PasskeySignInButton';
 import Divider from '@/components/Divider';
 import GoogleOneTap from '@/components/GoogleOneTap';
@@ -89,13 +96,38 @@ const SignInFooters = () => {
         )
       }
       {
-        // Social sign-in methods
-        signInMethods.length > 0 && socialConnectors.length > 0 && (
-          <>
-            <Divider label="description.or" className="mb-4" />
-            <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
-          </>
-        )
+        // Alternate sign-in methods — social providers and/or a dedicated
+        // "Continue with phone" button. Phone gets its own button (instead of being
+        // folded into the smart field) so it's an explicit, always-visible option that
+        // routes to a focused phone screen with the country selector shown. The "or"
+        // divider appears once if EITHER a phone button or social buttons are shown.
+        (() => {
+          const hasPhone = signInMethods.some(
+            ({ identifier }) => identifier === SignInIdentifier.Phone
+          );
+          const hasSocial = socialConnectors.length > 0;
+          // Only worth a divider/alt-section when the inline form has a non-phone method
+          // to be the primary path (otherwise phone is already the inline form).
+          const hasNonPhoneInline = signInMethods.some(
+            ({ identifier }) => identifier !== SignInIdentifier.Phone
+          );
+
+          if (!(hasSocial || (hasPhone && hasNonPhoneInline))) {
+            return null;
+          }
+
+          return (
+            <>
+              <Divider label="description.or" className="mb-4" />
+              {hasSocial && (
+                <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
+              )}
+              {hasPhone && hasNonPhoneInline && (
+                <ContinueWithPhoneButton mode="signIn" className="mb-4" />
+              )}
+            </>
+          );
+        })()
       }
       {passkeySignIn?.enabled && passkeySignIn.showPasskeyButton && <PasskeySignInButton />}
     </>
