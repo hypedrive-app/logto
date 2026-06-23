@@ -60,10 +60,9 @@ const FocusedAuthPageLayout = ({
           identifier screens (e.g. "Continue with phone") were missing the logo entirely. */}
       <BrandingHeader
         className={classNames(
-          // Compact logo (28px, matching the prior custom-CSS sizing) and a tight reserved
-          // height — the focused identifier screens want a small brand mark above the title,
-          // not the large hero logo the first-screen landing uses.
-          'mobile:mt-3 mobile:pb-5 desktop:mb-5 mobile:!h-auto mobile:!min-h-0 [&_img]:!h-7',
+          // Same logo size as the landing page (BrandingHeader's h-8 / 32px) for
+          // consistency, just a tighter reserved header height on the focused screens.
+          'mobile:mt-3 mobile:pb-5 desktop:mb-5 mobile:!h-auto mobile:!min-h-0',
           layoutClassNames.brandingHeader
         )}
         headline={title}

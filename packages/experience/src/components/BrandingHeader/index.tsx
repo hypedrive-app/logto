@@ -38,7 +38,7 @@ const BrandingHeader = ({
         <div className="flex items-center mobile:not-last:mb-2 desktop:not-last:mb-3">
           {thirdPartyLogo && (
             <img
-              className="h-10 w-auto object-contain object-center"
+              className="h-8 w-auto object-contain object-center"
               alt="third party logo"
               src={thirdPartyLogo}
             />
@@ -46,7 +46,7 @@ const BrandingHeader = ({
           {shouldConnectSvg && <ConnectIcon className="text-line-strong mx-3" />}
           {logo && (
             <img
-              className="h-10 w-auto object-contain object-center"
+              className="h-8 w-auto object-contain object-center"
               alt="app logo"
               src={logo}
             />

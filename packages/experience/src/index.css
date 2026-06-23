@@ -114,6 +114,13 @@
   --color-bg-mask:                 rgba(0,0,0,0.6);
   --color-static-dark-type-primary: #0e1116;
   --color-shadow-2-reversed:       0 -2px 8px rgba(0,0,0,0.4);
+  /* These were light-only and looked wrong on dark: the button loading spinner used a
+     near-black grey (invisible on a dark button), and the amber alert tints were tuned
+     for a light surface. Flip them for dark. */
+  --color-brand-loading:           rgba(255,255,255,0.55);
+  --color-alert-60:                #fbbf24;
+  --color-alert-70:                #fcd34d;
+  --color-alert-90:                #3a2e12;
 }
 
 /* ── Tailwind theme ── */
@@ -208,7 +215,11 @@
      and wrap normally — graceful, no layout break. */
   h1, h2, .text-balance { text-wrap: balance; }
   :focus { outline: none; }
-  :focus-visible {
+  /* Keyboard focus ring for buttons / links / generic controls. EXCLUDES text inputs,
+     textareas and selects: those already render their own border + soft rose ring
+     (.input-base:focus), and adding this hard 2px outline on top drew a second line —
+     a near-black bar in light mode where --primary is near-black. */
+  :focus-visible:not(input):not(textarea):not(select) {
     outline: 2px solid var(--primary);
     outline-offset: 2px;
     border-radius: 4px;
@@ -349,16 +360,26 @@
   .btn-primary {
     position: relative;
     color: var(--primary-contrast);
+    /* Layered for physical depth (matches the refined backup CSS): a brighter top half
+       fading to the base colour gives a subtle convex sheen, a hairline inset border
+       defines the edge, and the top-edge highlight + drop shadow lift it off the card. */
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 50%),
+      linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0) 52%),
       var(--primary);
-    box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-xs);
+    box-shadow:
+      inset 0 0 0 1px rgba(0,0,0,0.06),
+      inset 0 1px 0 var(--btn-edge),
+      0 1px 2px rgba(0,0,0,0.12),
+      var(--sh-xs);
   }
   .btn-primary:hover:not(:disabled) {
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 52%),
+      var(--primary-hover);
     box-shadow:
-      var(--sh-xs),
-      0 4px 14px var(--color-overlay-brand-focused),
-      inset 0 1px 0 var(--btn-edge);
+      inset 0 0 0 1px rgba(0,0,0,0.06),
+      inset 0 1px 0 var(--btn-edge),
+      0 4px 14px var(--color-overlay-brand-focused);
   }
 
   /* Ghost / secondary button */
