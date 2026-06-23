@@ -24,7 +24,10 @@ import SecurityRow, { type SecurityRowData } from '../components/SecurityRow';
 import SecuritySection from '../components/SecuritySection';
 import { SecurityRowSkeleton, SecuritySkeleton } from '../components/SecuritySkeleton';
 
-import styles from './index.module.scss';
+// Shimmer block styling, matching the shared `SecuritySkeleton` (kept inline since that
+// component does not export its block primitive). Used only for the toggle-row skeleton.
+const skeletonBlock =
+  'relative overflow-hidden rounded-[13px] bg-surface-2 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.45),transparent)] bg-[length:200%_100%] bg-no-repeat animate-[shimmer_2s_infinite]';
 
 const PasskeySection = () => {
   const { t } = useTranslation();
@@ -163,16 +166,14 @@ const PasskeySection = () => {
         <SecuritySkeleton ariaLabel={t('account_center.security.passkeys')}>
           {showToggle && (
             <>
-              <div className={styles.toggleRow}>
-                <div className={styles.toggleInfo}>
-                  <div className={classNames(styles.skeletonBlock, styles.skeletonToggleTitle)} />
-                  <div
-                    className={classNames(styles.skeletonBlock, styles.skeletonToggleDescription)}
-                  />
+              <div className="flex items-center gap-6 px-6 py-5 mobile:gap-3 mobile:p-4">
+                <div className="flex-1 flex flex-col gap-1 min-w-0 mobile:gap-1.5">
+                  <div className={classNames(skeletonBlock, 'w-[200px] max-w-[60%] h-4')} />
+                  <div className={classNames(skeletonBlock, 'w-[360px] max-w-full h-3.5')} />
                 </div>
-                <div className={classNames(styles.skeletonBlock, styles.skeletonSwitch)} />
+                <div className={classNames(skeletonBlock, 'w-11 h-6 shrink-0 rounded-xl')} />
               </div>
-              <div className={styles.divider} />
+              <div className="h-px bg-line" />
             </>
           )}
           <SecurityRowSkeleton hasAction={isEditable} />
@@ -185,12 +186,12 @@ const PasskeySection = () => {
     <SecuritySection title={t('account_center.security.passkeys')}>
       {showToggle && (
         <>
-          <div className={styles.toggleRow}>
-            <div className={styles.toggleInfo}>
-              <div className={styles.toggleTitle}>
+          <div className="flex items-center gap-6 px-6 py-5 mobile:gap-3 mobile:p-4">
+            <div className="flex-1 flex flex-col gap-1 min-w-0 mobile:gap-1.5">
+              <div className="text-sm font-medium text-ink mobile:[overflow-wrap:anywhere] mobile:break-words">
                 {t('account_center.security.passkey_sign_in_prompt')}
               </div>
-              <div className={styles.toggleDescription}>
+              <div className="text-sm text-muted mobile:[overflow-wrap:anywhere] mobile:break-words">
                 {t('account_center.security.passkey_sign_in_prompt_description')}
               </div>
             </div>
@@ -202,7 +203,7 @@ const PasskeySection = () => {
               }}
             />
           </div>
-          <div className={styles.divider} />
+          <div className="h-px bg-line" />
         </>
       )}
       <SecurityRow row={passkeyRow} />
