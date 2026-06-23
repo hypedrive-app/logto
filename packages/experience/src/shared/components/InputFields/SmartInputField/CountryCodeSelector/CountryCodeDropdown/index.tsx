@@ -5,12 +5,12 @@ import classNames from 'classnames';
 import type { KeyboardEventHandler } from 'react';
 import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Sheet } from 'react-modal-sheet';
 import ReactModal from 'react-modal';
 
 import useDebounce from '@/hooks/use-debounce';
 import usePlatform from '@/hooks/use-platform';
 import InputField from '@/shared/components/InputFields/InputField';
-import NavBar from '@/shared/components/NavBar';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 import type { CountryMetaData } from '@/utils/country-code';
 
@@ -240,134 +240,151 @@ const CountryCodeDropdown = ({
     }
   }, [selectedCountryCode]);
 
+  // Search field — shared by the desktop popover and the mobile sheet.
+  const searchField = (
+    <InputField
+      // Autofocus the search ONLY on desktop. On mobile, autofocusing pops the on-screen
+      // keyboard the instant the sheet opens, covering the list. The user taps to search.
+      autoFocus={!isMobile}
+      name="country-code-search"
+      type="text"
+      // inputMode="none" on mobile until the user taps the field — keeps the keyboard down.
+      inputMode={isMobile && !isSearchEngaged ? 'none' : 'text'}
+      onPointerDown={isMobile ? onSearchPointerDown : undefined}
+      prefix={<MagnifyingGlassIcon className="w-5 h-5" />}
+      value={searchValue}
+      className="mb-2 [&_input]:ps-2 [&_svg]:text-muted [&_svg]:self-center"
+      inputFieldClassName="desktop:py-1.5 desktop:px-3 desktop:h-auto mobile:ps-4"
+      placeholder={t('input.search_region_code')}
+      onChange={onSearchChange}
+      onKeyDown={onInputKeyDown}
+    />
+  );
+
+  // Country list — shared. `tall` lets the desktop popover cap height while the mobile
+  // sheet scroller owns its own height.
+  const countryListEl = (
+    <>
+      <ul className="-mx-3 px-3 list-none overflow-y-auto desktop:max-h-[400px] mobile:text-base">
+        {filteredCountryList.map(({ countryCallingCode, countryCode: countryKeyCode, countryName }) => {
+          const isActive = countryCallingCode === countryCode;
+          const isSelected = countryKeyCode === selectedCountryCode;
+
+          return (
+            <li
+              key={countryKeyCode}
+              tabIndex={0}
+              data-id={countryKeyCode}
+              aria-selected={isSelected}
+              className={classNames(
+                'flex items-center gap-3 py-2.5 px-3 rounded-[11px] cursor-pointer',
+                conditional(isActive && '[&_.calling-code]:text-primary'),
+                conditional(isSelected && 'bg-[var(--color-overlay-neutral-hover)]')
+              )}
+              // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
+              role="button"
+              onKeyDown={onKeyDownHandler({
+                Enter: () => {
+                  onCodeChange(countryCallingCode);
+                },
+              })}
+              onClick={() => {
+                onCodeChange(countryCallingCode);
+              }}
+              onMouseEnter={() => {
+                setSelectedCountryCode(countryKeyCode);
+              }}
+              onMouseLeave={() => {
+                setSelectedCountryCode('');
+              }}
+            >
+              {FlagUtils.isValidCountryCode(countryKeyCode) && (
+                <DynamicFlag
+                  code={countryKeyCode.toLowerCase()}
+                  width={24}
+                  height={24}
+                  aria-hidden="true"
+                  className="shrink-0 w-6 h-6 rounded-full shadow-[0_0_0_1px_var(--color-line-divider)]"
+                />
+              )}
+              <span className="flex-1 truncate text-ink">{countryName}</span>
+              <span className="calling-code shrink-0 text-muted [font-variant-numeric:tabular-nums]">{`+${countryCallingCode}`}</span>
+              {isActive && <CheckIcon className="shrink-0 ms-1 w-5 h-5 text-primary" />}
+            </li>
+          );
+        })}
+      </ul>
+      {filteredCountryList.length === 0 && (
+        <div className="text-muted py-1 px-2 text-center">
+          {t('description.no_region_code_found')}
+        </div>
+      )}
+    </>
+  );
+
+  // Mobile: a real bottom sheet (react-modal-sheet / Motion) — native iOS-style
+  // drag-to-dismiss, momentum, focus trap and a11y handled by the library. `detent="content"`
+  // sizes it to the content, capped by the sheet's own max height.
+  if (isMobile) {
+    return (
+      <Sheet
+        isOpen={isOpen}
+        detent="content"
+        // Cap at 85svh so a long list never covers the whole screen.
+        onClose={onDestroy}
+      >
+        <Sheet.Container
+          className="!bg-elevated !rounded-t-[20px] !shadow-[var(--sh-float)]"
+          style={{ maxHeight: '85svh' }}
+        >
+          <Sheet.Header>
+            {/* DragIndicator = the grab handle; dragging the header dismisses the sheet. */}
+            <Sheet.DragIndicator className="!bg-[var(--color-line-strong)]" />
+            <div className="px-4 pb-2 pt-1">
+              <div className="mb-3 text-center text-sm font-medium text-ink">
+                {t('input.search_region_code')}
+              </div>
+              {searchField}
+            </div>
+          </Sheet.Header>
+          {/* disableScroll=false lets the list scroll inside; the library stops drag-to-
+              dismiss from fighting an active scroll automatically. */}
+          <Sheet.Content className="overflow-y-auto px-4 pb-[max(env(safe-area-inset-bottom),12px)]">
+            {countryListEl}
+          </Sheet.Content>
+        </Sheet.Container>
+        <Sheet.Backdrop className="!bg-[var(--color-bg-mask)]" onTap={onDestroy} />
+      </Sheet>
+    );
+  }
+
+  // Desktop: positioned popover under the field (unchanged react-modal behavior).
   return (
     <ReactModal
       id="country-code-dropdown"
       isOpen={isOpen}
-      // Desktop: invisible click-catcher overlay (the sheet is a positioned popover).
-      // Mobile: dimmed mask behind a bottom sheet that slides up from the edge.
-      overlayClassName="bg-transparent fixed inset-0 z-40 mobile:z-[var(--z-modal)] mobile:bg-[var(--color-bg-mask)]"
-      // Desktop popover keeps its measured `position`. Mobile becomes a bottom sheet:
-      // pinned to the bottom edge, full width, capped at 85svh, rounded top, sliding in
-      // via translate-y (matches OrganizationSelectorModal's pattern).
-      className={
-        'absolute z-50 focus-visible:outline-none ' +
-        'mobile:inset-x-0 mobile:bottom-0 mobile:top-auto mobile:max-h-[85svh] ' +
-        'mobile:rounded-t-[20px] mobile:overflow-hidden mobile:pb-[env(safe-area-inset-bottom)] ' +
-        'mobile:translate-y-full mobile:transition-transform mobile:duration-300 mobile:ease-[var(--ease-out)] ' +
-        'mobile:[&.ReactModal__Content--after-open]:translate-y-0 ' +
-        'mobile:[&.ReactModal__Content--before-close]:translate-y-full'
-      }
-      style={{
-        content: {
-          ...position,
-        },
-      }}
-      closeTimeoutMS={isMobile ? 300 : 200}
+      overlayClassName="bg-transparent fixed inset-0 z-40"
+      className="absolute z-50 focus-visible:outline-none"
+      style={{ content: { ...position } }}
+      closeTimeoutMS={200}
       onRequestClose={(event) => {
         event.stopPropagation();
         onDestroy();
       }}
     >
       <div
-        className="bg-elevated py-2 px-3 desktop:border desktop:border-line-strong desktop:shadow-[var(--sh-float)] desktop:rounded-[13px] desktop:py-3 mobile:flex mobile:flex-col mobile:items-stretch mobile:max-h-[85svh] mobile:rounded-t-[20px] mobile:px-4 mobile:pt-2 mobile:pb-3"
+        className="bg-elevated py-3 px-3 border border-line-strong shadow-[var(--sh-float)] rounded-[13px]"
         role="button"
         tabIndex={0}
         onClick={(event) => {
-          // Prevent parent node trigger onClick show modal event
           event.stopPropagation();
         }}
         onKeyDown={(event) => {
-          // Prevent parent node trigger onClick show modal event
           event.stopPropagation();
         }}
       >
-        {isMobile && (
-          <>
-            {/* Grab handle — the standard affordance that signals a draggable/dismissible
-                bottom sheet (iOS/Android pattern). Purely visual; tap the mask or Back to close. */}
-            <div
-              aria-hidden
-              className="mx-auto mb-1 mt-0.5 h-1 w-9 shrink-0 rounded-full bg-[var(--color-line-strong)]"
-            />
-            <NavBar type="back" title={t('input.search_region_code')} onClose={onDestroy} />
-          </>
-        )}
-        <InputField
-          // Autofocus the search ONLY on desktop. On mobile, autofocusing pops the
-          // on-screen keyboard the instant the sheet opens — covering the country list
-          // the user wants to scroll. They can tap the search box if they want to type.
-          autoFocus={!isMobile}
-          name="country-code-search"
-          type="text"
-          // inputMode="none" on mobile until the user taps to search — keeps the keyboard
-          // down so the list stays visible. Desktop and engaged-search use the text keyboard.
-          inputMode={isMobile && !isSearchEngaged ? 'none' : 'text'}
-          onPointerDown={isMobile ? onSearchPointerDown : undefined}
-          prefix={<MagnifyingGlassIcon className="w-5 h-5" />}
-          value={searchValue}
-          className="mb-2 [&_input]:ps-2 [&_svg]:text-muted [&_svg]:self-center mobile:[&:not(:first-child)]:mt-2"
-          inputFieldClassName="desktop:py-1.5 desktop:px-3 desktop:h-auto mobile:ps-4"
-          placeholder={t('input.search_region_code')}
-          onChange={onSearchChange}
-          onKeyDown={onInputKeyDown}
-        />
-        <ul className="-mx-3 px-3 list-none overflow-y-auto desktop:max-h-[400px] mobile:text-base mobile:overflow-auto mobile:flex-1">
-          {filteredCountryList.map(({ countryCallingCode, countryCode: countryKeyCode, countryName }) => {
-            const isActive = countryCallingCode === countryCode;
-            const isSelected = countryKeyCode === selectedCountryCode;
-
-            return (
-              <li
-                key={countryKeyCode}
-                tabIndex={0}
-                data-id={countryKeyCode}
-                // Expose the keyboard highlight semantically so assistive tech (and tests) can
-                // observe which result is active independent of the visual highlight styling.
-                aria-selected={isSelected}
-                className={classNames(
-                  'flex items-center gap-3 py-2.5 px-3 rounded-[11px] cursor-pointer',
-                  conditional(isActive && '[&_.calling-code]:text-primary'),
-                  conditional(isSelected && 'bg-[var(--color-overlay-neutral-hover)]')
-                )}
-                // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
-                role="button"
-                onKeyDown={onKeyDownHandler({
-                  Enter: () => {
-                    onCodeChange(countryCallingCode);
-                  },
-                })}
-                onClick={() => {
-                  onCodeChange(countryCallingCode);
-                }}
-                onMouseEnter={() => {
-                  setSelectedCountryCode(countryKeyCode);
-                }}
-                onMouseLeave={() => {
-                  setSelectedCountryCode('');
-                }}
-              >
-                {FlagUtils.isValidCountryCode(countryKeyCode) && (
-                  <DynamicFlag
-                    code={countryKeyCode.toLowerCase()}
-                    width={24}
-                    height={24}
-                    aria-hidden="true"
-                    className="shrink-0 w-6 h-6 rounded-full shadow-[0_0_0_1px_var(--color-line-divider)]"
-                  />
-                )}
-                <span className="flex-1 truncate text-ink">{countryName}</span>
-                <span className="calling-code shrink-0 text-muted [font-variant-numeric:tabular-nums]">{`+${countryCallingCode}`}</span>
-                {isActive && <CheckIcon className="shrink-0 ms-1 w-5 h-5 text-primary" />}
-              </li>
-            );
-          })}
-        </ul>
-        {filteredCountryList.length === 0 && (
-          <div className="text-muted py-1 px-2 text-center">
-            {t('description.no_region_code_found')}
-          </div>
-        )}
+        {searchField}
+        {countryListEl}
       </div>
     </ReactModal>
   );
