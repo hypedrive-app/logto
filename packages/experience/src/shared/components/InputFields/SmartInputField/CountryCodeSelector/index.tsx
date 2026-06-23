@@ -31,6 +31,9 @@ const CountryCodeSelector = (
   const defaultCountCode = useMemo(getDefaultCountryCallingCode, []);
 
   const showDropDown = () => {
+    // Blur the phone number input before opening, so the on-screen keyboard dismisses
+    // instead of staying up (or re-popping) behind the country sheet/popover on mobile.
+    inputRef?.current?.blur();
     setIsDropdownOpen(true);
   };
 
@@ -73,6 +76,10 @@ const CountryCodeSelector = (
       aria-haspopup="listbox"
       aria-expanded={isDropdownOpen}
       aria-disabled={!isInteractive}
+      // Prevent the browser's default focus-shift on tap. Without this, tapping the
+      // selector moves focus toward the adjacent number input → the mobile keyboard
+      // pops up alongside the dropdown. preventDefault keeps focus where we put it.
+      onPointerDown={isInteractive ? (event) => event.preventDefault() : undefined}
       onClick={isInteractive ? showDropDown : undefined}
       onKeyDown={
         isInteractive

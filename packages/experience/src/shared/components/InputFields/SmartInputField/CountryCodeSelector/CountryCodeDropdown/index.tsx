@@ -283,7 +283,10 @@ const CountryCodeDropdown = ({
           </>
         )}
         <InputField
-          autoFocus
+          // Autofocus the search ONLY on desktop. On mobile, autofocusing pops the
+          // on-screen keyboard the instant the sheet opens — covering the country list
+          // the user wants to scroll. They can tap the search box if they want to type.
+          autoFocus={!isMobile}
           name="country-code-search"
           type="text"
           inputMode="text"
