@@ -434,6 +434,21 @@
   .shake { animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both; }
   @media (prefers-reduced-motion: reduce) { .shake { animation: none; } }
 
+  /* Staggered entrance — direct children fade+rise in sequence (form fields, option
+     buttons). Reuses social-fade-in; the per-child delay creates the cascade. Honoured
+     only when motion is allowed. */
+  .stagger-children > * {
+    animation: social-fade-in 0.34s var(--ease-out) both;
+  }
+  .stagger-children > *:nth-child(2) { animation-delay: 0.05s; }
+  .stagger-children > *:nth-child(3) { animation-delay: 0.10s; }
+  .stagger-children > *:nth-child(4) { animation-delay: 0.15s; }
+  .stagger-children > *:nth-child(5) { animation-delay: 0.20s; }
+  .stagger-children > *:nth-child(n+6) { animation-delay: 0.24s; }
+  @media (prefers-reduced-motion: reduce) {
+    .stagger-children > * { animation: none; }
+  }
+
   /* Status chips — small, pill, tinted */
   .chip {
     display: inline-flex;
@@ -482,6 +497,22 @@
 }
 @keyframes onAutoFillStart { from {} to {} }
 @keyframes onAutoFillCancel { from {} to {} }
+
+/* Cross-fade between auth steps (sign-in → verify → password). @view-transition is a
+   progressive enhancement: supporting engines (Chrome, Safari 18+) cross-fade route
+   changes; every other browser ignores the at-rule entirely and navigates instantly —
+   zero breakage, nothing to feature-detect in JS. Honoured per reduced-motion below. */
+@view-transition { navigation: auto; }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.22s;
+  animation-timing-function: var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
 
 /* Error shake — a tight horizontal nudge on a rejected OTP / wrong password, the standard
    "no" gesture (matches the iOS lock-screen). Pure transform = GPU-cheap and works on every

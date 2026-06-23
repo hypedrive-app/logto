@@ -16,7 +16,9 @@ const FirstScreenLayout = ({ children, pageMeta }: Props) => {
     <>
       <PageMeta {...pageMeta} />
       {platform === 'web' && <div className="desktop:flex-[3]" />}
-      <div className="mx-auto flex w-full max-w-[var(--max-w)] flex-1 flex-col self-stretch [&>*:last-child]:mb-0 desktop:py-6">
+      {/* stagger-children: the branding header, form and footer cascade in on load —
+          a subtle premium touch. Reduced-motion-guarded; Safari-safe (opacity+transform). */}
+      <div className="stagger-children mx-auto flex w-full max-w-[var(--max-w)] flex-1 flex-col self-stretch [&>*:last-child]:mb-0 desktop:py-6">
         {children}
       </div>
       {platform === 'web' && <div className="desktop:flex-[5]" />}

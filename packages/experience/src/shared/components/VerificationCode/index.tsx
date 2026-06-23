@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import type { FormEventHandler, KeyboardEventHandler, ClipboardEventHandler } from 'react';
 import { useMemo, useRef, useCallback, useEffect } from 'react';
 
@@ -207,7 +208,15 @@ const VerificationCode = ({
 
   return (
     <div className={className}>
-      <div className={passcodeClass} role="group" aria-label="Verification code">
+      <div
+        // Re-key on each error so the shake animation replays for every wrong code (a
+        // CSS animation only fires when the element is (re)mounted with the class). The
+        // .shake utility is reduced-motion-guarded and Safari-safe (pure transform).
+        key={error ? `err-${error}` : 'ok'}
+        className={classNames(passcodeClass, error && 'shake')}
+        role="group"
+        aria-label="Verification code"
+      >
         {Array.from({ length }).map((_, index) => (
           <input
             ref={(element) => {
