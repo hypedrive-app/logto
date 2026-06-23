@@ -1,8 +1,9 @@
 import { SignInIdentifier } from '@logto/schemas';
-import { useState, useCallback, useMemo } from 'react';
+import { getCountryCallingCode } from 'libphonenumber-js/mobile';
+import { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type { ChangeEventHandler } from 'react';
 
-import { getDefaultCountryCallingCode } from '@/utils/country-code';
+import { getDefaultCountryCallingCode, detectCountryByIp } from '@/utils/country-code';
 import { parseIdentifierValue } from '@/utils/form';
 
 import { detectIdentifierType } from './utils';
@@ -50,6 +51,27 @@ const useSmartInputField = ({ defaultValue, enabledTypes }: Props) => {
     defaultCountryCode ?? getDefaultCountryCallingCode()
   );
 
+  // Upgrade the default country from IP geolocation once on mount — but never override a
+  // value the user (or a prefilled identifier) already set. country.is is best-effort:
+  // on failure the locale-derived default stands.
+  const userTouchedCountry = useRef(Boolean(defaultCountryCode));
+  useEffect(() => {
+    let cancelled = false;
+    void detectCountryByIp().then((detected) => {
+      if (cancelled || !detected || userTouchedCountry.current) {
+        return;
+      }
+      try {
+        setCountryCode(getCountryCallingCode(detected));
+      } catch {
+        // ignore — keep the existing default
+      }
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const [inputValue, setInputValue] = useState<string>(defaultInputValue ?? '');
 
   const detectInputType = useCallback(
@@ -61,6 +83,10 @@ const useSmartInputField = ({ defaultValue, enabledTypes }: Props) => {
     (value: string) => {
       if (currentType === SignInIdentifier.Phone) {
         const code = value.replace(/\D/g, '');
+        // The user picked a country explicitly — don't let the async IP detection
+        // override it afterwards.
+        // eslint-disable-next-line @silverhand/fp/no-mutation
+        userTouchedCountry.current = true;
         setCountryCode(code);
       }
     },

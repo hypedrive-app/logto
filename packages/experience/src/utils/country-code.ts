@@ -3,13 +3,42 @@ import i18next from 'i18next';
 import type { CountryCode, CountryCallingCode } from 'libphonenumber-js/mobile';
 import { getCountries, getCountryCallingCode } from 'libphonenumber-js/mobile';
 
-export const fallbackCountryCode = 'US';
+// India-first fallback: when the browser locale carries no region (e.g. plain "en"),
+// the previous "US" fallback made every phone field default to +1. Our audience is
+// India-first, so default to IN; locale region (en-IN / en-US) still wins when present,
+// and IP geolocation (detectCountryByIp) upgrades this at runtime when available.
+export const fallbackCountryCode = 'IN';
 
 export const countryCallingCodeMap: Record<string, CountryCode> = {
   zh: 'CN',
-  en: 'US',
+  en: 'IN',
   ja: 'JP',
   ko: 'KR',
+};
+
+/**
+ * Best-effort default country from the user's IP, via country.is — a free, keyless,
+ * open-source endpoint (https://country.is) returning `{ country: "IN" }`. Used only to
+ * UPGRADE the locale-derived default; any failure/timeout silently keeps the locale
+ * default, so this never blocks or breaks the form. Resolves to a valid CountryCode or
+ * undefined.
+ */
+export const detectCountryByIp = async (): Promise<CountryCode | undefined> => {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+    }, 1500);
+    const response = await fetch('https://api.country.is/', { signal: controller.signal });
+    clearTimeout(timeout);
+    if (!response.ok) {
+      return undefined;
+    }
+    const { country } = (await response.json()) as { country?: string };
+    return country && isValidCountryCode(country) ? country : undefined;
+  } catch {
+    return undefined;
+  }
 };
 
 export const isValidCountryCode = (countryCode: string): countryCode is CountryCode => {
@@ -95,18 +124,25 @@ const buildCountryMetaData = (countryCode: CountryCode): CountryMetaData => ({
   countryName: getCountryName(countryCode),
 });
 
+/**
+ * NANP micro-territories that share +1 with the US/Canada. libphonenumber lists all 25
+ * of them, so the picker showed "+1" ~25 times (US, Canada, then 23 tiny Caribbean/
+ * Pacific territories) — the repetition the user flagged. These have a negligible
+ * sign-up base for this product, so we hide them; US and CA (the only +1 regions real
+ * users pick) stay. Anyone in a hidden territory can still type their full +1 number.
+ */
+const hiddenSharedCodeRegions = new Set<CountryCode>([
+  'AG', 'AI', 'AS', 'BB', 'BM', 'BS', 'DM', 'DO', 'GD', 'GU', 'JM', 'KN', 'KY',
+  'LC', 'MP', 'MS', 'PR', 'SX', 'TC', 'TT', 'VC', 'VG', 'VI',
+]);
+
 export const getCountryList = (): CountryMetaData[] => {
   const defaultCountryCode = getDefaultCountryCode();
 
   const countryList = getCountries()
-    .filter((code) => code !== defaultCountryCode)
+    .filter((code) => code !== defaultCountryCode && !hiddenSharedCodeRegions.has(code))
     .map((code) => buildCountryMetaData(code))
-    /**
-     * Sort alphabetically by localized country name so the list reads naturally.
-     * Note: we intentionally keep every country (no calling-code dedupe) so that
-     * regions sharing a calling code — e.g. US/Canada on +1 — are both selectable,
-     * distinguished by name and flag.
-     */
+    // Sort alphabetically by localized country name so the list reads naturally.
     .sort((previous, next) =>
       previous.countryName.localeCompare(next.countryName, i18next.language)
     );
