@@ -62,13 +62,17 @@ export const aliyunSmsConfigGuard = z.object({
       requiredTemplateUsageTypes.every((requiredType) =>
         templates.map((template) => template.usageType).includes(requiredType)
       ),
-    (templates) => ({
-      message: `UsageType (${requiredTemplateUsageTypes
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      error: (issue) => {
+        const templates = issue.input as Array<{ usageType: string }>;
+        return `UsageType (${requiredTemplateUsageTypes
         .filter(
           (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
         )
-        .join(', ')}) should be provided in templates.`,
-    })
+        .join(', ')}) should be provided in templates.`;
+      },
+    }
   ),
   strictPhoneRegionNumberCheck: z.boolean().optional(),
 });

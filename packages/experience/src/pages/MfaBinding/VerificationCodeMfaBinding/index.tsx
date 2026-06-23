@@ -3,7 +3,7 @@ import { conditional } from '@silverhand/essentials';
 import { type TFuncKey } from 'i18next';
 import { useCallback, useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -19,8 +19,6 @@ import { UserMfaFlow } from '@/types';
 import { mfaFlowStateGuard } from '@/types/guard';
 import { codeVerificationTypeMap } from '@/utils/sign-in-experience';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly identifierType: SignInIdentifier.Email | SignInIdentifier.Phone;
   readonly titleKey: TFuncKey;
@@ -35,7 +33,7 @@ const VerificationCodeMfaBinding = ({
   invalidInputErrorKey,
 }: Props) => {
   const { state } = useLocation();
-  const [, mfaFlowState] = validate(state, mfaFlowStateGuard);
+  const { data: mfaFlowState } = mfaFlowStateGuard.safeParse(state);
   const { setVerificationId, setIdentifierInputValue } = useContext(UserInteractionContext);
   const navigate = useNavigateWithPreservedSearchParams();
   const [errorMessage, setErrorMessage] = useState<string>();
@@ -107,7 +105,7 @@ const VerificationCodeMfaBinding = ({
         <SwitchMfaFactorsLink
           flow={UserMfaFlow.MfaBinding}
           flowState={{ availableFactors, skippable }}
-          className={styles.switchLink}
+          className="mt-6"
         />
       )}
     </SecondaryPageLayout>

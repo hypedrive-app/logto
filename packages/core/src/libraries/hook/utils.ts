@@ -10,7 +10,7 @@ import {
 import { conditional, trySafe } from '@silverhand/essentials';
 import { type Context } from 'koa';
 import { type IRouterParamContext } from 'koa-router';
-import ky, { type KyResponse } from 'ky';
+import ky, { type HTTPError, type KyResponse } from 'ky';
 
 import { sign } from '#src/utils/sign.js';
 
@@ -22,6 +22,18 @@ export const parseResponse = async (response: KyResponse) => {
     body: trySafe(() => JSON.parse(body) as unknown) ?? String(body),
   };
 };
+
+/**
+ * Normalize the error response of a *failed* webhook into the same shape as {@link parseResponse}.
+ *
+ * `ky` v2 consumes the response body to pre-parse it onto `HTTPError.data`, so the error path can no
+ * longer read `error.response.text()` (it throws `Body has already been read`). Use the pre-parsed
+ * `error.data` instead — `ky` parses it as JSON when the response is JSON, otherwise as a string.
+ */
+export const parseHttpError = ({ response, data }: HTTPError) => ({
+  statusCode: response.status,
+  body: data,
+});
 
 type SendWebhookRequest = {
   hookConfig: HookConfig;

@@ -135,9 +135,41 @@ export class MfaValidator {
     return hasUserFactors;
   }
 
+  /**
+   * The phishing-resistant subset of the user's available MFA factors.
+   *
+   * Only WebAuthn (passkey / hardware security key) is phishing-resistant; phishable factors
+   * (TOTP, email/SMS codes, backup codes) are excluded even when enrolled. Used to populate
+   * the `availableFactors` payload of the step-up `phr` 403 so the experience app offers only
+   * the security key.
+   */
+  get availablePhishingResistantFactors() {
+    return this.availableUserMfaVerificationTypes.filter((factor) => factor === MfaFactor.WebAuthn);
+  }
+
   isMfaVerified(verificationRecords: VerificationRecord[]) {
-    const verifiedMfaVerificationRecords = verificationRecords.filter(
-      (verification) =>
+    return this.getVerifiedMfaRecords(verificationRecords).length > 0;
+  }
+
+  /**
+   * Whether a phishing-resistant factor has been verified in this interaction.
+   *
+   * Satisfied only by a verified WebAuthn record that is enabled in the user's MFA settings.
+   * Used to guard the `urn:logto:acr:phr` step-up ACR.
+   */
+  isPhishingResistantVerified(verificationRecords: VerificationRecord[]) {
+    return this.getVerifiedMfaRecords(verificationRecords).some(
+      (verification) => verification.type === VerificationType.WebAuthn
+    );
+  }
+
+  /**
+   * The verified, usable MFA records for this interaction: verified, not a fresh bind, and of a
+   * type enabled in the user's MFA settings.
+   */
+  private getVerifiedMfaRecords(verificationRecords: VerificationRecord[]) {
+    return verificationRecords.filter(
+      (verification): verification is MfaVerificationRecord =>
         isMfaVerificationRecord(verification) &&
         verification.isVerified &&
         // New bind MFA verification can not be used for verification
@@ -147,7 +179,5 @@ export class MfaValidator {
           mfaVerificationTypeToMfaFactorMap[verification.type]
         )
     );
-
-    return verifiedMfaVerificationRecords.length > 0;
   }
 }

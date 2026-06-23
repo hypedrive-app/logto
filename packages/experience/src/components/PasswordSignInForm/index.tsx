@@ -1,3 +1,4 @@
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { AgreeToTermsPolicy, type SignInIdentifier } from '@logto/schemas';
 import classNames from 'classnames';
 import { useCallback, useContext, useEffect } from 'react';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import WebAuthnContext from '@/Providers/WebAuthnContextProvider/WebAuthnContext';
-import LockIcon from '@/assets/icons/lock.svg?react';
 import { SmartInputField, PasswordInputField } from '@/components/InputFields';
 import CaptchaBox from '@/containers/CaptchaBox';
 import ForgotPasswordLink from '@/containers/ForgotPasswordLink';
@@ -20,8 +20,6 @@ import Button from '@/shared/components/Button';
 import ErrorMessage from '@/shared/components/ErrorMessage';
 import type { IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
-
-import styles from './index.module.scss';
 
 type Props = {
   readonly className?: string;
@@ -48,6 +46,7 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
   const {
     watch,
     register,
+    trigger,
     handleSubmit,
     control,
     formState: { errors, isValid, isSubmitting },
@@ -114,7 +113,13 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
   }, [clearErrorMessage, isValid]);
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -132,7 +137,7 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
         render={({ field, formState: { defaultValues } }) => (
           <SmartInputField
             autoFocus={autoFocus}
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             isDanger={!!errors.identifier}
             errorMessage={errors.identifier?.message}
@@ -142,25 +147,34 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
         )}
       />
       {showSingleSignOnForm && (
-        <div className={styles.message}>{t('description.single_sign_on_enabled')}</div>
+        <div className="mb-4 text-sm text-muted">{t('description.single_sign_on_enabled')}</div>
       )}
 
       {!showSingleSignOnForm && (
         <PasswordInputField
-          className={styles.inputField}
+          className="mb-4"
           autoComplete="current-password"
           label={t('input.password')}
           isDanger={!!errors.password}
           errorMessage={errors.password?.message}
-          {...register('password', { required: t('error.password_required') })}
+          {...register('password', {
+            required: t('error.password_required'),
+            // Revalidate on change so the error clears as the user types after a
+            // failed submit — matches the UX of other forms in the codebase.
+            onChange: () => {
+              void trigger('password');
+            },
+          })}
         />
       )}
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 mt-0">{errorMessage}</ErrorMessage>
+      )}
 
       {isForgotPasswordEnabled && !showSingleSignOnForm && (
         <ForgotPasswordLink
-          className={styles.link}
+          className="mb-4 -mt-1 self-start w-auto desktop:-mt-2"
           identifier={watch('identifier').type}
           value={watch('identifier').value}
         />
@@ -174,9 +188,9 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
        */}
       <TermsAndPrivacyCheckbox
         className={classNames(
-          styles.terms,
+          'mb-4',
           // For sign in, only show the terms checkbox if the terms policy is manual
-          agreeToTermsPolicy !== AgreeToTermsPolicy.Manual && styles.hidden
+          agreeToTermsPolicy !== AgreeToTermsPolicy.Manual && 'hidden'
         )}
       />
 
@@ -185,7 +199,7 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
       <Button
         name="submit"
         title={showSingleSignOnForm ? 'action.single_sign_on' : 'action.sign_in'}
-        icon={showSingleSignOnForm ? <LockIcon /> : undefined}
+        icon={showSingleSignOnForm ? <LockClosedIcon className="w-5 h-5" /> : undefined}
         htmlType="submit"
         isLoading={isSubmitting || isPasskeyFlowProcessing}
       />

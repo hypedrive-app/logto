@@ -1,5 +1,5 @@
 import { type TFuncKey } from 'i18next';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
 
 export type Props = {

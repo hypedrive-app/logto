@@ -3,8 +3,9 @@ import { LogtoJwtTokenKeyType } from '@logto/schemas';
 import { Action } from '../../CustomizeJwt/utils/type';
 
 import { formatResponseDataToFormData } from './format';
+import { vi } from 'vitest';
 
-jest.mock('./config', () => ({
+vi.mock('./config', () => ({
   defaultAccessTokenJwtCustomizerCode: 'default-access-script',
   defaultAccessTokenPayload: { sub: 'user-id' },
   defaultClientCredentialsJwtCustomizerCode: 'default-client-credentials-script',

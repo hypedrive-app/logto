@@ -47,8 +47,9 @@ export const getPhrases = async ({
   ky
     .extend({
       hooks: {
+        // v2: hooks now receive a single state object.
         beforeRequest: [
-          (request) => {
+          ({ request }) => {
             if (localLanguage) {
               request.headers.set('Accept-Language', localLanguage);
             }

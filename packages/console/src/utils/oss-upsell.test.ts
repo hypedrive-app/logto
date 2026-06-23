@@ -1,11 +1,12 @@
 import { buildCloudUpsellUrl, openCloudUpsell, ossUpsellEntries } from './oss-upsell';
+import { vi } from 'vitest';
 
 describe('oss upsell helpers', () => {
-  const mockWindowOpen = jest.fn<ReturnType<typeof window.open>, Parameters<typeof window.open>>();
+  const mockWindowOpen = vi.fn<(...args: Parameters<typeof window.open>) => ReturnType<typeof window.open>>();
 
   beforeEach(() => {
-    jest.restoreAllMocks();
-    jest.spyOn(window, 'open').mockImplementation(mockWindowOpen);
+    vi.restoreAllMocks();
+    vi.spyOn(window, 'open').mockImplementation(mockWindowOpen);
     mockWindowOpen.mockReset();
   });
 
@@ -33,7 +34,7 @@ describe('oss upsell helpers', () => {
   });
 
   it('returns the UTM-tagged Cloud URL without navigation when window is unavailable', () => {
-    jest
+    vi
       .spyOn(globalThis, 'window', 'get')
       .mockReturnValue(undefined as unknown as Window & typeof globalThis);
 

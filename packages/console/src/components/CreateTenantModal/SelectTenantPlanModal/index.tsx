@@ -35,7 +35,7 @@ function SelectTenantPlanModal({ tenantData, onClose }: Props) {
   const { subscribe } = useSubscribe();
   const cloudApi = useCloudApi({ hideErrorToast: true });
 
-  const reservedBasicLogtoSkus = conditional(pickupFeaturedLogtoSkus(logtoSkus));
+  const reservedBasicLogtoSkus = conditional(logtoSkus && pickupFeaturedLogtoSkus(logtoSkus));
 
   if (!reservedBasicLogtoSkus || !tenantData) {
     return null;

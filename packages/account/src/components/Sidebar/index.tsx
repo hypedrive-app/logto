@@ -6,8 +6,6 @@ import { layoutClassNames } from '@ac/constants/layout';
 
 import type { AccountNavItem } from '../account-nav-items';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly items: readonly AccountNavItem[];
 };
@@ -20,17 +18,28 @@ const Sidebar = ({ items }: Props) => {
   }
 
   return (
-    <aside className={classNames(styles.sidebar, layoutClassNames.sidebar)}>
-      <nav className={styles.nav}>
+    <aside
+      className={classNames(
+        'w-[220px] flex-shrink-0 justify-self-start py-3 px-2 desktop:max-[1060px]:hidden mobile:hidden',
+        layoutClassNames.sidebar
+      )}
+    >
+      <nav className="flex flex-col gap-1">
         {items.map(({ to, labelKey, Icon }) => (
           <NavLink
             key={to}
             to={to}
             className={({ isActive }) =>
-              classNames(styles.item, isActive && styles.active, layoutClassNames.sidebarItem)
+              classNames(
+                'flex items-center gap-2 py-2 px-3 rounded-[11px] text-sm font-medium no-underline cursor-pointer transition-colors duration-200',
+                isActive
+                  ? 'bg-surface text-ink font-medium'
+                  : 'text-muted overlay-hover',
+                layoutClassNames.sidebarItem
+              )
             }
           >
-            <Icon className={styles.icon} />
+            <Icon className="w-5 h-5 flex-shrink-0" />
             <span>{t(labelKey)}</span>
           </NavLink>
         ))}

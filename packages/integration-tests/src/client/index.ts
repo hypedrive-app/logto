@@ -1,4 +1,4 @@
-import LogtoClient, { PersistKey, type LogtoConfig, type SignInOptions } from '@logto/node';
+import LogtoClient, { PersistKey, Prompt, type LogtoConfig, type SignInOptions } from '@logto/node';
 import { demoAppApplicationId } from '@logto/schemas';
 import type { Nullable, Optional } from '@silverhand/essentials';
 import { assert } from '@silverhand/essentials';
@@ -69,7 +69,7 @@ export default class MockClient {
   constructor(config?: Partial<LogtoConfig>, api?: KyInstance) {
     this.storage = new MemoryStorage();
     this.config = { ...defaultConfig, ...config };
-    this.api = api ?? ky.extend({ prefixUrl: this.config.endpoint + '/api' });
+    this.api = api ?? ky.extend({ prefix: this.config.endpoint + '/api' });
 
     this.logto = new LogtoClient(this.config, {
       navigate: (url: string) => {
@@ -187,6 +187,20 @@ export default class MockClient {
 
       this.mergeRawCookies(authResponse.headers.getSetCookie());
       await this.logto.handleSignInCallback(signInCallbackUri);
+
+      return;
+    }
+
+    // When consent was already granted in a prior sign-in (e.g. a step-up re-authorization), the
+    // provider skips the consent page and redirects straight to the redirect URI with an auth `code`.
+    // Complete the callback directly in that case.
+    if (
+      authResponse.status === 303 &&
+      authResponseLocation?.startsWith(demoAppRedirectUri) &&
+      new URL(authResponseLocation).searchParams.has('code')
+    ) {
+      this.mergeRawCookies(authResponse.headers.getSetCookie());
+      await this.logto.handleSignInCallback(authResponseLocation);
 
       return;
     }
@@ -319,6 +333,48 @@ export default class MockClient {
     return this.api
       .post('experience/submit', { headers: { cookie: this.interactionCookie } })
       .json<{ redirectTo: string }>();
+  }
+
+  /**
+   * Start a step-up authorization (RFC 9470) on an already-authenticated client.
+   *
+   * Unlike {@link initSession}, this reuses the OIDC session cookie established by a
+   * prior completed sign-in (the `_session.sig` cookie) and carries `acr_values` so the
+   * provider's `interactions.url` builder detects the existing session and injects the
+   * `step_up_acr` extra param.
+   *
+   * The new interaction cookies returned by the authorization endpoint are merged into
+   * the client so the subsequent experience-API calls operate on the step-up interaction.
+   *
+   * @param acrValues The space-separated ACR values to request, e.g. `urn:logto:acr:mfa`.
+   * @returns The `location` the authorization endpoint redirected to (the experience URL,
+   *   which carries `step_up_acr` when step-up was detected).
+   */
+  public async startStepUpAuthorization(acrValues: string, redirectUri = demoAppRedirectUri) {
+    assert(
+      this.interactionCookie.includes('_session.sig'),
+      new Error('No authenticated session: sign in before requesting a step-up.')
+    );
+
+    const response = await this.startAuthorization(
+      redirectUri,
+      // `prompt: login` forces the provider to run the interaction (rather than reusing the
+      // existing grant) so the step-up challenge is actually presented.
+      { prompt: Prompt.Login, extraParams: { acr_values: acrValues } },
+      this.getCookieHeader('/')
+    );
+
+    assert(
+      response.status === 303,
+      new Error(`Step-up authorization failed: unexpected status ${response.status}`)
+    );
+
+    const location = response.headers.get('location');
+    assert(location, new Error('Step-up authorization did not redirect'));
+
+    this.mergeRawCookies(response.headers.getSetCookie());
+
+    return location;
   }
 
   private readonly consent = async () => {

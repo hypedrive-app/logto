@@ -1,28 +1,7 @@
 import { languages, languageTagGuard } from '@logto/language-kit';
 import { jsonGuard, jsonObjectGuard, translationGuard } from '@logto/schemas';
-import type { ValuesOf } from '@silverhand/essentials';
-import { conditional, deduplicate } from '@silverhand/essentials';
 import type { OpenAPIV3 } from 'openapi-types';
-import {
-  ZodDiscriminatedUnion,
-  type ZodStringDef,
-  ZodRecord,
-  ZodArray,
-  ZodBoolean,
-  ZodEffects,
-  ZodEnum,
-  ZodLiteral,
-  ZodNativeEnum,
-  ZodNullable,
-  ZodNumber,
-  ZodObject,
-  ZodOptional,
-  ZodString,
-  ZodUnion,
-  ZodUnknown,
-  ZodDefault,
-  ZodIntersection,
-} from 'zod';
+import { z } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 
@@ -59,296 +38,117 @@ export const translationSchemas: Record<string, OpenAPIV3.SchemaObject> = {
   },
 };
 
-export type ZodStringCheck = ValuesOf<ZodStringDef['checks']>;
-
-const zodStringCheckToSwaggerFormat = (zodStringCheck: ZodStringCheck) => {
-  const { kind } = zodStringCheck;
-
-  switch (kind) {
-    case 'email':
-    case 'url':
-    case 'uuid':
-    case 'cuid':
-    case 'regex': {
-      return kind;
-    }
-
-    case 'min':
-    case 'max': {
-      // Do nothing here
-      return;
-    }
-
-    default: {
-      throw new RequestError('swagger.invalid_zod_type', zodStringCheck);
-    }
+/**
+ * A few guards are referenced as named components or need bespoke OpenAPI output that the
+ * generic conversion can't infer (recursive JSON, translation `$ref`, language enum). They are
+ * matched by identity during conversion and replaced with the hand-authored schema below.
+ */
+const overrideSchema = (jsonSchema: Record<string, unknown>, replacement: OpenAPIV3.SchemaObject) => {
+  for (const key of Object.keys(jsonSchema)) {
+    // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
+    delete jsonSchema[key];
   }
+  Object.assign(jsonSchema, replacement);
 };
 
-// https://github.com/colinhacks/zod#strings
-const zodStringToSwagger = (zodString: ZodString): OpenAPIV3.SchemaObject => {
-  const { checks } = zodString._def;
-
-  const formats = checks
-    .map((zodStringCheck) => zodStringCheckToSwaggerFormat(zodStringCheck))
-    .filter(Boolean);
-  const minLength = checks.find(
-    (check): check is { kind: 'min'; value: number } => check.kind === 'min'
-  )?.value;
-  const maxLength = checks.find(
-    (check): check is { kind: 'max'; value: number } => check.kind === 'max'
-  )?.value;
-  const pattern = checks
-    .find((check): check is { kind: 'regex'; regex: RegExp } => check.kind === 'regex')
-    ?.regex.toString();
-
-  return {
-    type: 'string',
-    format: formats.length > 0 ? formats.join(' | ') : undefined,
-    minLength,
-    maxLength,
-    pattern,
-  };
+const arbitraryJsonObject: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  description: 'arbitrary',
+  additionalProperties: true,
 };
 
-// https://github.com/colinhacks/zod#literals
-const zodLiteralToSwagger = (zodLiteral: ZodLiteral<unknown>): OpenAPIV3.SchemaObject => {
-  const { value } = zodLiteral;
-
-  switch (typeof value) {
-    case 'boolean': {
-      return {
-        type: 'boolean',
-        format: String(value),
-      };
-    }
-
-    case 'number': {
-      return {
-        type: 'number',
-        format: String(value),
-      };
-    }
-
-    case 'string': {
-      return {
-        type: 'string',
-        format: value === '' ? 'empty' : `"${value}"`,
-      };
-    }
-
-    default: {
-      throw new RequestError('swagger.invalid_zod_type', zodLiteral);
-    }
-  }
+const arbitraryJson: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  oneOf: [
+    {
+      type: 'object',
+      description: 'arbitrary JSON object',
+      additionalProperties: true,
+    },
+    {
+      type: 'array',
+      items: {
+        oneOf: [
+          { type: 'string' },
+          { type: 'number' },
+          { type: 'boolean' },
+          {
+            type: 'string',
+            nullable: true,
+            description: 'null value',
+          },
+          {
+            type: 'object',
+            description: 'arbitrary JSON object',
+            additionalProperties: true,
+          },
+        ],
+      },
+    },
+    { type: 'string' },
+    { type: 'number' },
+    { type: 'boolean' },
+  ],
+  nullable: true,
 };
 
-// Too many zod types :-)
-// eslint-disable-next-line complexity
+/**
+ * Convert a Zod guard into an OpenAPI (Swagger) schema object.
+ *
+ * Built on Zod 4's native `z.toJSONSchema` with the `openapi-3.0` target, which is the
+ * idiomatic, forward-compatible way to introspect schemas (the previous hand-rolled converter
+ * relied on private Zod internals that were reworked in Zod 4). The `override` hook patches in
+ * the few guards that need bespoke output. `unrepresentable: 'any'` keeps refinements/transforms
+ * from throwing (they were previously rendered as an "arbitrary object").
+ */
 export const zodTypeToSwagger = (
   config: unknown
 ): OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject => {
-  if (config === jsonObjectGuard) {
-    return {
-      type: 'object',
-      description: 'arbitrary',
-      additionalProperties: true,
-    };
+  if (!(config instanceof z.ZodType)) {
+    throw new RequestError('swagger.invalid_zod_type', config);
   }
 
-  if (config === jsonGuard) {
-    return {
-      type: 'object',
-      oneOf: [
-        {
-          type: 'object',
-          description: 'arbitrary JSON object',
-          additionalProperties: true,
-        },
-        {
-          type: 'array',
-          items: {
-            oneOf: [
-              { type: 'string' },
-              { type: 'number' },
-              { type: 'boolean' },
-              {
-                type: 'string',
-                nullable: true,
-                description: 'null value',
-              },
-              {
-                type: 'object',
-                description: 'arbitrary JSON object',
-                additionalProperties: true,
-              },
-            ],
-          },
-        },
-        { type: 'string' },
-        { type: 'number' },
-        { type: 'boolean' },
-      ],
-      nullable: true,
-    };
-  }
+  // eslint-disable-next-line no-restricted-syntax
+  const schema = z.toJSONSchema(config, {
+    target: 'openapi-3.0',
+    io: 'input',
+    // Render unrepresentable nodes (e.g. refinement-only schemas) as a permissive object
+    // instead of throwing, matching the previous converter's fallback behavior.
+    unrepresentable: 'any',
+    override({ zodSchema, jsonSchema }) {
+      // `zodSchema` is typed as Zod's internal `$ZodTypes`; compare by reference identity.
+      const schema: unknown = zodSchema;
 
-  if (config === translationGuard) {
-    return {
-      $ref: '#/components/schemas/TranslationObject',
-    };
-  }
-
-  if (config === languageTagGuard) {
-    return {
-      type: 'string',
-      enum: Object.keys(languages),
-    };
-  }
-
-  if (config instanceof ZodOptional) {
-    return zodTypeToSwagger(config._def.innerType);
-  }
-
-  if (config instanceof ZodNullable) {
-    const schema = zodTypeToSwagger(config._def.innerType);
-
-    if ('$ref' in schema) {
-      return {
-        allOf: [schema],
-        nullable: true,
-      };
-    }
-
-    const nullableSchema: OpenAPIV3.SchemaObject = {
-      ...schema,
-      nullable: true,
-    };
-
-    if (!nullableSchema.type && Array.isArray(nullableSchema.oneOf)) {
-      const types = nullableSchema.oneOf
-        .map((option) =>
-          typeof option === 'object' && !('$ref' in option) ? option.type : undefined
-        )
-        .filter(
-          (type): type is OpenAPIV3.NonArraySchemaObjectType =>
-            typeof type === 'string' && type !== 'array'
-        );
-
-      const uniqueTypes = deduplicate(types);
-
-      if (uniqueTypes.length === 1) {
-        // eslint-disable-next-line @silverhand/fp/no-mutation
-        nullableSchema.type = uniqueTypes[0];
+      if (schema === jsonObjectGuard) {
+        overrideSchema(jsonSchema, arbitraryJsonObject);
+        return;
       }
-    }
 
-    return nullableSchema;
-  }
+      if (schema === jsonGuard) {
+        overrideSchema(jsonSchema, arbitraryJson);
+        return;
+      }
 
-  if (config instanceof ZodNativeEnum || config instanceof ZodEnum) {
-    return {
-      type: 'string',
-      // Type from Zod is any
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-      enum: Object.values(config.enum),
-    };
-  }
+      if (schema === translationGuard) {
+        overrideSchema(jsonSchema, {
+          $ref: '#/components/schemas/TranslationObject',
+        } as OpenAPIV3.SchemaObject);
+        return;
+      }
 
-  if (config instanceof ZodLiteral) {
-    return zodLiteralToSwagger(config);
-  }
+      if (schema === languageTagGuard) {
+        overrideSchema(jsonSchema, { type: 'string', enum: Object.keys(languages) });
+      }
+    },
+  });
 
-  if (config instanceof ZodUnknown) {
-    return { example: {} }; // Any data type
-  }
+  // Recursive guards (e.g. `jsonGuard`) make Zod hoist a shared node to a root `definitions`/
+  // `$defs` bucket. The bespoke overrides above already inline those shapes, so drop the now-unused
+  // root buckets to keep each schema self-contained (matching the previous converter's output).
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
+  delete (schema as Record<string, unknown>).definitions;
+  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
+  delete (schema as Record<string, unknown>).$defs;
 
-  if (config instanceof ZodUnion || config instanceof ZodDiscriminatedUnion) {
-    return {
-      // ZodUnion.options type is any
-      // eslint-disable-next-line no-restricted-syntax
-      oneOf: (config.options as unknown[]).map((option) => zodTypeToSwagger(option)),
-    };
-  }
-
-  if (config instanceof ZodObject) {
-    // Type from Zod is any
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    const entries = Object.entries(config.shape);
-    const required = entries
-      .filter(([, value]) => !(value instanceof ZodOptional))
-      .map(([key]) => key);
-
-    return {
-      type: 'object',
-      required: conditional(required.length > 0 && required),
-      properties: Object.fromEntries(entries.map(([key, value]) => [key, zodTypeToSwagger(value)])),
-    };
-  }
-
-  if (config instanceof ZodRecord) {
-    return {
-      type: 'object',
-      additionalProperties: zodTypeToSwagger(config.valueSchema),
-    };
-  }
-
-  if (config instanceof ZodArray) {
-    return {
-      type: 'array',
-      items: zodTypeToSwagger(config._def.type),
-    };
-  }
-
-  if (config instanceof ZodString) {
-    return zodStringToSwagger(config);
-  }
-
-  if (config instanceof ZodNumber) {
-    return {
-      type: 'number',
-    };
-  }
-
-  if (config instanceof ZodBoolean) {
-    return {
-      type: 'boolean',
-    };
-  }
-
-  if (config instanceof ZodRecord) {
-    return {
-      type: 'object',
-      additionalProperties: zodTypeToSwagger(config.valueSchema),
-    };
-  }
-
-  if (config instanceof ZodEffects) {
-    if (config._def.effect.type === 'preprocess' || config._def.effect.type === 'transform') {
-      return zodTypeToSwagger(config._def.schema);
-    }
-
-    // TO-DO: Improve swagger output for zod schema with refinement (validate through JS functions)
-    return {
-      type: 'object',
-      description: 'Validator function',
-      additionalProperties: true,
-    };
-  }
-
-  if (config instanceof ZodDefault) {
-    return {
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-      default: config._def.defaultValue(),
-      ...zodTypeToSwagger(config._def.innerType),
-    };
-  }
-
-  if (config instanceof ZodIntersection) {
-    return {
-      allOf: [zodTypeToSwagger(config._def.left), zodTypeToSwagger(config._def.right)],
-    };
-  }
-
-  throw new RequestError('swagger.invalid_zod_type', config);
+  return schema as OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
 };

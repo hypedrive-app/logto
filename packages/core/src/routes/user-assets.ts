@@ -7,6 +7,7 @@ import {
   allowUploadMimeTypes,
   maxUploadFileSize,
   uploadFileGuard,
+  buildUploadFilesGuard,
 } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { format } from 'date-fns';
@@ -55,7 +56,7 @@ export default function userAssetsRoutes<T extends ManagementApiRouter>(
     '/user-assets',
     koaGuard({
       files: object({
-        file: uploadFileGuard.array().min(1),
+        file: buildUploadFilesGuard(uploadFileGuard.array().min(1)),
       }),
       response: userAssetsGuard,
     }),

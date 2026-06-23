@@ -5,8 +5,6 @@ import type { TFuncKey } from 'i18next';
 import { useAccountLayout } from '@ac/Providers/AccountLayoutContext';
 import { layoutClassNames } from '@ac/constants/layout';
 
-import styles from '../../pages/Home/index.module.scss';
-
 type Props = {
   readonly titleKey: TFuncKey;
   readonly descriptionKey: TFuncKey;
@@ -20,11 +18,18 @@ const AccountPageHeader = ({ titleKey, descriptionKey }: Props) => {
   }
 
   return (
-    <div className={styles.header}>
-      <div className={classNames(styles.title, layoutClassNames.pageTitle)}>
+    <div className="mb-5 mobile:mb-4">
+      <div
+        className={classNames('text-xl font-semibold text-ink', layoutClassNames.pageTitle)}
+      >
         <DynamicT forKey={titleKey} />
       </div>
-      <div className={classNames(styles.description, layoutClassNames.pageDescription)}>
+      <div
+        className={classNames(
+          'mt-1 text-sm text-muted mobile:mt-1.5',
+          layoutClassNames.pageDescription
+        )}
+      >
         <DynamicT forKey={descriptionKey} />
       </div>
     </div>

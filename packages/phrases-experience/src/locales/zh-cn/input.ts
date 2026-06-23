@@ -8,6 +8,14 @@ const input = {
   backup_code: '备用码',
   code: '代码',
   label_with_optional: '{{label}}（可选）',
+  caps_lock_on: 'Caps Lock is on',
+  password_strength: {
+    label: 'Password strength: {{strength}}',
+    weak: 'Weak',
+    fair: 'Fair',
+    good: 'Good',
+    strong: 'Strong',
+  },
 };
 
 export default Object.freeze(input);

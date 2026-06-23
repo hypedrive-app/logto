@@ -15,8 +15,6 @@ import type { HorizontalAlignment } from '@/types/positioning';
 
 import OverlayScrollbar from '../OverlayScrollbar';
 
-import styles from './index.module.scss';
-
 export { default as DropdownItem } from './DropdownItem';
 
 type Props = {
@@ -81,8 +79,11 @@ const Dropdown = ({
         },
       }}
       shouldFocusAfterRender={false}
-      className={classNames(styles.content, positionState.verticalAlign === 'top' && styles.onTop)}
-      overlayClassName={styles.overlay}
+      className={classNames(
+        'absolute rounded-[13px] shadow-[var(--sh-float)] focus:outline-none',
+        positionState.verticalAlign === 'top' && 'shadow-[var(--sh-float)]'
+      )}
+      overlayClassName="bg-transparent fixed inset-0 z-[var(--z-dropdown)]"
       overlayElement={noOverlay && ((_, contentElement) => contentElement)}
       onRequestClose={(event) => {
         /**
@@ -94,7 +95,7 @@ const Dropdown = ({
       }}
       onAfterOpen={mutate}
     >
-      <div ref={overlayRef} className={styles.dropdownContainer}>
+      <div ref={overlayRef} className="bg-elevated border border-line rounded-[13px]">
         <WrapperComponent
           className={className}
           role="menu"

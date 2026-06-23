@@ -2,7 +2,7 @@ import { MfaFactor } from '@logto/schemas';
 import { t } from 'i18next';
 import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -15,8 +15,6 @@ import { UserMfaFlow } from '@/types';
 import { backupCodeBindingStateGuard } from '@/types/guard';
 import { isNativeWebview } from '@/utils/native-sdk';
 
-import styles from './index.module.scss';
-
 const BackupCodeBinding = () => {
   const { copyText, downloadText } = useTextHandler();
   const sendMfaPayload = useSendMfaPayload();
@@ -25,7 +23,7 @@ const BackupCodeBinding = () => {
   const verificationId = verificationIdsMap[MfaFactor.BackupCode];
 
   const { state } = useLocation();
-  const [, backupCodeBindingState] = validate(state, backupCodeBindingStateGuard);
+  const { data: backupCodeBindingState } = backupCodeBindingStateGuard.safeParse(state);
 
   if (!backupCodeBindingState || !verificationId) {
     return <ErrorPage title="error.invalid_session" />;
@@ -40,13 +38,13 @@ const BackupCodeBinding = () => {
       title="mfa.save_backup_code"
       description="mfa.save_backup_code_description"
     >
-      <div className={styles.container}>
-        <div className={styles.backupCodes}>
+      <div className="flex flex-col justify-center items-stretch gap-4 pb-6">
+        <div className="grid grid-cols-2 p-4 text-sm font-medium text-center rounded-[13px] bg-surface text-ink gap-y-2 mobile:text-base">
           {codes.map((code) => (
             <span key={code}>{code}</span>
           ))}
         </div>
-        <div className={styles.actions}>
+        <div className="flex items-center gap-4">
           {!isNativeWebview() && (
             <Button
               title="action.download"
@@ -64,7 +62,7 @@ const BackupCodeBinding = () => {
             }}
           />
         </div>
-        <div className={styles.hint}>
+        <div className="text-sm text-muted">
           <DynamicT forKey="mfa.backup_code_hint" />
         </div>
         <Button

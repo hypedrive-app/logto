@@ -1,3 +1,4 @@
+import { type Optional } from '@silverhand/essentials';
 import { useCallback } from 'react';
 import useSWRImmutable from 'swr/immutable';
 
@@ -11,7 +12,13 @@ export const isDevOnlyRegion = (regionName?: string): boolean =>
 /**
  * Hook to fetch available regions for the current user. Cloud API is required to use this hook.
  */
-const useAvailableRegions = () => {
+// Explicit return type: Zod 4's prebuilt `@logto/cloud` types leak a non-portable `TenantTag`
+// name through inference (TS4023).
+const useAvailableRegions = (): {
+  regions: Optional<RegionType[]>;
+  regionsError: Optional<Error>;
+  getRegionByName: (name: string) => Optional<RegionType>;
+} => {
   const cloudApi = useCloudApi();
   const { data: regions, error: regionsError } = useSWRImmutable<RegionType[], Error>(
     'api/me/regions',

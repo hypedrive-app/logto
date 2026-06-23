@@ -6,8 +6,6 @@ import usePlatform from '@/hooks/use-platform';
 import OrganizationItem from '../OrganizationItem';
 import { type Organization } from '../OrganizationItem';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly isOpen: boolean;
   readonly parentElementRef: React.RefObject<HTMLDivElement>;
@@ -41,8 +39,11 @@ const OrganizationSelectorModal = ({
     // Offset the modal from the parent element
     const offset = 8;
 
-    // The height of each organization item
-    const organizationItemHeight = 40;
+    // Measure the actual rendered item height rather than hardcoding 40px, so the
+    // position calculation stays correct when padding/font-size changes.
+    const firstItem = document.querySelector(`[data-organization-item]`);
+    const organizationItemHeight =
+      (firstItem instanceof HTMLElement ? firstItem.offsetHeight : undefined) ?? 40;
     // The padding around the modal content
     const organizationModalPadding = 8;
 
@@ -67,8 +68,8 @@ const OrganizationSelectorModal = ({
   return (
     <ReactModal
       isOpen={isOpen}
-      overlayClassName={styles.dropdownOverlay}
-      className={styles.dropdownModal}
+      overlayClassName="bg-transparent fixed inset-0 z-40 mobile:bg-[var(--color-bg-mask)]"
+      className="border border-line shadow-[var(--sh-float)] rounded-[13px] bg-elevated absolute z-50 mobile:border-0 mobile:border-t mobile:border-line mobile:shadow-none mobile:rounded-b-none mobile:bottom-0 mobile:w-full mobile:min-h-[200px] mobile:pb-[env(safe-area-inset-bottom)] mobile:translate-y-full mobile:transition-transform mobile:duration-200 mobile:ease-in-out mobile:[&.ReactModal__Content--after-open]:translate-y-0 mobile:[&.ReactModal__Content--before-close]:translate-y-full"
       style={{
         content: {
           ...position,
@@ -77,11 +78,11 @@ const OrganizationSelectorModal = ({
       closeTimeoutMS={isMobile ? 300 : 0}
       onRequestClose={onClose}
     >
-      <div className={styles.container}>
+      <div className="p-2 mobile:px-1 mobile:py-3">
         {organizations.map((organization) => (
           <OrganizationItem
             key={organization.id}
-            className={styles.organizationItem}
+            className="mobile:p-3"
             organization={organization}
             isSelected={organization.id === selectedOrganization.id}
             onSelect={() => {

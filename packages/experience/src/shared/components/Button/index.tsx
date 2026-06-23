@@ -6,7 +6,6 @@ import { useDebouncedLoader } from 'use-debounced-loader';
 import DynamicT from '@/shared/components/DynamicT';
 
 import RotatingRingIcon from './RotatingRingIcon';
-import styles from './index.module.scss';
 
 export type ButtonType = 'primary' | 'secondary' | 'danger';
 
@@ -26,6 +25,18 @@ type Props = BaseProps & {
   readonly i18nProps?: Record<string, string>;
 };
 
+const baseClass =
+  'relative flex flex-row items-center justify-center h-12 px-4 rounded-[11px] font-semibold text-base overflow-hidden select-none outline-none appearance-none [-webkit-tap-highlight-color:transparent] motion-reduce:transition-none desktop:text-[15px]';
+
+const typeClass: Record<ButtonType, string> = {
+  primary: 'btn-primary',
+  secondary: 'btn-ghost',
+  danger: 'btn-danger',
+};
+
+const sizeClass = (size: 'small' | 'large'): string =>
+  size === 'large' ? 'w-full' : 'min-w-[85px]';
+
 const Button = ({
   htmlType = 'button',
   type = 'primary',
@@ -39,31 +50,31 @@ const Button = ({
   onClick,
   ...rest
 }: Props) => {
-  const isLoadingActive = useDebouncedLoader(isLoading, 300);
+  // 100ms debounce: responsive but suppresses spinner flash on instant responses.
+  const isLoadingActive = useDebouncedLoader(isLoading, 100);
 
   return (
     <button
       disabled={isDisabled || isLoading}
-      className={classNames(
-        styles.button,
-        styles[type],
-        styles[size],
-        isDisabled && styles.disabled,
-        isLoading && styles.loading,
-        isLoadingActive && styles.loadingActive,
-        className
-      )}
+      className={classNames(baseClass, typeClass[type], sizeClass(size), className)}
       type={htmlType}
       onClick={onClick}
       {...rest}
     >
       <span
         className={classNames(
-          styles.content,
-          (isLoadingActive || Boolean(icon)) && styles.iconVisible
+          'relative inline-flex items-center justify-center transition-[padding] duration-200',
+          (isLoadingActive || Boolean(icon)) && 'ps-7'
         )}
       >
-        <span className={styles.icon}>{isLoadingActive ? <RotatingRingIcon /> : icon}</span>
+        <span
+          className={classNames(
+            'absolute inset-inline-start-0 inline-flex items-center transition-opacity duration-200',
+            isLoadingActive || icon ? 'opacity-100' : 'opacity-0'
+          )}
+        >
+          {isLoadingActive ? <RotatingRingIcon /> : icon}
+        </span>
         <DynamicT forKey={title} interpolation={i18nProps} />
       </span>
     </button>

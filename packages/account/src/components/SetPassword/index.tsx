@@ -8,7 +8,6 @@ import { useTranslation } from 'react-i18next';
 import PasswordIdentifierInput from '../PasswordIdentifierInput';
 
 import TogglePassword from './TogglePassword';
-import styles from './index.module.scss';
 
 type Props = {
   readonly className?: string;
@@ -73,11 +72,16 @@ const SetPassword = ({
   );
 
   return (
-    <form className={className ?? styles.form} onSubmit={handleSubmit}>
+    <form
+      className={
+        className ?? 'flex flex-col items-center justify-center [&>*]:w-full'
+      }
+      onSubmit={handleSubmit}
+    >
       {beforeFields}
       <PasswordIdentifierInput />
       <InputField
-        className={styles.inputField}
+        className="mb-4"
         id="new-password"
         name="newPassword"
         type={showPassword ? 'text' : 'password'}
@@ -107,7 +111,7 @@ const SetPassword = ({
       />
 
       <InputField
-        className={styles.inputField}
+        className="mb-4"
         id="confirm-password"
         name="confirmPassword"
         type={showPassword ? 'text' : 'password'}

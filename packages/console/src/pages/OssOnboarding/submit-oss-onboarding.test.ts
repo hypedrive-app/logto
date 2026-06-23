@@ -2,6 +2,7 @@ import { CompanySize, Project, type OssUserOnboardingData } from '@logto/schemas
 import type { Options } from 'ky';
 
 import type { OssOnboardingFormData } from './utils';
+import { vi } from 'vitest';
 
 // Module-level mocks for env constants. Must be declared before importing the module under test.
 // eslint-disable-next-line @silverhand/fp/no-let
@@ -9,9 +10,9 @@ let mockIsDevFeaturesEnabled = true;
 // eslint-disable-next-line @silverhand/fp/no-let
 let mockOssSurveyEndpoint: string | undefined = 'https://survey.example.com';
 
-const mockKyPost = jest.fn<Promise<{ ok: boolean }>, [URL, Options?]>();
+const mockKyPost = vi.fn<(...args: [URL, Options?]) => Promise<{ ok: boolean }>>();
 const mockKyOptions: { current?: Options } = {};
-const mockKyCreate = jest.fn((options?: Options) => {
+const mockKyCreate = vi.fn((options?: Options) => {
   // eslint-disable-next-line @silverhand/fp/no-mutation
   mockKyOptions.current = options;
 
@@ -37,14 +38,14 @@ const mockKyCreate = jest.fn((options?: Options) => {
   };
 });
 
-jest.mock('ky', () => ({
+vi.mock('ky', () => ({
   __esModule: true,
   default: {
     create: (...args: [Options?]) => mockKyCreate(...args),
   },
 }));
 
-jest.mock('@/consts/env', () => ({
+vi.mock('@/consts/env', () => ({
   get isDevFeaturesEnabled() {
     return mockIsDevFeaturesEnabled;
   },
@@ -118,8 +119,8 @@ describe('submitOssOnboarding', () => {
 
   it('updates, reports and navigates when onboarding is submitted', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockResolvedValue();
 
@@ -159,8 +160,8 @@ describe('submitOssOnboarding', () => {
 
   it('updates and navigates without reporting when the email is missing', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockResolvedValue();
 
@@ -185,8 +186,8 @@ describe('submitOssOnboarding', () => {
 
   it('handles personal project submit when company fields are missing', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockResolvedValue();
 
@@ -224,8 +225,8 @@ describe('submitOssOnboarding', () => {
 
   it('constructs the reporting URL when endpoint has trailing slash', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     // eslint-disable-next-line @silverhand/fp/no-mutation
     mockOssSurveyEndpoint = 'https://survey.example.com/';
@@ -245,8 +246,8 @@ describe('submitOssOnboarding', () => {
 
   it('still reports and navigates when onboarding data persistence fails', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockRejectedValue(new Error('save failed'));
 
@@ -264,8 +265,8 @@ describe('submitOssOnboarding', () => {
 
   it('retries report once after a network failure', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     mockKyPost.mockRejectedValueOnce(new TypeError('network error')).mockResolvedValueOnce({
       ok: true,
@@ -290,8 +291,8 @@ describe('submitOssOnboarding', () => {
 
   it('swallows report fetch failures after retry to keep submit flow unchanged', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     mockKyPost.mockRejectedValue(new TypeError('network error'));
     update.mockResolvedValue();
@@ -314,8 +315,8 @@ describe('submitOssOnboarding', () => {
 
   it('does not report when isDevFeaturesEnabled is false', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     // eslint-disable-next-line @silverhand/fp/no-mutation
     mockIsDevFeaturesEnabled = false;
@@ -333,8 +334,8 @@ describe('submitOssOnboarding', () => {
 
   it('does not report when ossSurveyEndpoint is undefined', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     // eslint-disable-next-line @silverhand/fp/no-mutation
     mockOssSurveyEndpoint = undefined;
@@ -352,8 +353,8 @@ describe('submitOssOnboarding', () => {
 
   it('does not report when ossSurveyEndpoint is invalid', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     // eslint-disable-next-line @silverhand/fp/no-mutation
     mockOssSurveyEndpoint = 'not a valid URL';
@@ -371,8 +372,8 @@ describe('submitOssOnboarding', () => {
 
   it('omits whitespace-only project name before update and report', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockResolvedValue();
 
@@ -413,8 +414,8 @@ describe('submitOssOnboarding', () => {
 
   it('omits whitespace-only company name before update and report', async () => {
     const submitOssOnboarding = await getSubmitOssOnboarding();
-    const update = jest.fn<Promise<void>, [Partial<OssUserOnboardingData>]>();
-    const navigate = jest.fn<void, [string, { replace: boolean }]>();
+    const update = vi.fn<(...args: [Partial<OssUserOnboardingData>]) => Promise<void>>();
+    const navigate = vi.fn<(...args: [string, { replace: boolean }]) => void>();
 
     update.mockResolvedValue();
 

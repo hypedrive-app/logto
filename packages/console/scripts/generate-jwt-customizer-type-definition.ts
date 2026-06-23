@@ -10,7 +10,7 @@ import {
 } from '@logto/schemas';
 import prettier from 'prettier';
 import { type ZodTypeAny } from 'zod';
-import { printNode, zodToTs } from 'zod-to-ts';
+import { createAuxiliaryTypeStore, printNode, zodToTs } from 'zod-to-ts';
 
 import { jwtCustomizerApiContextTypeDefinition } from './custom-jwt-customizer-type-definition.js';
 
@@ -29,17 +29,15 @@ const typeIdentifiers = `export enum JwtCustomizerTypeDefinitionKey {
 
 const inferTsDefinitionFromZod = (zodSchema: ZodTypeAny, identifier: string): string => {
   /**
-   * We have z.lazy() used for defining Json objects in the zod schemas.
-   * @see https://zod.dev/?id=json-type
-   * zod-to-ts does not support z.lazy() yet. It will use the root type of the lazy schema. Which will be the identifier we pass to the function.
-   * @see https://github.com/sachinraja/zod-to-ts?tab=readme-ov-file#zlazy
-   *
-   * The second argument is the root type identifier for the schema.
-   * Here we use 'Record<string, unknown>' as the root type identifier. So all the Json objects will be inferred as Record<string, unknown>.
-   * This is a limitation of zod-to-ts. We can't infer the exact type of the Json objects.
-   * This solution is hacky but it works for now. The impact is it will always define the type identifer as Record<string, unknown>.
+   * We have z.lazy() used for defining Json objects in the zod schemas (@see https://zod.dev/?id=json-type).
+   * As of zod-to-ts v2 recursive `z.lazy()` schemas are resolved via an `auxiliaryTypeStore` rather
+   * than a root-type-Listener string. We don't emit the auxiliary declarations themselves, so the
+   * recursive Json references collapse to their referenced identifier — equivalent to the previous
+   * `Record<string, unknown>` fallback for our purposes.
+   * @see https://github.com/sachinraja/zod-to-ts#usage
    */
-  const { node } = zodToTs(zodSchema, 'Record<string, unknown>', { nativeEnums: 'union' });
+  const auxiliaryTypeStore = createAuxiliaryTypeStore();
+  const { node } = zodToTs(zodSchema, { auxiliaryTypeStore });
   const typeDefinition = printNode(node);
 
   return `type ${identifier} = ${typeDefinition};`;

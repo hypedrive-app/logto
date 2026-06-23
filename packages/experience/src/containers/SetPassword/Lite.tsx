@@ -6,9 +6,9 @@ import { useTranslation } from 'react-i18next';
 import { PasswordInputField } from '@/components/InputFields';
 import Button from '@/shared/components/Button';
 import ErrorMessage from '@/shared/components/ErrorMessage';
+import StrengthMeter from '@/shared/components/InputFields/PasswordInputField/StrengthMeter';
 
 import HiddenIdentifierInput from './HiddenIdentifierInput';
-import styles from './index.module.scss';
 
 type Props = {
   readonly className?: string;
@@ -28,12 +28,15 @@ const Lite = ({ className, autoFocus, onSubmit, errorMessage, clearErrorMessage 
 
   const {
     register,
+    watch,
     handleSubmit,
     formState: { errors, isValid, isSubmitting },
   } = useForm<FieldState>({
     reValidateMode: 'onBlur',
     defaultValues: { newPassword: '' },
   });
+
+  const newPasswordValue = watch('newPassword');
 
   useEffect(() => {
     if (!isValid) {
@@ -53,10 +56,16 @@ const Lite = ({ className, autoFocus, onSubmit, errorMessage, clearErrorMessage 
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <HiddenIdentifierInput />
       <PasswordInputField
-        className={styles.inputField}
+        className="mb-4"
         autoComplete="new-password"
         label={t('input.password')}
         autoFocus={autoFocus}
@@ -68,7 +77,13 @@ const Lite = ({ className, autoFocus, onSubmit, errorMessage, clearErrorMessage 
         })}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {newPasswordValue.length > 0 && (
+        <StrengthMeter className="-mt-3 mb-4" password={newPasswordValue} />
+      )}
+
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 -mt-3">{errorMessage}</ErrorMessage>
+      )}
 
       <Button
         name="submit"

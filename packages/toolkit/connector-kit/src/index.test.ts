@@ -21,7 +21,7 @@ describe('validateConfig', () => {
   });
 
   it('invalid config', () => {
-    const testingTypeGuard = z.record(z.string());
+    const testingTypeGuard = z.record(z.string(), z.string());
     const testingConfig = { foo: 'foo', bar: 1 };
     expect(() => {
       validateConfig(testingConfig, testingTypeGuard);

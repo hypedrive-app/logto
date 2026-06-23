@@ -4,7 +4,6 @@ import { useParams } from 'react-router-dom';
 import StaticPageLayout from '@/Layout/StaticPageLayout';
 import SocialLanding from '@/containers/SocialLanding';
 
-import styles from './index.module.scss';
 import useSocialCallbackHandler from './use-social-callback-handler';
 
 type Parameters = {
@@ -33,7 +32,7 @@ const Callback = () => {
 
   return (
     <StaticPageLayout>
-      <SocialLanding isLoading className={styles.connectorContainer} connectorId={connectorId} />
+      <SocialLanding isLoading className="flex-1" connectorId={connectorId} />
     </StaticPageLayout>
   );
 };

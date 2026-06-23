@@ -2,7 +2,7 @@ import { CustomProfileFieldType, type CustomProfileField } from '@logto/schemas'
 import { condString } from '@silverhand/essentials';
 import { useState } from 'react';
 import { Controller, FormProvider, useForm } from 'react-hook-form';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import AvatarUploadField from '@/components/InputFields/AvatarUploadField';
 import PrimitiveProfileInputField from '@/components/InputFields/PrimitiveProfileInputField';
@@ -10,7 +10,6 @@ import Button from '@/shared/components/Button';
 
 import AddressSubForm from './AddressSubForm';
 import FullnameSubForm from './FullnameSubForm';
-import styles from './index.module.scss';
 import useFieldLabel from './use-field-label';
 import useValidateField from './use-validate-field';
 
@@ -45,7 +44,7 @@ const ExtraProfileForm = ({ customProfileFields, defaultValues, onSubmit }: Prop
 
   return (
     <FormProvider {...methods}>
-      <form className={styles.form} onSubmit={submit}>
+      <form className="flex flex-col gap-4" onSubmit={submit}>
         {customProfileFields.map((field) => {
           if (field.type === CustomProfileFieldType.Fullname) {
             return <FullnameSubForm key={field.name} field={field} />;
@@ -66,7 +65,7 @@ const ExtraProfileForm = ({ customProfileFields, defaultValues, onSubmit }: Prop
                 }
 
                 if (name === 'avatar' && type === CustomProfileFieldType.Url) {
-                  s.assert(value, s.optional(s.string()));
+                  const stringValue = z.string().optional().parse(value);
 
                   return (
                     <AvatarUploadField
@@ -74,7 +73,7 @@ const ExtraProfileForm = ({ customProfileFields, defaultValues, onSubmit }: Prop
                       label={label || getFieldLabel(name)}
                       description={condString(description)}
                       isRequired={required}
-                      value={value}
+                      value={stringValue}
                       errorMessage={errors[name]?.message}
                       onChange={onChange}
                       onBlur={onBlur}
@@ -83,7 +82,7 @@ const ExtraProfileForm = ({ customProfileFields, defaultValues, onSubmit }: Prop
                   );
                 }
 
-                s.assert(value, s.optional(s.string()));
+                const stringValue = z.string().optional().parse(value);
                 return (
                   <PrimitiveProfileInputField
                     {...field}
@@ -91,7 +90,7 @@ const ExtraProfileForm = ({ customProfileFields, defaultValues, onSubmit }: Prop
                     label={label || getFieldLabel(name)}
                     description={condString(description)}
                     required={required}
-                    value={value}
+                    value={stringValue}
                     isDanger={!!errors[name]}
                     errorMessage={errors[name]?.message}
                     onChange={onChange}

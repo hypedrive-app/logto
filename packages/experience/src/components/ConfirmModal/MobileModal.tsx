@@ -3,9 +3,6 @@ import ReactModal from 'react-modal';
 
 import Button from '@/shared/components/Button';
 
-import modalStyles from '../../scss/modal.module.scss';
-
-import styles from './MobileModal.module.scss';
 import type { ModalProps } from './type';
 
 const MobileModal = ({
@@ -29,13 +26,19 @@ const MobileModal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
       role="dialog"
       isOpen={isOpen}
-      className={classNames(styles.modal, className)}
-      overlayClassName={classNames(modalStyles.overlay, styles.overlay)}
+      className={classNames(
+        'absolute left-5 right-5 top-1/2 max-w-[var(--max-width)] mx-auto -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none',
+        className
+      )}
+      overlayClassName={classNames(
+        'fixed inset-0 bg-[var(--color-bg-mask)]',
+        'z-[var(--z-modal)]'
+      )}
       onRequestClose={onClose}
     >
-      <div className={styles.container}>
-        <div className={styles.content}>{children}</div>
-        <div className={styles.footer}>
+      <div className="p-5 bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] focus-visible:outline-none">
+        <div className="text-center text-base text-ink">{children}</div>
+        <div className="flex items-center mt-6 [&>*]:flex-1 [&>button:first-child]:me-3">
           <Button
             title={cancelText}
             i18nProps={cancelTextI18nProps}

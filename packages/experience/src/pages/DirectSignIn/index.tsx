@@ -10,8 +10,6 @@ import useSingleSignOn from '@/hooks/use-single-sign-on';
 import { LoadingIconWithContainer } from '@/shared/components/LoadingLayer';
 import { logtoGoogleOneTapCookie } from '@/utils/cookies';
 
-import styles from './index.module.scss';
-
 const DirectSignIn = () => {
   const { method, target } = useParams();
   const { socialConnectors, ssoConnectors } = useSieMethods();
@@ -69,7 +67,7 @@ const DirectSignIn = () => {
   ]);
 
   return (
-    <div className={styles.container}>
+    <div className="fixed inset-0 flex flex-col items-center justify-center">
       <LoadingIconWithContainer />
     </div>
   );

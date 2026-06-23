@@ -3,8 +3,6 @@ import { type ReactNode } from 'react';
 
 import DynamicT from '@/shared/components/DynamicT';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly title: TFuncKey;
   readonly description: TFuncKey;
@@ -16,10 +14,10 @@ type Props = {
 const SectionLayout = ({ title, description, titleProps, descriptionProps, children }: Props) => {
   return (
     <div>
-      <div className={styles.title}>
+      <div className="text-base font-semibold -tracking-[0.01em] text-ink">
         <DynamicT forKey={title} interpolation={titleProps} />
       </div>
-      <div className={styles.description}>
+      <div className="mt-2 text-sm text-muted">
         <DynamicT forKey={description} interpolation={descriptionProps} />
       </div>
       {children}

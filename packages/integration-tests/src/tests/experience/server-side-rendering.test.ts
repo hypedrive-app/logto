@@ -15,7 +15,7 @@ const ssrDataGuard = z.object({
   }),
   phrases: z.object({
     lng: z.string(),
-    data: z.record(z.unknown()),
+    data: z.record(z.string(), z.unknown()),
   }),
 });
 

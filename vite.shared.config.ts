@@ -1,8 +1,18 @@
 /** @fileoverview The common config for frontend projects. */
 
-import { Rollup, UserConfig } from 'vite';
+import { UserConfig } from 'vite';
 
-export const manualChunks: Rollup.GetManualChunk = (id, { getModuleInfo }) => {
+/**
+ * Minimal structural shape of the chunking meta this helper relies on. Typed against
+ * just `getModuleInfo(...).importedIds` rather than a specific bundler's `GetManualChunk`,
+ * so it stays compatible across Vite 6 (Rollup) and Vite 8 (Rolldown), whose nominal
+ * `ModuleInfo`/`GetModuleInfo` types differ.
+ */
+type ChunkMeta = {
+  getModuleInfo: (moduleId: string) => { importedIds: readonly string[] } | null | undefined;
+};
+
+export const manualChunks = (id: string, { getModuleInfo }: ChunkMeta): string | undefined => {
   const hasReactDependency = (id: string): boolean => {
     return getModuleInfo(id)
       ?.importedIds

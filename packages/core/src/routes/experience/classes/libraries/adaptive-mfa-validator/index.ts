@@ -68,7 +68,14 @@ export class AdaptiveMfaValidator {
    * @remarks Record geo context on successful sign-in and register events only.
    */
   public async recordSignInGeoContext(user: User, interactionEvent: InteractionEvent) {
-    if (interactionEvent === InteractionEvent.ForgotPassword) {
+    if (
+      interactionEvent === InteractionEvent.ForgotPassword ||
+      // Step-up occurs within an existing session — the user is already at the
+      // same location. Recording it would artificially refresh their known
+      // sign-in countries and could trigger false-positive adaptive MFA rules
+      // (e.g. "new country") on the next ordinary sign-in.
+      interactionEvent === InteractionEvent.StepUp
+    ) {
       return;
     }
 

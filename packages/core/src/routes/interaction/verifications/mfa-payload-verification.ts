@@ -102,7 +102,8 @@ const verifyBindWebAuthn = async (
   assertThat(verified, 'session.mfa.webauthn_verification_failed');
   assertThat(registrationInfo, 'session.mfa.webauthn_verification_failed');
 
-  const { credentialID, credentialPublicKey, counter } = registrationInfo;
+  // v13: registrationInfo.credential replaces the flat credentialID/credentialPublicKey/counter.
+  const { id: credentialID, publicKey: credentialPublicKey, counter } = registrationInfo.credential;
 
   return {
     type,

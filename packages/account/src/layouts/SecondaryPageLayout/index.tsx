@@ -7,8 +7,6 @@ import { type ReactElement } from 'react';
 
 import { layoutClassNames } from '@ac/constants/layout';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly title: TFuncKey;
   readonly description?: TFuncKey | ReactElement | '';
@@ -33,18 +31,26 @@ const SecondaryPageLayout = ({
   children,
 }: Props) => {
   return (
-    <div className={classNames(styles.wrapper, layoutClassNames.secondaryPageWrapper)}>
+    <div className={classNames('flex-1 self-stretch', layoutClassNames.secondaryPageWrapper)}>
       <PageMeta titleKey={title} />
       <NavBar isHidden={isNavBarHidden} onSkip={onSkip} onClose={onBack} />
-      <div className={styles.container}>
+      <div className="w-full max-w-[var(--max-width)] mx-auto my-2 mobile:max-w-none mobile:my-2 desktop:my-12">
         {notification}
-        <div className={styles.header}>
-          <div className={classNames(styles.title, layoutClassNames.secondaryPageTitle)}>
+        <div className="mb-6 desktop:mb-4">
+          <div
+            className={classNames(
+              'mobile:text-[28px]/[36px] mobile:font-semibold mobile:text-ink desktop:text-2xl desktop:font-semibold desktop:text-ink',
+              layoutClassNames.secondaryPageTitle
+            )}
+          >
             <DynamicT forKey={title} interpolation={titleProps} />
           </div>
           {description && (
             <div
-              className={classNames(styles.description, layoutClassNames.secondaryPageDescription)}
+              className={classNames(
+                'mt-2 text-sm text-muted',
+                layoutClassNames.secondaryPageDescription
+              )}
             >
               {typeof description === 'string' ? (
                 <DynamicT forKey={description} interpolation={descriptionProps} />

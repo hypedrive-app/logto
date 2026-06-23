@@ -17,11 +17,9 @@ import { sessionStorage } from '@ac/utils/session-storage';
 import { getSessions, revokeSession, getGrants, revokeGrant } from '../../apis/sessions';
 import useApi from '../../hooks/use-api';
 import useErrorHandler from '../../hooks/use-error-handler';
-import homeStyles from '../Home/index.module.scss';
 
 import GrantRow from './GrantRow';
 import SessionRow from './SessionRow';
-import styles from './index.module.scss';
 import { normalizeGrantRows, type AccountSession, type GrantedAppRow } from './utils';
 
 const Sessions = () => {
@@ -218,17 +216,32 @@ const Sessions = () => {
 
   return (
     <>
-      <div className={homeStyles.container}>
+      <div className="flex-1 flex flex-col">
         <AccountPageHeader
           titleKey="account_center.sessions.page_title"
           descriptionKey="account_center.sessions.page_description"
         />
-        <div className={classNames(homeStyles.content, layoutClassNames.pageContent)}>
-          <div className={classNames(styles.section, layoutClassNames.section)}>
-            <div className={classNames(styles.sectionTitle, layoutClassNames.sectionTitle)}>
+        <div
+          className={classNames(
+            'flex-1 flex flex-col gap-5 mobile:gap-4',
+            layoutClassNames.pageContent
+          )}
+        >
+          <div className={classNames('flex flex-col gap-1.5', layoutClassNames.section)}>
+            <div
+              className={classNames(
+                'ps-1 text-sm font-medium text-ink mobile:ps-0',
+                layoutClassNames.sectionTitle
+              )}
+            >
               {t('account_center.sessions.title')}
             </div>
-            <div className={classNames(styles.card, layoutClassNames.card)}>
+            <div
+              className={classNames(
+                'bg-elevated rounded-[16px] [overflow:clip]',
+                layoutClassNames.card
+              )}
+            >
               {hasLoaded ? (
                 <>
                   {currentSession && (
@@ -245,18 +258,29 @@ const Sessions = () => {
                     />
                   ))}
                   {otherSessions.length === 0 && (
-                    <div className={styles.emptyState}>
+                    <div className="px-6 py-5 text-sm text-muted text-center">
                       {t('account_center.sessions.no_other_sessions')}
                     </div>
                   )}
                 </>
               ) : (
-                <div className={classNames(styles.row, layoutClassNames.row)}>
-                  <div className={styles.sessionInfo}>
+                <div
+                  className={classNames(
+                    'grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-4 px-6 py-[18px] min-h-[76px] mobile:min-h-0 mobile:gap-x-3 mobile:gap-y-2 mobile:p-4 desktop:max-[800px]:min-h-0 desktop:max-[800px]:gap-x-3 desktop:max-[800px]:gap-y-2 desktop:max-[800px]:p-4',
+                    layoutClassNames.row
+                  )}
+                >
+                  <div className="col-start-1 flex flex-col gap-1 min-w-0">
                     {isLoading ? (
-                      <div className={styles.meta}>{t('account_center.sessions.loading')}</div>
+                      <div className="text-xs text-muted overflow-hidden text-ellipsis whitespace-nowrap">
+                        {t('account_center.sessions.loading')}
+                      </div>
                     ) : (
-                      <button type="button" className={styles.actionButton} onClick={handleManage}>
+                      <button
+                        type="button"
+                        className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline py-0.5"
+                        onClick={handleManage}
+                      >
                         {t('account_center.security.manage')}
                       </button>
                     )}
@@ -267,13 +291,23 @@ const Sessions = () => {
           </div>
 
           {hasLoaded && (grantRows !== undefined || hasGrantLoadingError) && (
-            <div className={classNames(styles.section, layoutClassNames.section)}>
-              <div className={classNames(styles.sectionTitle, layoutClassNames.sectionTitle)}>
+            <div className={classNames('flex flex-col gap-1.5', layoutClassNames.section)}>
+              <div
+                className={classNames(
+                  'ps-1 text-sm font-medium text-ink mobile:ps-0',
+                  layoutClassNames.sectionTitle
+                )}
+              >
                 {t('account_center.sessions.third_party_apps_title')}
               </div>
-              <div className={classNames(styles.card, layoutClassNames.card)}>
+              <div
+                className={classNames(
+                  'bg-elevated rounded-[16px] [overflow:clip]',
+                  layoutClassNames.card
+                )}
+              >
                 {hasGrantLoadingError ? (
-                  <div className={styles.emptyState}>
+                  <div className="px-6 py-5 text-sm text-muted text-center">
                     {t('account_center.sessions.third_party_apps_load_failed')}
                   </div>
                 ) : grantRows && grantRows.length > 0 ? (
@@ -289,7 +323,7 @@ const Sessions = () => {
                     />
                   ))
                 ) : (
-                  <div className={styles.emptyState}>
+                  <div className="px-6 py-5 text-sm text-muted text-center">
                     {t('account_center.sessions.no_third_party_apps')}
                   </div>
                 )}

@@ -1,7 +1,7 @@
 import { MfaFactor, SignInIdentifier, type RequestErrorBody } from '@logto/schemas';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import { UserMfaFlow } from '@/types';
@@ -18,9 +18,16 @@ import useToast from './use-toast';
 export type Options = {
   /** Whether to replace the current page in the history stack on navigation. */
   replace?: boolean;
+  /**
+   * Override the base path used for MFA verification navigation.
+   * Defaults to `/${UserMfaFlow.MfaVerification}` (`/mfa-verification`).
+   * Pass `'step-up'` for step-up authentication flows so sub-routes resolve
+   * under `/step-up/` instead of `/mfa-verification/`.
+   */
+  verificationBasePath?: string;
 };
 
-const useMfaErrorHandler = ({ replace }: Options = {}) => {
+const useMfaErrorHandler = ({ replace, verificationBasePath }: Options = {}) => {
   const navigate = useNavigateWithPreservedSearchParams();
   const { t } = useTranslation();
   const { setToast } = useToast();
@@ -49,6 +56,10 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
   const handleMfaRedirect = useCallback(
     async (flow: UserMfaFlow, state: MfaFlowState) => {
       const { availableFactors } = state;
+
+      // For verification flows, allow the caller to override the base path
+      // (e.g. step-up uses '/step-up' instead of '/mfa-verification').
+      const verificationPath = verificationBasePath ?? flow;
 
       if (availableFactors.length > 1 && flow === UserMfaFlow.MfaBinding) {
         /**
@@ -81,7 +92,7 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
 
       if (factor === MfaFactor.WebAuthn) {
         /**
-         * Start WebAuthn processing if only TOTP is available.
+         * Start WebAuthn processing if WebAuthn is available.
          */
         return startWebAuthnProcessing(flow, state, replace);
       }
@@ -96,8 +107,10 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
 
       /**
        * Redirect to the specific MFA factor page.
+       * Uses `verificationPath` so step-up flows land on `/step-up/<factor>`
+       * rather than `/mfa-verification/<factor>`.
        */
-      navigate({ pathname: `/${flow}/${factor}` }, { replace, state });
+      navigate({ pathname: `/${verificationPath}/${factor}` }, { replace, state });
     },
     [
       navigate,
@@ -107,6 +120,7 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
       startTotpBinding,
       startWebAuthnProcessing,
       t,
+      verificationBasePath,
     ]
   );
 
@@ -118,7 +132,7 @@ const useMfaErrorHandler = ({ replace }: Options = {}) => {
           return;
         }
 
-        const [_, data] = validate(error.data, mfaErrorDataGuard);
+        const { data: data } = mfaErrorDataGuard.safeParse(error.data);
         const factors = data?.availableFactors ?? [];
         const skippable = data?.skippable;
         const maskedIdentifiers = data?.maskedIdentifiers;

@@ -30,7 +30,7 @@ describe('verifyIdentifier', () => {
 
   it('should return the interaction record if the event is register', async () => {
     const interactionRecord = {
-      event: InteractionEvent.Register,
+      event: InteractionEvent.Register as const,
     };
 
     const result = await verifyIdentifier(ctx, tenant, interactionRecord);
@@ -42,7 +42,7 @@ describe('verifyIdentifier', () => {
 
   it('should return and assign the verified result to the interaction record if the event is sign in', async () => {
     const interactionRecord: SignInInteractionResult = {
-      event: InteractionEvent.SignIn,
+      event: InteractionEvent.SignIn as const,
       identifiers: [{ key: 'emailVerified', value: 'email@logto.io' }],
     };
 

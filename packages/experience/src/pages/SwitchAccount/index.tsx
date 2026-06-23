@@ -1,23 +1,22 @@
-import { experience, type ConsentInfoResponse } from '@logto/schemas';
-import { useContext, useEffect, useState } from 'react';
+import { experience } from '@logto/schemas';
+import { useQuery } from '@tanstack/react-query';
+import { useContext, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 
 import StaticPageLayout from '@/Layout/StaticPageLayout';
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 import { getConsentInfo } from '@/apis/consent';
 import TextLink from '@/components/TextLink';
-import useApi from '@/hooks/use-api';
 import useErrorHandler from '@/hooks/use-error-handler';
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import UserProfile from '@/pages/Consent/UserProfile';
 import ErrorPage from '@/pages/ErrorPage';
+import { queryKeys } from '@/query-client';
 import Button from '@/shared/components/Button';
 import DynamicT from '@/shared/components/DynamicT';
 import LoadingLayer from '@/shared/components/LoadingLayer';
 import PageMeta from '@/shared/components/PageMeta';
 import { getBrandingLogoUrl } from '@/shared/utils/logo';
-
-import styles from './index.module.scss';
 
 /**
  * This component is only used when there's an active session, and then the user
@@ -28,23 +27,20 @@ const SwitchAccount = () => {
   const navigate = useNavigateWithPreservedSearchParams();
   const handleError = useErrorHandler();
 
-  const [consentData, setConsentData] = useState<ConsentInfoResponse>();
-  const asyncGetConsentInfo = useApi(getConsentInfo);
-
   const [params] = useSearchParams();
   const loginHint = params.get('login_hint');
 
-  useEffect(() => {
-    (async () => {
-      const [error, result] = await asyncGetConsentInfo();
+  // Consent info fetch via TanStack Query (replaces manual useState + useEffect).
+  const { data: consentData, error: consentInfoError } = useQuery({
+    queryKey: queryKeys.consentInfo,
+    queryFn: getConsentInfo,
+  });
 
-      if (error) {
-        await handleError(error);
-        return;
-      }
-      setConsentData(result);
-    })();
-  }, [asyncGetConsentInfo, handleError]);
+  useEffect(() => {
+    if (consentInfoError) {
+      void handleError(consentInfoError);
+    }
+  }, [consentInfoError, handleError]);
 
   if (!loginHint) {
     return <ErrorPage title="error.unknown" message="error.unknown" />;
@@ -63,20 +59,20 @@ const SwitchAccount = () => {
   return (
     <StaticPageLayout>
       <PageMeta titleKey="description.switch_account" />
-      <div className={styles.container}>
-        {logoUrl && <img className={styles.logo} src={logoUrl} alt="app logo" />}
-        <div className={styles.title}>
+      <div className="flex flex-1 flex-col items-center justify-center w-full mx-auto max-w-[var(--max-w)]">
+        {logoUrl && <img className="h-10 w-auto mx-auto" src={logoUrl} alt="app logo" />}
+        <div className="mt-8 text-sm font-medium self-start mobile:mb-4 desktop:mb-2">
           <DynamicT
             forKey="description.switch_account_title"
             interpolation={{ account: consentData.user.primaryEmail }}
           />
         </div>
-        <UserProfile user={consentData.user} className={styles.userProfile} />
-        <div className={styles.message}>
+        <UserProfile user={consentData.user} className="w-full" />
+        <div className="mt-6 text-sm self-start">
           <DynamicT forKey="description.switch_account_description" />
         </div>
         <Button
-          className={styles.button}
+          className="mt-2"
           type="primary"
           size="large"
           title="action.continue_as"
@@ -88,7 +84,7 @@ const SwitchAccount = () => {
             );
           }}
         />
-        <div className={styles.linkButton}>
+        <div className="mt-6">
           <TextLink
             text="action.back_to_current_account"
             onClick={async () => {

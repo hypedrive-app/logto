@@ -8,8 +8,6 @@ import useTextHandler from '@/hooks/use-text-handler';
 import Button from '@/shared/components/Button';
 import { type TotpBindingState } from '@/types/guard';
 
-import styles from './index.module.scss';
-
 const SecretSection = ({ secret, secretQrCode }: TotpBindingState) => {
   const { t } = useTranslation();
   const { isMobile } = usePlatform();
@@ -27,15 +25,17 @@ const SecretSection = ({ secret, secretQrCode }: TotpBindingState) => {
         isQrCodeFormat ? 'mfa.scan_qr_code_description' : 'mfa.copy_and_paste_key_description'
       }
     >
-      <div className={styles.secretContent}>
+      <div className="flex flex-col items-center justify-center">
         {isQrCodeFormat && secretQrCode && (
-          <div className={styles.qrCode}>
-            <img src={secretQrCode} alt="QR code" />
+          <div className="border border-line-strong rounded-[13px] overflow-hidden m-4 h-[136px] w-[136px] bg-white p-1">
+            <img className="w-full h-full block object-contain object-center" src={secretQrCode} alt="QR code" />
           </div>
         )}
         {!isQrCodeFormat && (
-          <div className={styles.copySecret}>
-            <div className={styles.rawSecret}>{secret}</div>
+          <div className="w-full m-4">
+            <div className="p-4 w-full text-center font-mono text-base font-semibold tracking-[0.08em] rounded-[13px] bg-surface border border-line-strong text-ink mb-3 break-all">
+              {secret}
+            </div>
             <Button
               title="action.copy"
               type="secondary"

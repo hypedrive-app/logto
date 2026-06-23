@@ -63,7 +63,7 @@ export default function wellKnownRoutes<T extends AnonymousRouter>(
       query: z.object({
         lng: z.string().optional(),
       }),
-      response: z.record(z.string().or(z.record(z.unknown()))),
+      response: z.record(z.string(), z.string().or(z.record(z.string(), z.unknown()))),
       status: 200,
     }),
     async (ctx, next) => {

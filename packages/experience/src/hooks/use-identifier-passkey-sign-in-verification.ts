@@ -36,7 +36,7 @@ const useIdentifierPasskeySignInVerification = () => {
       }
 
       const response = await trySafe(
-        async () => startAuthentication(options),
+        async () => startAuthentication({ optionsJSON: options }),
         () => {
           setToast(t('mfa.webauthn_failed_to_verify'));
         }

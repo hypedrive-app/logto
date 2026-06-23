@@ -50,13 +50,7 @@ const renderTestButton = (error: unknown, errorHandlers?: ErrorHandlers) =>
   renderWithPageContext(
     <ReauthPromptProvider>
       <TestButton error={error} errorHandlers={errorHandlers} />
-    </ReauthPromptProvider>,
-    {
-      future: {
-        v7_relativeSplatPath: true,
-        v7_startTransition: true,
-      },
-    }
+    </ReauthPromptProvider>
   );
 
 describe('useErrorHandler', () => {

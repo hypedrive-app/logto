@@ -28,7 +28,7 @@ const verifyProfile = await pickDefault(import('./profile-verification.js'));
 
 describe('profile protected identifier verification', () => {
   const baseInteraction = {
-    event: InteractionEvent.SignIn,
+    event: InteractionEvent.SignIn as const,
     identifiers: [{ key: 'accountId', value: 'foo' }] as Identifier[],
     accountId: 'foo',
   };

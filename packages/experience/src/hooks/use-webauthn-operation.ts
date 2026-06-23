@@ -10,7 +10,7 @@ import {
   startAuthentication,
   startRegistration,
 } from '@simplewebauthn/browser';
-import type { RegistrationResponseJSON, AuthenticationResponseJSON } from '@simplewebauthn/types';
+import type { RegistrationResponseJSON, AuthenticationResponseJSON } from '@simplewebauthn/browser';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -50,8 +50,8 @@ const useWebAuthnOperation = () => {
       const response = await trySafe(
         async () =>
           parsedRegistrationOptions.success
-            ? startRegistration(parsedRegistrationOptions.data)
-            : startAuthentication(options),
+            ? startRegistration({ optionsJSON: parsedRegistrationOptions.data })
+            : startAuthentication({ optionsJSON: options }),
         () => {
           setToast(
             t(

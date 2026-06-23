@@ -529,9 +529,9 @@ describe('Token Exchange', () => {
           .catch((error: unknown) => error);
         expect(error).toBeInstanceOf(HTTPError);
         expect((error as HTTPError).response.status).toBe(400);
-        expect(
-          oidcInvalidRequestErrorGuard.safeParse(await (error as HTTPError).response.json()).success
-        ).toBe(true);
+        expect(oidcInvalidRequestErrorGuard.safeParse((error as HTTPError).data).success).toBe(
+          true
+        );
 
         await deleteJwtCustomizer('access-token');
       }
@@ -597,7 +597,7 @@ describe('Token Exchange', () => {
         .catch((error: unknown) => error);
       expect(error).toBeInstanceOf(HTTPError);
       expect((error as HTTPError).response.status).toBe(400);
-      expect(await (error as HTTPError).response.json()).toMatchObject({
+      expect((error as HTTPError).data).toMatchObject({
         error: 'access_denied',
       });
 

@@ -2,7 +2,7 @@ import { SignInIdentifier, type VerificationCodeIdentifier } from '@logto/schema
 import { t } from 'i18next';
 import { useContext } from 'react';
 import { useParams } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -35,7 +35,7 @@ const VerificationCode = () => {
   const { identifierInputValue, forgotPasswordIdentifierInputValue, verificationIdsMap } =
     useContext(UserInteractionContext);
 
-  const [, userFlow] = validate(flow, userFlowGuard);
+  const { data: userFlow } = userFlowGuard.safeParse(flow);
 
   if (!userFlow) {
     return <ErrorPage />;
@@ -56,7 +56,7 @@ const VerificationCode = () => {
   // VerificationId not found
   const verificationId = verificationIdsMap[codeVerificationTypeMap[type]];
   if (!verificationId) {
-    return <ErrorPage title="error.invalid_session" rawMessage="Verification ID not found" />;
+    return <ErrorPage title="error.invalid_session" />;
   }
 
   return (

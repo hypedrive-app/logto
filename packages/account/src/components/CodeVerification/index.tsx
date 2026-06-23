@@ -16,8 +16,6 @@ import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 
 import SwitchVerificationMethodLink from '../SwitchVerificationMethodLink';
 
-import styles from './index.module.scss';
-
 const resendCooldownSeconds = 60;
 
 export type TranslationKeys = {
@@ -220,7 +218,7 @@ const CodeVerification = ({
     >
       {hasSentCode ? (
         <form
-          className={styles.container}
+          className="flex flex-col gap-4 w-full max-w-[400px]"
           onSubmit={(event) => {
             event.preventDefault();
             if (!isCodeReady(codeInput)) {
@@ -232,7 +230,7 @@ const CodeVerification = ({
         >
           <VerificationCodeInput
             name={codeInputName}
-            className={styles.codeInput}
+            className="w-full"
             value={codeInput}
             error={codeError}
             onChange={(code) => {
@@ -240,14 +238,14 @@ const CodeVerification = ({
               setCodeInput(code);
             }}
           />
-          <div className={styles.message}>
+          <div className="text-sm text-muted min-h-5">
             {countdown > 0 ? (
               t('account_center.email_verification.resend_countdown', { seconds: countdown })
             ) : (
               <>
                 {`${t('account_center.email_verification.not_received')} `}
                 <button
-                  className={styles.resendButton}
+                  className="bg-transparent border-none p-0 text-sm text-primary cursor-pointer disabled:cursor-not-allowed disabled:text-muted"
                   type="button"
                   disabled={loading}
                   onClick={() => {
@@ -263,18 +261,21 @@ const CodeVerification = ({
             title="action.continue"
             type="primary"
             htmlType="submit"
-            className={styles.submit}
+            className="self-start"
             isLoading={loading}
           />
           {hasAlternativeMethod && (
-            <SwitchVerificationMethodLink className={styles.switchLink} onClick={onSwitchMethod} />
+            <SwitchVerificationMethodLink className="self-start" onClick={onSwitchMethod} />
           )}
         </form>
       ) : (
-        <form className={styles.prepare} onSubmit={handleSendCode}>
+        <form
+          className="flex flex-col gap-4 w-full max-w-[400px]"
+          onSubmit={handleSendCode}
+        >
           <SmartInputField
             readOnly
-            className={styles.identifierInput}
+            className="w-full"
             name="identifier"
             label={t(identifierLabelKey)}
             defaultValue={identifier ?? ''}
@@ -284,12 +285,12 @@ const CodeVerification = ({
             title="account_center.email_verification.send"
             type="primary"
             htmlType="submit"
-            className={styles.prepareAction}
+            className="w-full"
             disabled={loading}
             isLoading={loading}
           />
           {hasAlternativeMethod && (
-            <SwitchVerificationMethodLink className={styles.switchLink} onClick={onSwitchMethod} />
+            <SwitchVerificationMethodLink className="self-start" onClick={onSwitchMethod} />
           )}
         </form>
       )}

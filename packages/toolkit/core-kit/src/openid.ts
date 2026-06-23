@@ -77,7 +77,7 @@ export const userClaimsList = [
  */
 export const userClaimGuard = z.enum(userClaimsList);
 
-export type UserClaim = z.infer<typeof userClaimGuard>;
+export type UserClaim = (typeof userClaimsList)[number];
 
 /**
  * Scopes for ID Token and Userinfo Endpoint.

@@ -14,12 +14,11 @@ import SocialSignInList from '@/containers/SocialSignInList';
 import TermsAndPrivacyCheckbox from '@/containers/TermsAndPrivacyCheckbox';
 import TermsAndPrivacyLinks from '@/containers/TermsAndPrivacyLinks';
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
+import usePlatform from '@/hooks/use-platform';
 import { useSieMethods } from '@/hooks/use-sie';
 import useTerms from '@/hooks/use-terms';
 
 import ErrorPage from '../ErrorPage';
-
-import styles from './index.module.scss';
 
 const RegisterFooter = () => {
   const { t } = useTranslation();
@@ -63,7 +62,7 @@ const RegisterFooter = () => {
         // Single Sign On footer
         singleSignOnEnabled && (
           <>
-            <div className={styles.singleSignOn}>
+            <div className="text-center mb-4">
               {t('description.use')}{' '}
               <TextLink text="action.single_sign_on" onClick={handleSsoNavigation} />
             </div>
@@ -74,7 +73,7 @@ const RegisterFooter = () => {
               signInMethods.length === 0 &&
                 socialConnectors.length === 0 &&
                 agreeToTermsPolicy === AgreeToTermsPolicy.Manual && (
-                  <TermsAndPrivacyCheckbox className={styles.checkbox} />
+                  <TermsAndPrivacyCheckbox className="justify-center" />
                 )
             }
           </>
@@ -83,7 +82,7 @@ const RegisterFooter = () => {
       {
         // SignIn footer
         signInMode === SignInMode.SignInAndRegister && signInMethods.length > 0 && (
-          <div className={styles.createAccount}>
+          <div className="text-center mb-4">
             {t('description.have_account')} <TextLink replace to="/sign-in" text="action.sign_in" />
           </div>
         )
@@ -92,8 +91,8 @@ const RegisterFooter = () => {
         // Social sign-in methods
         signUpMethods.length > 0 && socialConnectors.length > 0 && (
           <>
-            <Divider label="description.or" className={styles.divider} />
-            <SocialSignInList socialConnectors={socialConnectors} className={styles.main} />
+            <Divider label="description.or" className="mb-4" />
+            <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
           </>
         )
       }
@@ -104,6 +103,7 @@ const RegisterFooter = () => {
 const Register = () => {
   const { signUpMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
+  const { isMobile } = usePlatform();
 
   if (!signInMode) {
     return <ErrorPage />;
@@ -118,20 +118,25 @@ const Register = () => {
       <GoogleOneTap context="signup" />
       <SingleSignOnFormModeContextProvider>
         {signUpMethods.length > 0 && (
-          <IdentifierRegisterForm signUpMethods={signUpMethods} className={styles.main} />
+          // Autofocus on desktop only (avoid forcing the keyboard open on mobile).
+          <IdentifierRegisterForm
+            autoFocus={!isMobile}
+            signUpMethods={signUpMethods}
+            className="mb-4"
+          />
         )}
         {/* Social sign-in methods only */}
         {signUpMethods.length === 0 && socialConnectors.length > 0 && (
           <>
             {agreeToTermsPolicy !== AgreeToTermsPolicy.Automatic && (
-              <TermsAndPrivacyCheckbox className={styles.terms} />
+              <TermsAndPrivacyCheckbox className="mb-4 text-center text-xs text-muted" />
             )}
-            <SocialSignInList className={styles.main} socialConnectors={socialConnectors} />
+            <SocialSignInList className="mb-4" socialConnectors={socialConnectors} />
           </>
         )}
         <RegisterFooter />
         {agreeToTermsPolicy === AgreeToTermsPolicy.Automatic && (
-          <TermsAndPrivacyLinks className={styles.terms} />
+          <TermsAndPrivacyLinks className="mb-4 text-center text-xs text-muted" />
         )}
       </SingleSignOnFormModeContextProvider>
       {/* Hide footer elements when showing Single Sign On form */}

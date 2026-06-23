@@ -3,6 +3,8 @@ import { useCallback, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Navigate, useSearchParams } from 'react-router-dom';
 
+import useStepUpAcr from '@/hooks/use-step-up-acr';
+
 import LandingPageLayout from '@/Layout/LandingPageLayout';
 import SingleSignOnFormModeContextProvider from '@/Providers/SingleSignOnFormModeContextProvider';
 import SingleSignOnFormModeContext from '@/Providers/SingleSignOnFormModeContextProvider/SingleSignOnFormModeContext';
@@ -21,7 +23,6 @@ import useTerms from '@/hooks/use-terms';
 import ErrorPage from '../ErrorPage';
 
 import Main from './Main';
-import styles from './index.module.scss';
 
 const SignInFooters = () => {
   const { t } = useTranslation();
@@ -61,7 +62,7 @@ const SignInFooters = () => {
         // Single Sign On footer
         singleSignOnEnabled && (
           <>
-            <div className={styles.singleSignOn}>
+            <div className="text-center text-xs text-muted mb-4">
               {t('description.use')}{' '}
               <TextLink text="action.single_sign_on" onClick={handleSsoNavigation} />
             </div>
@@ -72,7 +73,7 @@ const SignInFooters = () => {
               signInMethods.length === 0 &&
                 socialConnectors.length === 0 &&
                 agreeToTermsPolicy === AgreeToTermsPolicy.Manual && (
-                  <TermsAndPrivacyCheckbox className={styles.checkboxForSsoOnly} />
+                  <TermsAndPrivacyCheckbox className="justify-center" />
                 )
             }
           </>
@@ -81,7 +82,7 @@ const SignInFooters = () => {
       {
         // Create Account footer
         signInMode === SignInMode.SignInAndRegister && signUpMethods.length > 0 && (
-          <div className={styles.createAccount}>
+          <div className="text-center text-base text-ink mb-5">
             {t('description.no_account')}{' '}
             <TextLink replace to="/register" text="action.create_account" />
           </div>
@@ -91,8 +92,8 @@ const SignInFooters = () => {
         // Social sign-in methods
         signInMethods.length > 0 && socialConnectors.length > 0 && (
           <>
-            <Divider label="description.or" className={styles.divider} />
-            <SocialSignInList socialConnectors={socialConnectors} className={styles.main} />
+            <Divider label="description.or" className="mb-4" />
+            <SocialSignInList socialConnectors={socialConnectors} className="mb-4" />
           </>
         )
       }
@@ -105,6 +106,7 @@ const SignIn = () => {
   const { signInMethods, socialConnectors, signInMode } = useSieMethods();
   const { agreeToTermsPolicy } = useTerms();
   const [params] = useSearchParams();
+  const stepUpAcr = useStepUpAcr();
 
   if (!signInMode) {
     return <ErrorPage />;
@@ -112,6 +114,21 @@ const SignIn = () => {
 
   if (signInMode === SignInMode.Register) {
     return <Navigate to="/register" />;
+  }
+
+  /**
+   * Step-up authentication (RFC 9470): the OIDC server has injected `step_up_acr`
+   * into the URL because `acr_values` was requested and the existing session does
+   * not yet satisfy it. Redirect to the step-up flow which skips the
+   * identifier/password step and shows only MFA verification.
+   */
+  if (stepUpAcr) {
+    return (
+      <Navigate
+        replace
+        to={{ pathname: '/step-up', search: `?${params.toString()}` }}
+      />
+    );
   }
 
   if (params.get(ExtraParamsKey.OneTimeToken)) {
@@ -135,7 +152,7 @@ const SignIn = () => {
       {
         // Only show terms and privacy links for sign in page if the agree to terms policy is `Automatic` or `ManualRegistrationOnly`
         agreeToTermsPolicy !== AgreeToTermsPolicy.Manual && (
-          <TermsAndPrivacyLinks className={styles.terms} />
+          <TermsAndPrivacyLinks className="mt-4 text-center text-xs text-muted" />
         )
       }
     </LandingPageLayout>

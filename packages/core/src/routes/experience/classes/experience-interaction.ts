@@ -4,6 +4,8 @@ import { appInsights } from '@logto/app-insights/node';
 import {
   InteractionEvent,
   InteractionHookEvent,
+  type LogtoAcrValue,
+  LogtoAcrValues,
   MfaFactor,
   VerificationType,
   type User,
@@ -76,6 +78,13 @@ export default class ExperienceInteraction {
     skipped: false,
   };
 
+  /**
+   * The ACR value requested by the client for step-up interactions.
+   * Populated from {@link InteractionStorage.stepUpAcr} when restoring an existing
+   * step-up interaction, or set directly when creating a new step-up interaction.
+   */
+  private stepUpAcr?: LogtoAcrValue;
+
   /** The interaction event for the current interaction. */
   #interactionEvent: InteractionEvent;
 
@@ -142,6 +151,7 @@ export default class ExperienceInteraction {
         verified: false,
         skipped: false,
       },
+      stepUpAcr,
     } = result.data;
 
     this.#interactionEvent = interactionEvent;
@@ -149,6 +159,11 @@ export default class ExperienceInteraction {
     this.profile = new Profile(libraries, queries, profile, interactionContext);
     this.mfa = new Mfa(libraries, queries, mfa, interactionContext);
     this.captcha = captcha;
+
+    // `interactionStorageGuard` validates `stepUpAcr` against `LogtoAcrValues`, so an invalid or
+    // tampered value is already rejected during parsing and the type is the known union here.
+    this.stepUpAcr = stepUpAcr;
+
     for (const record of verificationRecords) {
       const instance = buildVerificationRecord(libraries, queries, record);
       this.verificationRecords.setValue(instance);
@@ -161,6 +176,22 @@ export default class ExperienceInteraction {
 
   get interactionEvent() {
     return this.#interactionEvent;
+  }
+
+  /**
+   * Initialize this interaction as a step-up flow.
+   *
+   * Called from `PUT /experience` when the request carries `step_up_acr`.
+   * Pre-identifies the user from the existing OIDC session so the experience
+   * app can skip the identifier/password step and go straight to MFA.
+   *
+   * @param accountId - The `accountId` stored in the current OIDC session cookie.
+   * @param acr - The ACR value the client is requesting (e.g. `urn:logto:acr:mfa`).
+   */
+  public initStepUp(accountId: string, acr: LogtoAcrValue) {
+    this.#interactionEvent = InteractionEvent.StepUp;
+    this.userId = accountId;
+    this.stepUpAcr = acr;
   }
 
   /**
@@ -509,6 +540,27 @@ export default class ExperienceInteraction {
       return;
     }
 
+    // Step-up: only the requested ACR factor is needed; profile/register steps are irrelevant.
+    if (this.#interactionEvent === InteractionEvent.StepUp) {
+      await this.guardStepUpAcr(log);
+      const { provider } = this.tenant;
+      const redirectTo = await provider.interactionResult(this.ctx.req, this.ctx.res, {
+        login: {
+          accountId: user.id,
+          // Report the ACR that was actually satisfied, so the issued token never claims a higher
+          // assurance level than was verified. `guardStepUpAcr` enforces the required factor before
+          // we get here for `Mfa` / `PhishingResistant`; for the baseline `Password` ACR the existing
+          // session already satisfies it. Falls back to `Mfa` only when a step-up ACR is unexpectedly absent.
+          acr: this.stepUpAcr ?? LogtoAcrValues.Mfa,
+          amr: this.resolveAmrFromVerifications(),
+        },
+        ...this.toJson(),
+      });
+      this.ctx.body = { redirectTo };
+      this.ctx.assignReleaseOnSuccessInteractionHookResult({ userId: user.id });
+      return;
+    }
+
     // Verified, only SignIn requires MFA verification, for register, it does not make sense to verify MFA
     if (this.#interactionEvent === InteractionEvent.SignIn) {
       await this.guardMfaVerificationStatus(log);
@@ -657,12 +709,20 @@ export default class ExperienceInteraction {
       return;
     }
 
+    // Step-up interactions are initiated by an already-authenticated user whose
+    // identity has already been verified in a prior session. Requiring a CAPTCHA
+    // here would block the flow with no mechanism to supply a token, so we skip
+    // the check — the OIDC session itself serves as the proof of prior verification.
+    if (this.#interactionEvent === InteractionEvent.StepUp) {
+      return;
+    }
+
     await this.signInExperienceValidator.guardCaptcha();
   }
 
   /** Convert the current interaction to JSON, so that it can be stored as the OIDC provider interaction result */
   public toJson(): InteractionStorage {
-    const { interactionEvent, userId, captcha } = this;
+    const { interactionEvent, userId, captcha, stepUpAcr } = this;
     const signInContext = this.adaptiveMfaValidator.getSignInContext();
 
     return {
@@ -673,6 +733,7 @@ export default class ExperienceInteraction {
       verificationRecords: this.verificationRecordsArray.map((record) => record.toJson()),
       captcha,
       ...conditional(signInContext && { signInContext }),
+      ...conditional(stepUpAcr && { stepUpAcr }),
     };
   }
 
@@ -683,6 +744,77 @@ export default class ExperienceInteraction {
       mfa: this.mfa.sanitizedData,
       verificationRecords: this.verificationRecordsArray.map((record) => record.toSanitizedJson()),
     };
+  }
+
+  /**
+   * Guard that the step-up interaction has satisfied the requested ACR.
+   *
+   * - `urn:logto:acr:mfa`: the user must have completed at least one verified MFA factor.
+   * - `urn:logto:acr:phr` (phishing-resistant): the user must have completed a verified
+   *   WebAuthn factor specifically. Phishable factors do not satisfy it even when enrolled.
+   * - `urn:logto:acr:pwd` (or absent): already satisfied by the existing session — nothing to guard.
+   *
+   * The `availableFactors` returned on failure are scoped to the factors that can actually
+   * satisfy the requested ACR, so the experience app offers only the relevant ones.
+   *
+   * @throws {RequestError} 403 `session.mfa.require_mfa_verification` when not satisfied.
+   */
+  private async guardStepUpAcr(log?: LogEntry) {
+    // Only the elevated ACRs require an additional factor; `pwd` (and an unexpectedly absent ACR)
+    // are already satisfied by the existing session.
+    if (
+      this.stepUpAcr !== LogtoAcrValues.Mfa &&
+      this.stepUpAcr !== LogtoAcrValues.PhishingResistant
+    ) {
+      return;
+    }
+
+    const user = await this.getIdentifiedUser();
+    const mfaSettings = await this.signInExperienceValidator.getMfaSettings();
+    const adaptiveMfaResult = await this.adaptiveMfaValidator.getResult(log);
+    const mfaValidator = new MfaValidator(mfaSettings, user, adaptiveMfaResult);
+
+    const isPhishingResistant = this.stepUpAcr === LogtoAcrValues.PhishingResistant;
+
+    const isSatisfied = isPhishingResistant
+      ? mfaValidator.isPhishingResistantVerified(this.verificationRecordsArray)
+      : mfaValidator.isMfaVerified(this.verificationRecordsArray);
+
+    const availableFactors = isPhishingResistant
+      ? mfaValidator.availablePhishingResistantFactors
+      : mfaValidator.availableUserMfaVerificationTypes;
+
+    assertThat(
+      isSatisfied,
+      new RequestError(
+        { code: 'session.mfa.require_mfa_verification', status: 403 },
+        { availableFactors }
+      )
+    );
+  }
+
+  /**
+   * Derive AMR (Authentication Methods References) from the verified MFA records
+   * in this interaction. Used to populate the `amr` claim on the issued token.
+   */
+  private resolveAmrFromVerifications(): string[] {
+    const mfaTypeToAmr: Record<string, string> = {
+      [VerificationType.TOTP]: 'totp',
+      [VerificationType.WebAuthn]: 'hwk',
+      [VerificationType.BackupCode]: 'otp',
+      [VerificationType.MfaEmailVerificationCode]: 'otp',
+      [VerificationType.MfaPhoneVerificationCode]: 'otp',
+    };
+
+    const amrValues = this.verificationRecordsArray
+      .filter((record) => record.isVerified && record.type in mfaTypeToAmr)
+      .map((record) => mfaTypeToAmr[record.type])
+      .filter(Boolean);
+
+    // Only assert the `mfa` AMR when at least one MFA factor was actually verified — otherwise the
+    // token would claim multi-factor authentication that never happened (e.g. a baseline `pwd`
+    // step-up, where no factor is collected).
+    return amrValues.length > 0 ? [...new Set(['mfa', ...amrValues])] : [];
   }
 
   private assignAdaptiveMfaHookResult(userId: string, adaptiveMfaResult?: AdaptiveMfaResult) {

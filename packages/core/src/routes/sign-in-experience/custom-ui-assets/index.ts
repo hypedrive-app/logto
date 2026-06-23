@@ -1,6 +1,11 @@
 import { readFile } from 'node:fs/promises';
 
-import { uploadFileGuard, maxUploadFileSize, adminTenantId } from '@logto/schemas';
+import {
+  uploadFileGuard,
+  buildUploadFilesGuard,
+  maxUploadFileSize,
+  adminTenantId,
+} from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import pRetry, { AbortError } from 'p-retry';
 import { object, z } from 'zod';
@@ -32,7 +37,7 @@ export default function customUiAssetsRoutes<T extends ManagementApiRouter>(
     koaQuotaGuard({ key: 'bringYourUiEnabled', quota }),
     koaGuard({
       files: object({
-        file: uploadFileGuard.array().min(1).max(1),
+        file: buildUploadFilesGuard(uploadFileGuard.array().min(1).max(1)),
       }),
       response: z.object({
         customUiAssetId: z.string(),

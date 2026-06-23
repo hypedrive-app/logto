@@ -6,9 +6,14 @@ import { useCallback, useState, useRef, useMemo, Fragment, useEffect, useId } fr
 import { useTranslation } from 'react-i18next';
 
 import InputField from '@/shared/components/InputFields/InputField';
-import NotchedBorder from '@/shared/components/InputFields/InputField/NotchedBorder';
 
-import styles from './index.module.scss';
+const dateInputWrapperClass = [
+  'relative flex items-center gap-1.5 px-3.5 h-12 rounded-[11px] border bg-elevated shadow-[var(--sh-input)]',
+  'transition-[border-color,box-shadow] duration-150 ease-out focus-visible:outline-none',
+  // inner native input: transparent bg, inherits color
+  '[&_input]:bg-transparent [&_input]:text-ink [&_input]:[field-sizing:content] [&_input]:outline-none',
+  '[&_input::placeholder]:text-faint [&_input:focus-visible]:outline-none',
+].join(' ');
 
 type Props = {
   readonly className?: string;
@@ -73,7 +78,6 @@ const DateField = (props: Props) => {
     : condString(label && t('input.label_with_optional', { label }));
 
   const [isFocused, setIsFocused] = useState(false);
-  const isActive = isFocused || !!value;
   const firstInputId = useId();
   const inputReferences = useRef<Array<HTMLInputElement | undefined>>([]);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -279,9 +283,27 @@ const DateField = (props: Props) => {
   }
 
   return (
-    <div ref={containerRef} className={classNames(styles.dateFieldContainer, className)}>
+    <div ref={containerRef} className={classNames('flex flex-col', className)}>
+      {labelWithOptionalSuffix && (
+        <label
+          htmlFor={firstInputId}
+          className="mb-1.5 block text-sm font-medium text-ink-2"
+        >
+          {labelWithOptionalSuffix}
+        </label>
+      )}
       <div
-        className={styles.dateInputWrapper}
+        className={classNames(
+          dateInputWrapperClass,
+          // Resting / focus / danger border + ring (mirrors InputField)
+          errorMessage
+            ? 'border-danger'
+            : isFocused
+              ? 'border-primary'
+              : 'border-line-strong',
+          isFocused && !errorMessage && 'shadow-[var(--sh-input),0_0_0_3px_var(--primary-tint)]',
+          isFocused && errorMessage && 'shadow-[var(--sh-input),0_0_0_3px_var(--danger-soft)]'
+        )}
         // Rely on bubbling onBlur from inner inputs to detect leaving the whole group
         onBlur={(event) => {
           const { relatedTarget } = event;
@@ -291,20 +313,6 @@ const DateField = (props: Props) => {
           }
         }}
       >
-        {labelWithOptionalSuffix && (
-          <label
-            htmlFor={firstInputId}
-            className={classNames(styles.clickOverlay, isActive && styles.disabled)}
-          >
-            <span>{labelWithOptionalSuffix}</span>
-          </label>
-        )}
-        <NotchedBorder
-          isActive={isActive}
-          isFocused={isFocused}
-          label={labelWithOptionalSuffix ?? ''}
-          isDanger={!!errorMessage}
-        />
         {formatConfig?.parts.map((part, index) => (
           <Fragment key={part}>
             <input
@@ -314,7 +322,6 @@ const DateField = (props: Props) => {
               }}
               id={cond(index === 0 && firstInputId)}
               data-id={index}
-              className={classNames(isActive && styles.active)}
               placeholder={part.toUpperCase()}
               type="text"
               inputMode="numeric"
@@ -331,15 +338,13 @@ const DateField = (props: Props) => {
               }}
             />
             {index < formatConfig.parts.length - 1 && (
-              <span className={classNames(isActive && styles.active, styles.separator)}>
-                {formatConfig.separator}
-              </span>
+              <span className="text-muted">{formatConfig.separator}</span>
             )}
           </Fragment>
         ))}
       </div>
-      {description && <div className={styles.description}>{description}</div>}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+      {description && <div className="ms-0.5 text-sm text-muted">{description}</div>}
+      {errorMessage && <div className="ms-0.5 text-sm text-danger">{errorMessage}</div>}
     </div>
   );
 };

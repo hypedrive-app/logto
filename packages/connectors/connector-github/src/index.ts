@@ -149,7 +149,7 @@ const _getUserInfo = async (accessToken: string) => {
     timeout: defaultTimeout,
     hooks: {
       beforeRequest: [
-        (request) => {
+        ({ request }) => {
           request.headers.set('Authorization', `Bearer ${accessToken}`);
         },
       ],

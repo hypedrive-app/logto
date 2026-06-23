@@ -1,11 +1,9 @@
+import { InformationCircleIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import type { CSSProperties, ForwardedRef, ReactNode } from 'react';
 import { forwardRef } from 'react';
 
-import InfoIcon from '@/assets/icons/info-icon.svg?react';
 import TextLink from '@/components/TextLink';
-
-import styles from './index.module.scss';
 
 /* eslint-disable react/require-default-props */
 type Props = {
@@ -19,10 +17,17 @@ type Props = {
 const AppNotification = forwardRef(
   ({ className, message, style, onClose }: Props, ref: ForwardedRef<HTMLDivElement>) => {
     return (
-      <div ref={ref} className={classNames(styles.notification, className)} style={style}>
-        <InfoIcon className={styles.icon} />
-        <div className={styles.message}>{message}</div>
-        <TextLink text="action.got_it" className={styles.link} onClick={onClose} />
+      <div
+        ref={ref}
+        className={classNames(
+          'flex items-center p-3 text-sm text-ink-2 bg-surface border border-line rounded-[13px] shadow-[var(--sh-float)] z-50',
+          className
+        )}
+        style={style}
+      >
+        <InformationCircleIcon className="w-5 h-5 me-3 text-muted" />
+        <div className="flex-1 me-4">{message}</div>
+        <TextLink text="action.got_it" className="max-w-[20%]" onClick={onClose} />
       </div>
     );
   }

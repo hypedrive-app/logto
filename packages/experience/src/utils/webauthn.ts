@@ -4,8 +4,11 @@ import {
   type WebAuthnAuthenticationOptions,
 } from '@logto/schemas';
 import { cond } from '@silverhand/essentials';
-import { base64URLStringToBuffer, bufferToBase64URLString } from '@simplewebauthn/browser';
-import { type AuthenticationResponseJSON } from '@simplewebauthn/types';
+import {
+  base64URLStringToBuffer,
+  bufferToBase64URLString,
+  type AuthenticationResponseJSON,
+} from '@simplewebauthn/browser';
 
 import { type WebAuthnOptions } from '@/types';
 

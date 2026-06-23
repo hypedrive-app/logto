@@ -2,7 +2,7 @@ import { VerificationType } from '@logto/schemas';
 import { conditional } from '@silverhand/essentials';
 import { useContext } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -16,11 +16,10 @@ import { totpBindingStateGuard } from '@/types/guard';
 
 import SecretSection from './SecretSection';
 import VerificationSection from './VerificationSection';
-import styles from './index.module.scss';
 
 const TotpBinding = () => {
   const { state } = useLocation();
-  const [, totpBindingState] = validate(state, totpBindingStateGuard);
+  const { data: totpBindingState } = totpBindingStateGuard.safeParse(state);
   const { verificationIdsMap } = useContext(UserInteractionContext);
   const verificationId = verificationIdsMap[VerificationType.TOTP];
 
@@ -38,7 +37,7 @@ const TotpBinding = () => {
       title="mfa.add_authenticator_app"
       onSkip={conditional(skippable && (suggestion ? skipOptionalMfa : skipMfa))}
     >
-      <div className={styles.container}>
+      <div className="flex flex-col justify-center items-stretch gap-6 mb-6">
         <SecretSection {...totpBindingState} />
         <Divider />
         <VerificationSection verificationId={verificationId} />
@@ -48,7 +47,7 @@ const TotpBinding = () => {
             <SwitchMfaFactorsLink
               flow={UserMfaFlow.MfaBinding}
               flowState={{ availableFactors, skippable }}
-              className={styles.switchLink}
+              className="self-start"
             />
           </>
         )}

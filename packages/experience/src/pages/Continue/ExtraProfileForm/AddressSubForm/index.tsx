@@ -3,15 +3,13 @@ import classNames from 'classnames';
 import { useCallback, useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import PrimitiveProfileInputField from '@/components/InputFields/PrimitiveProfileInputField';
 import { addressFieldConfigGuard } from '@/types/guard';
 
 import useFieldLabel from '../use-field-label';
 import useValidateField from '../use-validate-field';
-
-import styles from './index.module.scss';
 
 type AddressSubFormType = Pick<UserProfile, 'address'>;
 
@@ -52,8 +50,8 @@ const AddressSubForm = ({ field }: Props) => {
   const { description, config } = field;
 
   const enabledParts = useMemo(() => {
-    s.assert(config, addressFieldConfigGuard);
-    return config.parts.filter(({ enabled }) => enabled);
+    const parsedConfig = addressFieldConfigGuard.parse(config);
+    return parsedConfig.parts.filter(({ enabled }) => enabled);
   }, [config]);
 
   const values = watch('address');
@@ -74,7 +72,7 @@ const AddressSubForm = ({ field }: Props) => {
     ([_, error]) => typeof error === 'object' && error.type !== 'required'
   );
   return (
-    <div className={styles.addressContainer}>
+    <div className="grid w-full grid-cols-2 gap-3 max-[580px]:grid-cols-1">
       {enabledParts.map((part) => (
         <Controller
           key={part.name}
@@ -93,8 +91,8 @@ const AddressSubForm = ({ field }: Props) => {
               {...part}
               name={`address.${part.name}`}
               className={classNames(
-                styles.inputField,
-                (part.name === 'locality' || part.name === 'region') && styles.halfSize
+                'col-span-2 max-[580px]:col-span-1',
+                (part.name === 'locality' || part.name === 'region') && 'col-span-1'
               )}
               label={part.label ?? t(`profile.address.${part.name}`)}
               value={value ?? ''}
@@ -114,9 +112,11 @@ const AddressSubForm = ({ field }: Props) => {
       {!enabledParts.some(({ name }) => name === 'formatted') && (
         <input {...register('address.formatted')} hidden />
       )}
-      {description && <div className={styles.description}>{description}</div>}
+      {description && (
+        <div className="-mt-2 ms-0.5 col-span-2 text-sm text-muted">{description}</div>
+      )}
       {errors.address && (
-        <div className={styles.errorMessage}>
+        <div className="-mt-2 ms-0.5 col-span-2 text-sm text-danger flex flex-col gap-1 [&>p]:m-0">
           {hasNonRequiredErrors ? (
             <>
               {Object.entries(errors.address).map(([errorKey, error]) => (

@@ -13,8 +13,6 @@ import ErrorPage from '@/pages/ErrorPage';
 import Button from '@/shared/components/Button';
 import { UserMfaFlow } from '@/types';
 
-import styles from './index.module.scss';
-
 type FormState = {
   code: string;
 };
@@ -25,7 +23,7 @@ const BackupCodeVerification = () => {
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { errors, isSubmitting },
   } = useForm<FormState>({ defaultValues: { code: '' } });
 
   const onSubmitHandler = useCallback(
@@ -54,8 +52,12 @@ const BackupCodeVerification = () => {
           <InputField
             autoComplete="off"
             label={t('input.backup_code')}
-            className={styles.backupCodeInput}
-            {...register('code')}
+            className="my-4"
+            isDanger={!!errors.code}
+            errorMessage={errors.code?.message}
+            {...register('code', {
+              required: t('error.general_required', { types: [t('input.backup_code')] }),
+            })}
           />
           <Button title="action.continue" htmlType="submit" isLoading={isSubmitting} />
         </form>
@@ -63,7 +65,7 @@ const BackupCodeVerification = () => {
       <SwitchMfaFactorsLink
         flow={UserMfaFlow.MfaVerification}
         flowState={flowState}
-        className={styles.switchFactorLink}
+        className="mt-6"
       />
     </SecondaryPageLayout>
   );

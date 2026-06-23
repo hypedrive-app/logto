@@ -5,8 +5,9 @@ import { searchKeys } from '@/shared/utils/search-parameters';
 
 export default ky.extend({
   hooks: {
+    // v2: hooks now receive a single state object instead of positional args.
     beforeRequest: [
-      (request) => {
+      ({ request }) => {
         request.headers.set('Accept-Language', i18next.language);
         /**
          * Attach app ID to HTTP header in order to support client-specific interaction cookie

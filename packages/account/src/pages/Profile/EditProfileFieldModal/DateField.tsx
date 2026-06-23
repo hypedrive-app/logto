@@ -3,7 +3,6 @@ import { SupportedDateFormat } from '@logto/schemas';
 import classNames from 'classnames';
 import { useMemo, useState } from 'react';
 
-import styles from './DateField.module.scss';
 import type { EditableValue } from './utils';
 
 type Props = {
@@ -83,6 +82,8 @@ const DateField = ({
     );
   }
 
+  const isActive = isFocused || Boolean(valueString);
+
   const handleChange = (index: number, nextValue: string) => {
     const maxLength = formatConfig.maxLengths[index];
     const nextParts = dateParts.map((part, partIndex) =>
@@ -93,21 +94,33 @@ const DateField = ({
   };
 
   return (
-    <div className={styles.dateFieldContainer}>
+    <div className="flex flex-col gap-1">
       <div
+        data-date-input-wrapper
         className={classNames(
-          styles.dateInputWrapper,
-          isFocused && styles.active,
-          errorMessage && styles.danger
+          'relative flex items-center gap-1.5 h-12 px-4 rounded-[11px] border bg-inherit text-ink shadow-[var(--sh-input)] transition-[border-color,box-shadow] duration-150 ease-out',
+          isFocused && 'border-primary shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-brand-focused)]',
+          errorMessage && 'border-danger shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-danger-focused)]',
+          !isFocused && !errorMessage && 'border-line-strong'
         )}
       >
-        <span className={classNames(styles.label, (isFocused || valueString) && styles.active)}>
+        <span
+          className={classNames(
+            'absolute start-3 px-1 bg-elevated pointer-events-none transition-all',
+            isActive
+              ? 'top-0 -translate-y-1/2 text-xs text-primary'
+              : 'top-1/2 -translate-y-1/2 text-sm text-muted'
+          )}
+        >
           {label}
         </span>
         {formatConfig.parts.map((part, index) => (
-          <div key={`${name}-${part}`} className={styles.part}>
+          <div key={`${name}-${part}`} className="flex items-center gap-1.5">
             <input
-              className={classNames((isFocused || valueString) && styles.active)}
+              className={classNames(
+                'w-auto min-w-[2ch] max-w-[5ch] p-0 border-none outline-none bg-inherit text-ink text-sm placeholder:text-muted',
+                isActive ? 'opacity-100' : 'opacity-0'
+              )}
               name={`${name}.${part}`}
               aria-label={`${label} ${part}`}
               value={dateParts[index] ?? ''}
@@ -119,7 +132,7 @@ const DateField = ({
                 setIsFocused(true);
               }}
               onBlur={({ currentTarget, relatedTarget }) => {
-                const wrapper = currentTarget.closest(`.${styles.dateInputWrapper}`);
+                const wrapper = currentTarget.closest('[data-date-input-wrapper]');
 
                 if (wrapper?.contains(relatedTarget)) {
                   return;
@@ -134,8 +147,8 @@ const DateField = ({
             {index < formatConfig.parts.length - 1 && (
               <span
                 className={classNames(
-                  styles.separator,
-                  (isFocused || valueString) && styles.active
+                  'text-[var(--color-line-border)] text-sm',
+                  isActive ? 'opacity-100' : 'opacity-0'
                 )}
               >
                 {formatConfig.separator}
@@ -144,8 +157,8 @@ const DateField = ({
           </div>
         ))}
       </div>
-      {description && <div className={styles.description}>{description}</div>}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+      {description && <div className="ms-0.5 text-sm text-muted">{description}</div>}
+      {errorMessage && <div className="ms-0.5 text-sm text-danger">{errorMessage}</div>}
     </div>
   );
 };

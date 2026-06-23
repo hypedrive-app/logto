@@ -364,6 +364,11 @@ export const buildLoginPromptUrl = (
   appendExtraParam(ExtraParamsKey.OneTimeToken);
   appendExtraParam(ExtraParamsKey.LoginHint);
   appendExtraParam(ExtraParamsKey.Identifier);
+  // Step-up (RFC 9470): forward the resolved ACR so the experience app can bootstrap the
+  // step-up flow (skip identifier/password, go straight to MFA). Without this the
+  // `step_up_acr` injected in `interactions.url` would be dropped here and step-up would
+  // silently degrade to a normal sign-in.
+  appendExtraParam(ExtraParamsKey.StepUpAcr);
 
   // Reuse DirectSignIn page to handle Google One Tap credential.
   // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing

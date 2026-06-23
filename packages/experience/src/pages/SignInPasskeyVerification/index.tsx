@@ -2,7 +2,7 @@ import { SignInIdentifier, VerificationType } from '@logto/schemas';
 import { cond } from '@silverhand/essentials';
 import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -13,8 +13,6 @@ import ErrorPage from '@/pages/ErrorPage';
 import Button from '@/shared/components/Button';
 import { identifierPasskeyStateGuard } from '@/types/guard';
 import { isWebAuthnOptions } from '@/utils/webauthn';
-
-import styles from './index.module.scss';
 
 /**
  * Passkey verification page for the identifier-based sign-in flow.
@@ -33,7 +31,7 @@ import styles from './index.module.scss';
  */
 const SignInPasskeyVerification = () => {
   const { state } = useLocation();
-  const [, passkeyState] = validate(state, identifierPasskeyStateGuard);
+  const { data: passkeyState } = identifierPasskeyStateGuard.safeParse(state);
   const { verificationIdsMap, identifierInputValue } = useContext(UserInteractionContext);
   const verificationId = verificationIdsMap[VerificationType.SignInPasskey];
   const { signInMethods } = useSieMethods();
@@ -63,7 +61,7 @@ const SignInPasskeyVerification = () => {
     >
       <Button
         title="action.verify_via_passkey"
-        className={styles.verifyButton}
+        className="my-4"
         isLoading={isVerifying}
         onClick={async () => {
           setIsVerifying(true);
@@ -72,7 +70,7 @@ const SignInPasskeyVerification = () => {
         }}
       />
       <SwitchToVerificationMethodsLink
-        className={styles.switchLink}
+        className="mt-6"
         identifier={cond(type !== SignInIdentifier.Username && type)}
         value={identifierInputValue.value}
         hasPassword={methodSetting?.password}

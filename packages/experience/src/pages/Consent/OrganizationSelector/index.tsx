@@ -1,15 +1,13 @@
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { ReservedResource } from '@logto/core-kit';
 import classNames from 'classnames';
 import { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ExpandableIcon from '@/assets/icons/expandable-icon.svg?react';
-
 import ScopeGroup from '../ScopeGroup';
 
 import OrganizationItem, { type Organization } from './OrganizationItem';
 import OrganizationSelectorModal from './OrganizationSelectorModal';
-import styles from './index.module.scss';
 
 export { type Organization } from './OrganizationItem';
 
@@ -38,9 +36,9 @@ const OrganizationSelector = ({
 
   return (
     <div className={className}>
-      <div className={styles.title}>{t(`description.authorize_organization_access`)}</div>
+      <div className="text-sm font-medium mb-2">{t(`description.authorize_organization_access`)}</div>
       {resourceScopes && resourceScopes.length > 0 && (
-        <div className={styles.scopeListWrapper}>
+        <div className="border border-line border-b-0 rounded-t-[10px] py-2">
           {resourceScopes
             .slice()
             // Sort the scopes to make sure the organization scope is always on top
@@ -67,15 +65,15 @@ const OrganizationSelector = ({
       <div
         ref={parentElementRef}
         className={classNames(
-          styles.cardWrapper,
-          Boolean(resourceScopes?.length) && styles.withoutTopRadius
+          'border border-line-strong rounded-[13px] p-2 relative data-[active=true]:border-primary data-[active=true]:outline data-[active=true]:outline-[3px] data-[active=true]:outline-[var(--color-overlay-brand-focused)]',
+          Boolean(resourceScopes?.length) && 'rounded-t-none rounded-b-[10px]'
         )}
         data-active={showDropdown}
       >
         <OrganizationItem
-          className={styles.selectedOrganization}
+          className="cursor-pointer overlay-hover"
           organization={selectedOrganization}
-          suffixElement={<ExpandableIcon className={styles.expandButton} />}
+          suffixElement={<ChevronDownIcon className="relative w-5 h-5 text-muted" />}
           onSelect={() => {
             setShowDropdown(true);
           }}

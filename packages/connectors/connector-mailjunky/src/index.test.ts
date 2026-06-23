@@ -96,7 +96,7 @@ describe('MailJunky connector', () => {
         payload: { link: 'https://example.com' },
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      '[Error: ConnectorError: {"issues":[{"code":"custom","message":"Missing required templates for usageType: Generic","path":["templates"]}],"name":"ZodError"}]'
+      `[Error: ConnectorError: {"name":"ZodError","message":"[\\n  {\\n    \\"code\\": \\"custom\\",\\n    \\"message\\": \\"Missing required templates for usageType: Generic\\",\\n    \\"path\\": [\\n      \\"templates\\"\\n    ]\\n  }\\n]"}]`
     );
   });
 

@@ -67,7 +67,7 @@ describe('SendGrid connector', () => {
         payload: { link: 'https://example.com' },
       })
     ).rejects.toThrowErrorMatchingInlineSnapshot(
-      '[Error: ConnectorError: {"issues":[{"code":"custom","message":"Template with UsageType (Generic) should be provided!","path":["templates"]}],"name":"ZodError"}]'
+      `[Error: ConnectorError: {"name":"ZodError","message":"[\\n  {\\n    \\"code\\": \\"custom\\",\\n    \\"path\\": [\\n      \\"templates\\"\\n    ],\\n    \\"message\\": \\"Template with UsageType (Generic) should be provided!\\"\\n  }\\n]"}]`
     );
   });
 

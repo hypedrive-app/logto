@@ -1,10 +1,11 @@
+import { experience } from '@logto/schemas';
 import { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 
 import StaticPageLayout from '@/Layout/StaticPageLayout';
 import SocialLandingContainer from '@/containers/SocialLanding';
+import ErrorPage from '@/pages/ErrorPage';
 
-import styles from './index.module.scss';
 import useSocialLandingHandler from './use-social-landing-handler';
 
 type Parameters = {
@@ -19,7 +20,7 @@ type Parameters = {
  */
 const SocialLanding = () => {
   const { connectorId } = useParams<Parameters>();
-  const { loading, socialLandingHandler } = useSocialLandingHandler();
+  const { loading, error, socialLandingHandler } = useSocialLandingHandler();
 
   // SocialSignIn Callback Handler
   useEffect(() => {
@@ -33,10 +34,23 @@ const SocialLanding = () => {
     return null;
   }
 
+  if (error) {
+    return (
+      <ErrorPage
+        title="error.invalid_connector_request"
+        primaryAction={{
+          title: 'description.back_to_sign_in',
+          to: `/${experience.routes.signIn}`,
+          replace: true,
+        }}
+      />
+    );
+  }
+
   return (
     <StaticPageLayout>
       <SocialLandingContainer
-        className={styles.connectorContainer}
+        className="flex-1"
         connectorId={connectorId}
         isLoading={loading}
       />

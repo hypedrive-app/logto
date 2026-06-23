@@ -71,7 +71,7 @@ class MockOrganizationClient extends ExperienceClient {
       return json;
     } catch (error) {
       if (error instanceof HTTPError) {
-        const json: unknown = JSON.parse(await error.response.text());
+        const json: unknown = error.data;
         console.error('HTTPError:', error.response.status, JSON.stringify(json, undefined, 2));
         throw new GrantError(error.response.status, json);
       }

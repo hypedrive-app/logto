@@ -14,6 +14,7 @@ import {
   inSeconds,
   logtoCookieKey,
   ExtraParamsKey,
+  LogtoAcrValues,
 } from '@logto/schemas';
 import { trySafe, tryThat } from '@silverhand/essentials';
 import { type i18n } from 'i18next';
@@ -68,8 +69,18 @@ import {
 } from './resource.js';
 import { getAcceptedUserClaims, getUserClaimsData } from './scope.js';
 
-// Temporarily removed 'EdDSA' since it's not supported by browser yet
-const supportedSigningAlgs = Object.freeze(['RS256', 'PS256', 'ES256', 'ES384', 'ES512'] as const);
+// `EdDSA` (Ed25519) tokens are smaller and ~10x faster to verify than RSA. It's safe to advertise:
+// tokens are verified by `jose` (server-side and in the `@logto/js` SDK), not by browser WebCrypto,
+// so the historical "browser unsupported" concern doesn't apply here. The signing algorithm a tenant
+// actually uses still depends on its OIDC private key type (RSA / EC / Ed25519), see `env-set/oidc.ts`.
+const supportedSigningAlgs = Object.freeze([
+  'RS256',
+  'PS256',
+  'ES256',
+  'ES384',
+  'ES512',
+  'EdDSA',
+] as const);
 
 export default function initOidc(
   tenantId: string,
@@ -170,6 +181,12 @@ export default function initOidc(
     },
     conformIdTokenClaims: false,
     allowWildcardRedirectUris: true,
+    /**
+     * Declare the ACR values this AS supports. oidc-provider exposes these in the discovery
+     * document and uses them to drive the `essential_acrs` / `essential_acr` interaction-policy
+     * checks so that step-up auth works out of the box.
+     */
+    acrValues: Object.values(LogtoAcrValues),
     features: {
       userinfo: { enabled: true },
       revocation: { enabled: true },
@@ -178,6 +195,12 @@ export default function initOidc(
       clientCredentials: { enabled: true },
       backchannelLogout: { enabled: true },
       deviceFlow: deviceFlowConfig,
+      /**
+       * Allow clients to request specific claims (including `acr`) via the `claims` parameter.
+       * Required for RFC 9470 step-up: clients may send
+       * `claims={"id_token":{"acr":{"essential":true,"values":["urn:logto:acr:mfa"]}}}`.
+       */
+      claimsParameter: { enabled: true },
       rpInitiatedLogout: {
         logoutSource: (ctx, form) => {
           // eslint-disable-next-line no-template-curly-in-string
@@ -256,6 +279,48 @@ export default function initOidc(
 
         switch (prompt.name) {
           case 'login': {
+            /**
+             * Step-up detection: if the request carries `acr_values` and the session already
+             * has an authenticated account, this is a step-up request — the user only needs to
+             * satisfy the missing factor (e.g. MFA), not re-enter their password.
+             *
+             * oidc-provider populates `ctx.oidc.session.accountId` from the existing cookie
+             * before calling `interactions.url`, so we can reliably detect this case here.
+             * We pass `step_up_acr` as an extra param so the experience app can skip the
+             * identifier/password step and go straight to MFA verification.
+             */
+            const hasExistingSession = Boolean(ctx.oidc.session?.accountId);
+
+            if (hasExistingSession) {
+              // `acr_values` is space-separated per OAuth 2.0 / OIDC spec.
+              // Also honour per-application `defaultAcrValues` configured in Console
+              // when the client hasn't explicitly sent `acr_values`.
+              const rawAcrValues = ctx.oidc.params?.acr_values;
+              const clientDefaultAcrValues = ctx.oidc.client?.metadata().defaultAcrValues;
+
+              const effectiveAcrValues =
+                typeof rawAcrValues === 'string' && rawAcrValues
+                  ? rawAcrValues
+                  : Array.isArray(clientDefaultAcrValues) && clientDefaultAcrValues.length > 0
+                    ? clientDefaultAcrValues.join(' ')
+                    : undefined;
+
+              // Resolve the highest-priority ACR that we actually support.
+              // Unknown values fall through so oidc-provider handles the error.
+              const knownAcrValues = new Set<string>(Object.values(LogtoAcrValues));
+              const resolvedAcr = effectiveAcrValues
+                ?.split(' ')
+                .find((value) => knownAcrValues.has(value));
+
+              if (resolvedAcr) {
+                const stepUpParams = {
+                  ...params,
+                  [ExtraParamsKey.StepUpAcr]: resolvedAcr,
+                };
+                return '/' + buildLoginPromptUrl(stepUpParams, sharedParams);
+              }
+            }
+
             return '/' + buildLoginPromptUrl(params, sharedParams);
           }
 

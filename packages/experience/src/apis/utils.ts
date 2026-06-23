@@ -1,5 +1,5 @@
 import { InteractionEvent, type VerificationCodeIdentifier } from '@logto/schemas';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import { type ContinueFlowInteractionEvent, UserFlow } from '@/types';
 import { continueFlowStateGuard } from '@/types/guard';
@@ -24,7 +24,7 @@ export const getInteractionEventFromState = (state: unknown) => {
     return;
   }
 
-  const [, continueFlowState] = validate(state, continueFlowStateGuard);
+  const { data: continueFlowState } = continueFlowStateGuard.safeParse(state);
 
   return continueFlowState?.interactionEvent;
 };

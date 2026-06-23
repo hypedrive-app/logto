@@ -46,12 +46,12 @@ export const passwordPolicyGuard = z.object({
       min: z.number().int().min(1).default(8),
       max: z.number().int().min(1).default(256),
     })
-    .default({}),
+    .prefault({}),
   characterTypes: z
     .object({
       min: z.number().int().min(1).max(4).optional().default(1),
     })
-    .default({}),
+    .prefault({}),
   rejects: z
     .object({
       pwned: z.boolean().default(true),
@@ -59,8 +59,8 @@ export const passwordPolicyGuard = z.object({
       userInfo: z.boolean().default(true),
       words: z.string().array().default([]),
     })
-    .default({}),
-}) satisfies z.ZodType<PasswordPolicy, z.ZodTypeDef, DeepPartial<PasswordPolicy>>;
+    .prefault({}),
+}) satisfies z.ZodType<PasswordPolicy, DeepPartial<PasswordPolicy>>;
 
 /** The code of why a password is rejected. */
 export type PasswordRejectionCode =

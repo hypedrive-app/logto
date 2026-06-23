@@ -74,7 +74,7 @@ export class JwtCustomizerLibrary {
       const result = await runScriptFunctionInLocalVm(data.script, 'getCustomJwtClaims', payload);
 
       // If the `result` is not a record, we cannot merge it to the existing token payload.
-      return z.record(z.unknown()).parse(result);
+      return z.record(z.string(), z.unknown()).parse(result);
     } catch (error: unknown) {
       if (error instanceof LocalVmError) {
         throw error;
@@ -82,7 +82,7 @@ export class JwtCustomizerLibrary {
 
       // Assuming we only use zod for request body validation
       if (error instanceof ZodError) {
-        const { errors } = error;
+        const { issues: errors } = error;
         throw new LocalVmError(
           {
             message: 'Invalid input',

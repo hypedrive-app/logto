@@ -14,7 +14,6 @@ import {
 import { generateStandardId } from '@logto/shared';
 import { conditional } from '@silverhand/essentials';
 import { isoBase64URL } from '@simplewebauthn/server/helpers';
-import { type PublicKeyCredentialRequestOptionsJSON } from 'node_modules/@simplewebauthn/server/esm/deps.js';
 
 import RequestError from '#src/errors/RequestError/index.js';
 import {
@@ -130,7 +129,8 @@ abstract class BaseWebAuthnVerification {
     assertThat(verified, 'session.mfa.webauthn_verification_failed');
     assertThat(registrationInfo, 'session.mfa.webauthn_verification_failed');
 
-    const { credentialID, credentialPublicKey, counter } = registrationInfo;
+    // v13: registrationInfo.credential replaces the flat credentialID/credentialPublicKey/counter fields.
+    const { id: credentialID, publicKey: credentialPublicKey, counter } = registrationInfo.credential;
 
     this.verified = true;
 
@@ -188,7 +188,8 @@ export class WebAuthnVerification
    */
   async generateWebAuthnAuthenticationOptions(
     ctx: WithLogContext
-  ): Promise<PublicKeyCredentialRequestOptionsJSON> {
+  // Use ReturnType to avoid importing the private internal type from @simplewebauthn/server.
+  ): ReturnType<typeof generateWebAuthnAuthenticationOptions> {
     const { hostname } = ctx.URL;
     const { mfaVerifications = [] } = await this.findUser();
     const authenticationOptions = await generateWebAuthnAuthenticationOptions({

@@ -41,7 +41,7 @@ const tryUpdateCustomUiCsp = async (customUiCsp: CustomUiCsp): Promise<CustomUiC
       throw error;
     }
 
-    const body = (await error.response.json()) as { code?: string };
+    const body = error.data as { code?: string };
 
     if (body.code !== 'request.invalid_input') {
       throw error;

@@ -3,15 +3,13 @@ import classNames from 'classnames';
 import { useMemo } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import PrimitiveProfileInputField from '@/components/InputFields/PrimitiveProfileInputField';
 import { fullnameFieldConfigGuard } from '@/types/guard';
 
 import useFieldLabel from '../use-field-label';
 import useValidateField from '../use-validate-field';
-
-import styles from './index.module.scss';
 
 type FullnameFormType = Pick<UserProfile, 'givenName' | 'middleName' | 'familyName'>;
 
@@ -25,23 +23,27 @@ const FullnameSubForm = ({ field }: Props) => {
   const validateField = useValidateField();
 
   const { name, label, description, config } = field;
-  s.assert(config, fullnameFieldConfigGuard);
+  const parsedConfig = fullnameFieldConfigGuard.parse(config);
 
   const {
     control,
     formState: { errors },
   } = useFormContext<FullnameFormType>();
 
-  const enabledParts = useMemo(() => config.parts.filter(({ enabled }) => enabled), [config.parts]);
+  const enabledParts = useMemo(
+    () => parsedConfig.parts.filter(({ enabled }) => enabled),
+    [parsedConfig.parts]
+  );
   const fullnameErrors = Object.entries(errors).filter(([errorKey]) =>
     enabledParts.some(({ name }) => name === errorKey)
   );
   const hasNonRequiredErrors = fullnameErrors.some(([_, error]) => error.type !== 'required');
+  const isVertical = enabledParts.length % 2 === 1;
 
   return (
-    <div className={styles.fullnameContainer}>
+    <div className="flex flex-col gap-1">
       <div
-        className={classNames(styles.flexWrapper, enabledParts.length % 2 === 1 && styles.vertical)}
+        className={classNames('flex gap-3 max-[580px]:flex-col', isVertical && 'flex-col')}
       >
         {enabledParts.map((part) => (
           <Controller
@@ -57,7 +59,10 @@ const FullnameSubForm = ({ field }: Props) => {
             render={({ field: { onBlur, onChange, value } }) => (
               <PrimitiveProfileInputField
                 {...part}
-                className={styles.inputField}
+                className={classNames(
+                  'max-[580px]:flex-none max-[580px]:w-full',
+                  isVertical ? 'flex-none w-full' : 'flex-1'
+                )}
                 name={part.name}
                 label={part.label ?? t(`profile.${part.name}`)}
                 value={value ?? ''}
@@ -70,9 +75,9 @@ const FullnameSubForm = ({ field }: Props) => {
           />
         ))}
       </div>
-      {description && <div className={styles.description}>{description}</div>}
+      {description && <div className="text-sm text-muted ms-0.5">{description}</div>}
       {fullnameErrors.length > 0 && (
-        <div className={styles.errorMessage}>
+        <div className="text-sm text-danger ms-0.5 flex flex-col gap-1 [&>p]:m-0">
           {hasNonRequiredErrors ? (
             <>
               {fullnameErrors.map(([errorKey, error]) => (

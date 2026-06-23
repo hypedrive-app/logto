@@ -12,7 +12,6 @@ import DynamicT from '@/shared/components/DynamicT';
 import type { SocialRelatedUserInfo } from '@/types/guard';
 import { maskEmail, maskPhone } from '@/utils/format';
 
-import styles from './index.module.scss';
 import useBindSocialRelatedUser from './use-social-link-related-user';
 
 type Props = {
@@ -55,8 +54,15 @@ const SocialLinkAccount = ({ connectorId, verificationId, className, relatedUser
   const { type, value } = relatedUser;
 
   return (
-    <div className={classNames(styles.container, className)}>
-      <div className={styles.desc}>{t('description.social_bind_with_existing')}</div>
+    <div
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+    >
+      <div className="text-sm text-muted text-start mobile:mb-2 desktop:mb-4">
+        {t('description.social_bind_with_existing')}
+      </div>
 
       <Button
         title="action.bind"
@@ -70,7 +76,7 @@ const SocialLinkAccount = ({ connectorId, verificationId, className, relatedUser
       />
 
       {signInMode !== SignInMode.SignIn && (
-        <div className={styles.hint}>
+        <div className="text-sm text-muted text-start mt-6">
           <div>
             <DynamicT forKey="description.skip_social_linking" />
           </div>

@@ -11,9 +11,19 @@ import { useTranslation } from 'react-i18next';
 import { uploadAccountAvatar } from '@ac/apis/avatar';
 import { layoutClassNames } from '@ac/constants/layout';
 
-import profileStyles from '../../pages/Profile/index.module.scss';
-
-import styles from './index.module.scss';
+const rowClass =
+  'grid grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] grid-flow-dense gap-x-6 items-center py-5 px-6 min-h-16 [&:not(:last-child)]:border-b [&:not(:last-child)]:border-[var(--color-line-divider)] mobile:flex mobile:flex-col mobile:items-stretch mobile:gap-1 mobile:p-4 mobile:min-h-0';
+const topLineClass =
+  'contents mobile:flex mobile:items-center mobile:justify-between mobile:gap-3 mobile:w-full';
+const nameClass =
+  'col-start-1 min-w-0 text-sm font-medium text-ink mobile:w-full mobile:break-words';
+const actionsClass =
+  'col-start-3 flex items-center gap-6 flex-shrink-0 mobile:flex-wrap mobile:justify-end mobile:gap-4';
+const changeButtonClass =
+  'text-sm font-medium text-primary cursor-pointer bg-none border-none py-0.5 whitespace-nowrap hover:underline mobile:p-0 mobile:whitespace-normal mobile:text-start';
+const valueClass =
+  'col-start-2 min-w-0 text-sm text-ink [overflow-wrap:anywhere] break-words';
+const avatarClass = 'w-8 h-8 rounded-[8px] object-cover block';
 
 type Props = {
   readonly className?: string;
@@ -67,15 +77,15 @@ const AvatarUploadField = ({ className, label, value = '', onChange }: Props) =>
       : tAvatar('upload');
 
   return (
-    <div className={classNames(profileStyles.row, layoutClassNames.row, className)}>
-      <div className={profileStyles.topLine}>
-        <label className={profileStyles.name} htmlFor={inputId}>
+    <div className={classNames(rowClass, layoutClassNames.row, className)}>
+      <div className={topLineClass}>
+        <label className={nameClass} htmlFor={inputId}>
           {label}
         </label>
-        <div className={profileStyles.actions}>
+        <div className={actionsClass}>
           <button
             type="button"
-            className={profileStyles.changeButton}
+            className={changeButtonClass}
             disabled={isUploading}
             onClick={openFilePicker}
           >
@@ -83,24 +93,19 @@ const AvatarUploadField = ({ className, label, value = '', onChange }: Props) =>
           </button>
         </div>
       </div>
-      <div className={profileStyles.value}>
-        <div className={styles.valueContent}>
+      <div className={valueClass}>
+        <div className="flex flex-col items-start gap-1">
           {isUploading ? (
-            <div className={styles.loadingIcon}>
+            <div className="w-8 h-8 text-primary">
               <RotatingRingIcon />
             </div>
           ) : value ? (
-            <img
-              className={profileStyles.avatar}
-              src={value}
-              alt={label}
-              referrerPolicy="no-referrer"
-            />
+            <img className={avatarClass} src={value} alt={label} referrerPolicy="no-referrer" />
           ) : (
-            <UserAvatar className={styles.placeholder} />
+            <UserAvatar className="w-8 h-8 rounded-[8px]" />
           )}
           {uploadError && !cropImageSource && (
-            <span className={styles.errorText} role="alert">
+            <span className="text-xs text-danger" role="alert">
               {uploadError}
             </span>
           )}
@@ -110,7 +115,7 @@ const AvatarUploadField = ({ className, label, value = '', onChange }: Props) =>
         key={fileInputKey}
         ref={inputRef}
         id={inputId}
-        className={styles.hiddenInput}
+        className="hidden"
         type="file"
         accept={avatarFileAccept}
         onChange={handleFileChange}

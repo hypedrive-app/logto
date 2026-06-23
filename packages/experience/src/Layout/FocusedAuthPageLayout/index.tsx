@@ -11,8 +11,6 @@ import type { Props as PageMetaProps } from '@/shared/components/PageMeta';
 
 import FirstScreenLayout from '../FirstScreenLayout';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly children: ReactNode;
   readonly pageMeta: PageMetaProps;
@@ -45,15 +43,17 @@ const FocusedAuthPageLayout = ({
 
   return (
     <FirstScreenLayout pageMeta={pageMeta}>
-      <div className={styles.header}>
-        <div className={styles.title}>
+      <div className="mt-6 mb-7">
+        <div className="-tracking-[0.01em] text-ink mobile:text-[28px]/[36px] mobile:font-semibold desktop:text-2xl desktop:font-semibold">
           <DynamicT forKey={title} />
         </div>
-        <div className={styles.description}>{description}</div>
+        <div className="mt-2 text-sm text-muted">{description}</div>
       </div>
       {children}
-      {shouldDisplayFooterTerms && <TermsAndPrivacyLinks className={styles.terms} />}
-      <TextLink {...authOptionsLink} className={styles.link} />
+      {shouldDisplayFooterTerms && (
+        <TermsAndPrivacyLinks className="mt-4 text-center text-xs text-muted" />
+      )}
+      <TextLink {...authOptionsLink} className="mt-7" />
     </FirstScreenLayout>
   );
 };

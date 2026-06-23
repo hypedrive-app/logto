@@ -41,6 +41,7 @@ export enum LogtoOidcConfigKey {
 export enum SupportedSigningKeyAlgorithm {
   RSA = 'RSA',
   EC = 'EC',
+  EdDSA = 'EdDSA',
 }
 
 export const oidcConfigKeyGuard = z.object({
@@ -76,7 +77,6 @@ export type LogtoOidcConfigType = {
 export const logtoOidcConfigGuard: Readonly<{
   [key in LogtoOidcConfigKey]: ZodType<
     LogtoOidcConfigType[key],
-    z.ZodTypeDef,
     Optional<Nullable<LogtoOidcConfigType[key]>>
   >;
 }> = Object.freeze({

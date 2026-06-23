@@ -3,8 +3,8 @@ import ky, { HTTPError } from 'ky';
 import { logtoConsoleUrl, logtoUrl } from '#src/constants.js';
 
 const apps = [
-  { name: 'experience', app: ky.extend({ prefixUrl: new URL(logtoUrl) }) },
-  { name: 'console', app: ky.extend({ prefixUrl: new URL(logtoConsoleUrl) }) },
+  { name: 'experience', app: ky.extend({ prefix: new URL(logtoUrl) }) },
+  { name: 'console', app: ky.extend({ prefix: new URL(logtoConsoleUrl) }) },
 ];
 
 describe.each(apps)('single page app: %s', ({ app }) => {

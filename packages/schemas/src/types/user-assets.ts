@@ -43,6 +43,17 @@ export const uploadFileGuard = z.object({
   size: z.number(),
 });
 
+/**
+ * Build a guard for a multipart file field, normalizing the value to an array of files.
+ *
+ * `koa-body` v8 unwraps a single uploaded file to a bare object (only multi-file fields stay as
+ * arrays), so a plain `uploadFileGuard.array()` rejects single-file uploads. This wraps the value
+ * in an array first, then applies the given array guard so routes can keep treating the field as a
+ * list. Pass the `.min()`/`.max()`-chained `uploadFileGuard.array()` as `arrayGuard`.
+ */
+export const buildUploadFilesGuard = <T extends z.ZodType>(arrayGuard: T) =>
+  z.preprocess((value): unknown[] => (Array.isArray(value) ? value : [value]), arrayGuard);
+
 type MimeTypeToFileExtensionMappings = {
   [key in AllowedUploadMimeType]: readonly [string, ...string[]];
 };

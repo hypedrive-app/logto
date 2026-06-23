@@ -7,6 +7,7 @@ import { findUp } from 'find-up';
 import { mergeConfig, defineConfig, type Plugin, type UserConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
 import svgr from 'vite-plugin-svgr';
+import tailwindcss from '@tailwindcss/vite';
 
 import { defaultConfig } from '../../vite.shared.config';
 
@@ -21,15 +22,8 @@ const experienceAliasPlugin = (): Plugin => ({
   enforce: 'pre',
   transform(code, id) {
     const normalizedId = id.replaceAll('\\', '/');
-
-    if (!normalizedId.startsWith(experienceSrcPath) || !code.includes('@/')) {
-      return null;
-    }
-
-    return {
-      code: code.replaceAll(/(["'])@\//g, '$1@experience/'),
-      map: null,
-    };
+    if (!normalizedId.startsWith(experienceSrcPath) || !code.includes('@/')) return null;
+    return { code: code.replaceAll(/(["'])@\//g, '$1@experience/'), map: null };
   },
 });
 
@@ -37,27 +31,22 @@ const buildConfig = (mode: string): UserConfig => ({
   base: '/account',
   server: {
     port: 5004,
-    hmr: {
-      port: 6004,
-    },
-    fs: {
-      allow: ['..'],
+    hmr: { port: 6004 },
+    fs: { allow: ['..'] },
+    proxy: {
+      '/api': { target: 'http://localhost:3001', changeOrigin: true },
+      '/oidc': { target: 'http://localhost:3001', changeOrigin: true },
     },
   },
   resolve: {
     alias: [
-      {
-        find: /^@ac\//,
-        replacement: `${accountCenterSrcPath}/`,
-      },
-      {
-        find: /^@experience\//,
-        replacement: `${experienceSrcPath}/`,
-      },
+      { find: /^@ac\//, replacement: `${accountCenterSrcPath}/` },
+      { find: /^@experience\//, replacement: `${experienceSrcPath}/` },
     ],
   },
   plugins: [
     experienceAliasPlugin(),
+    tailwindcss(),
     react(),
     svgr(),
     viteCompression({ disable: mode === 'development' }),

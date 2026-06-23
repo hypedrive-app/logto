@@ -106,7 +106,7 @@ export const oidcConnectorConfigGuard = oauth2ConfigGuard.extend({
   trustUnverifiedEmail: z.boolean().optional().default(false),
   idTokenVerificationConfig: idTokenVerificationConfigGuard,
   authRequestOptionalConfig: authRequestOptionalConfigGuard.optional(),
-  customConfig: z.record(z.string()).optional(),
+  customConfig: z.record(z.string(), z.string()).optional(),
 });
 
 export type OidcConnectorConfig = z.infer<typeof oidcConnectorConfigGuard>;

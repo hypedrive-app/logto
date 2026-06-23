@@ -16,8 +16,6 @@ import Button from '@/shared/components/Button';
 import ErrorMessage from '@/shared/components/ErrorMessage';
 import type { IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 
-import styles from '../index.module.scss';
-
 type Props = {
   readonly className?: string;
   readonly identifier: SignInIdentifier;
@@ -87,7 +85,13 @@ const PasswordForm = ({
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -101,7 +105,7 @@ const PasswordForm = ({
 
       <PasswordInputField
         autoFocus={autoFocus}
-        className={styles.inputField}
+        className="mb-4"
         autoComplete="current-password"
         label={t('input.password')}
         isDanger={!!errors.password}
@@ -109,10 +113,16 @@ const PasswordForm = ({
         {...register('password', { required: t('error.password_required') })}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 mt-0">{errorMessage}</ErrorMessage>
+      )}
 
       {isForgotPasswordEnabled && (
-        <ForgotPasswordLink className={styles.link} identifier={identifier} value={value} />
+        <ForgotPasswordLink
+          className="mb-4 self-start w-auto mt-0"
+          identifier={identifier}
+          value={value}
+        />
       )}
 
       <CaptchaBox />
@@ -120,7 +130,7 @@ const PasswordForm = ({
 
       <SwitchToVerificationMethodsLink
         hasVerificationCode={identifier !== SignInIdentifier.Username && isVerificationCodeEnabled}
-        className={styles.switch}
+        className="mt-8 self-start w-auto"
         identifier={cond(identifier !== SignInIdentifier.Username && identifier)}
         value={value}
       />

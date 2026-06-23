@@ -12,4 +12,5 @@ export const createOrUpdateCustomPhrase = async (languageTag: string, translatio
   authedAdminApi.put(`custom-phrases/${languageTag}`, { json: translation }).json<CustomPhrase>();
 
 export const deleteCustomPhrase = async (languageTag: string) =>
-  authedAdminApi.delete(`custom-phrases/${languageTag}`).json();
+  // `DELETE` returns `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+  authedAdminApi.delete(`custom-phrases/${languageTag}`);

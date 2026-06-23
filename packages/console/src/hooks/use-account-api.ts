@@ -31,11 +31,13 @@ const useAccountApi = () => {
   const api = useMemo(
     () =>
       ky.create({
-        prefixUrl: getAccountApiPrefixUrl(),
+        // ky v2 renamed `prefixUrl` to `prefix`.
+        prefix: getAccountApiPrefixUrl(),
         timeout: requestTimeout,
         hooks: {
+          // ky v2: hooks receive a single state object.
           beforeRequest: [
-            async (request) => {
+            async ({ request }) => {
               if (isAuthenticated) {
                 const accessToken = await getAccessToken();
                 request.headers.set('Authorization', `Bearer ${accessToken ?? ''}`);

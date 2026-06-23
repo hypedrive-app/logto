@@ -11,8 +11,6 @@ import { layoutClassNames } from '@/utils/consts';
 
 import FirstScreenLayout from '../FirstScreenLayout';
 
-import styles from './index.module.scss';
-
 type ThirdPartyBranding = ConsentInfoResponse['application']['branding'];
 
 type Props = {
@@ -37,7 +35,7 @@ const LandingPageLayout = ({ children, title, titleInterpolation, thirdPartyBran
   return (
     <FirstScreenLayout pageMeta={{ titleKey: title, titleKeyInterpolation: titleInterpolation }}>
       <BrandingHeader
-        className={classNames(styles.header, layoutClassNames.brandingHeader)}
+        className={classNames('mobile:mt-3 mobile:pb-8 desktop:mb-7', layoutClassNames.brandingHeader)}
         headline={title}
         headlineInterpolation={titleInterpolation}
         logo={getBrandingLogoUrl({ theme, branding, isDarkModeEnabled })}

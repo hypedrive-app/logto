@@ -1,4 +1,4 @@
-import { assert, conditional } from '@silverhand/essentials';
+import { assert, conditional, trySafe } from '@silverhand/essentials';
 
 import {
   ConnectorError,
@@ -146,7 +146,12 @@ const getUserInfo =
       };
     } catch (error: unknown) {
       if (error instanceof HTTPError) {
-        const errorBody: unknown = await error.response.json();
+        // `ky` consumes the response body to populate `error.data`, so re-reading it via
+        // `response.json()` throws `Body is unusable: Body has already been read` on current
+        // runtimes. Use the pre-parsed body instead; when the response had no JSON content type
+        // `error.data` is the raw text, so parse it to match the previous `response.json()` behavior.
+        const errorBody: unknown =
+          typeof error.data === 'string' ? trySafe(() => JSON.parse(error.data as string)) : error.data;
         const parsedError = getUserInfoErrorGuard.safeParse(errorBody);
 
         if (!parsedError.success) {

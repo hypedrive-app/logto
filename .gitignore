@@ -18,6 +18,9 @@ node_modules
 # production
 /packages/**/build
 /packages/**/lib
+
+# Panda CSS — generated at build time, do not commit
+/packages/**/styled-system
 /packages/**/dist
 
 # logs
@@ -47,3 +50,6 @@ CLAUDE.md
 # console auto generated files
 /packages/console/src/consts/jwt-customizer-type-definition.ts
 packages/connectors/connector-whatsapp/test-send.mjs
+
+# Turborepo
+.turbo

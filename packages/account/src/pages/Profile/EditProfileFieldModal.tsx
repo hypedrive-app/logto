@@ -23,7 +23,6 @@ import {
   type EditableValue,
 } from './EditProfileFieldModal/utils';
 import { getValidationError } from './EditProfileFieldModal/validation';
-import styles from './EditProfileFieldModal.module.scss';
 import { getSelectOptionLabel } from './select-options';
 import type { ProfileFieldRow } from './types';
 
@@ -182,24 +181,33 @@ const EditProfileFieldModal = ({ field, userInfo, onClose, onUpdated }: Props) =
       shouldCloseOnEsc
       shouldCloseOnOverlayClick
       isOpen={Boolean(field)}
-      className={styles.modal}
-      overlayClassName={styles.overlay}
+      className="bg-elevated rounded-[16px] p-6 max-w-[600px] w-[calc(100%-2rem)] shadow-[var(--sh-xs)]"
+      overlayClassName="fixed inset-0 z-[100] flex items-center justify-center bg-[var(--color-bg-mask)]"
       onRequestClose={onClose}
     >
       {field && (
         <>
-          <div className={styles.header}>
-            <div className={styles.title}>{t('action.change', { method: field.label })}</div>
-            <button type="button" className={styles.closeButton} onClick={onClose}>
+          <div className="flex items-start gap-4 mb-6">
+            <div className="flex-1 text-lg font-semibold text-ink">
+              {t('action.change', { method: field.label })}
+            </div>
+            <button
+              type="button"
+              className="flex items-center justify-center w-6 h-6 p-0 border-none bg-none text-muted cursor-pointer"
+              onClick={onClose}
+            >
               <CloseIcon />
             </button>
           </div>
-          <div className={styles.content}>
+          <div className="flex flex-col gap-4 mb-6">
             {fields.map((editableField) => {
               const value = values[editableField.name] ?? editableField.value;
 
               return editableField.type === CustomProfileFieldType.Checkbox ? (
-                <label key={editableField.name} className={styles.checkboxField}>
+                <label
+                  key={editableField.name}
+                  className="flex items-center gap-2 text-sm text-ink cursor-pointer [&_input]:cursor-pointer"
+                >
                   <input
                     type="checkbox"
                     checked={Boolean(value)}
@@ -278,7 +286,7 @@ const EditProfileFieldModal = ({ field, userInfo, onClose, onUpdated }: Props) =
               );
             })}
           </div>
-          <div className={styles.footer}>
+          <div className="flex justify-end gap-3">
             <Button title="action.cancel" type="secondary" onClick={onClose} />
             <Button
               title="action.save"

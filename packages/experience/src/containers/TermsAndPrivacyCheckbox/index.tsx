@@ -7,8 +7,6 @@ import TermsLinks from '@/components/TermsLinks';
 import useTerms from '@/hooks/use-terms';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly className?: string;
 };
@@ -33,7 +31,10 @@ const TermsAndPrivacyCheckbox = ({ className }: Props) => {
       role="radio"
       aria-checked={termsAgreement}
       tabIndex={0}
-      className={classNames(styles.terms, className)}
+      className={classNames(
+        'flex items-center w-full select-none cursor-pointer mobile:py-1',
+        className
+      )}
       onClick={toggle}
       onKeyDown={onKeyDownHandler({
         Escape: () => {
@@ -46,10 +47,10 @@ const TermsAndPrivacyCheckbox = ({ className }: Props) => {
       <Checkbox
         name="termsAgreement"
         checked={termsAgreement}
-        className={styles.checkbox}
+        className="me-2 fill-muted cursor-pointer"
         size="small"
       />
-      <div className={styles.content}>
+      <div className="text-xs text-muted">
         <span>{prefix}</span>
         <TermsLinks inline termsOfUseUrl={termsOfUseUrl} privacyPolicyUrl={privacyPolicyUrl} />
       </div>

@@ -1,8 +1,6 @@
 import { useEffect, useState } from 'react';
 import ReactModal from 'react-modal';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly message: string;
   readonly duration?: number;
@@ -26,7 +24,9 @@ const Toast = ({ message, duration = 3000, callback }: Props) => {
     return () => {
       clearTimeout(timer);
     };
-  }, [callback, duration, message, text]);
+    // `text` is intentionally excluded: it's set inside this effect, so including it
+    // would re-run the effect and reset the dismiss timer once on every show.
+  }, [callback, duration, message]);
 
   return (
     <ReactModal
@@ -35,8 +35,8 @@ const Toast = ({ message, duration = 3000, callback }: Props) => {
       // eslint-disable-next-line jsx-a11y/aria-role
       role="toast"
       isOpen={Boolean(message)}
-      overlayClassName={styles.toastContainer}
-      className={styles.toast}
+      overlayClassName="fixed top-1/2 left-0 right-0 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none z-[var(--z-toast)]"
+      className="mx-auto py-2 px-4 max-w-[min(295px,calc(100vw-32px))] text-base text-white rounded-[13px] bg-[var(--color-bg-toast)] text-center break-words pointer-events-auto focus-visible:outline-none desktop:py-3 desktop:shadow-[var(--sh-float)]"
       closeTimeoutMS={300}
     >
       {text}

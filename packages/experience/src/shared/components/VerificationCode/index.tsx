@@ -3,7 +3,18 @@ import { useMemo, useRef, useCallback, useEffect } from 'react';
 
 import ErrorMessage from '@/shared/components/ErrorMessage';
 
-import styles from './index.module.scss';
+const passcodeClass =
+  'flex items-center gap-2.5 ' +
+  '[&_input]:w-11 [&_input]:h-[52px] [&_input]:rounded-[11px] [&_input]:border [&_input]:border-line-strong [&_input]:bg-elevated ' +
+  '[&_input]:text-center [&_input]:text-lg [&_input]:font-semibold [&_input]:text-ink [&_input]:[caret-color:var(--color-brand-default)] ' +
+  '[&_input]:[font-variant-numeric:tabular-nums] [&_input]:tracking-wide [&_input]:shadow-[var(--sh-input)] ' +
+  '[&_input:focus]:border-[var(--color-brand-default)] [&_input:focus]:outline-none ' +
+  '[&_input::placeholder]:text-muted ' +
+  'max-[420px]:gap-2 max-[420px]:[&_input]:w-10 max-[420px]:[&_input]:h-12 ' +
+  'desktop:[&_input]:text-lg desktop:[&_input]:outline desktop:[&_input]:outline-[3px] desktop:[&_input]:outline-transparent ' +
+  'desktop:[&_input]:transition-[background-color,outline-color,border-color] desktop:[&_input]:duration-100 desktop:[&_input]:ease-in-out motion-reduce:desktop:[&_input]:transition-none ' +
+  'desktop:[&_input:focus]:outline-[var(--color-overlay-brand-focused)] ' +
+  'desktop:[&_input:hover:not(:focus)]:bg-[var(--color-overlay-neutral-hover)]';
 
 export const defaultLength = 6;
 
@@ -191,7 +202,7 @@ const VerificationCode = ({
 
   return (
     <div className={className}>
-      <div className={styles.passcode}>
+      <div className={passcodeClass} role="group" aria-label="Verification code">
         {Array.from({ length }).map((_, index) => (
           <input
             ref={(element) => {
@@ -203,17 +214,25 @@ const VerificationCode = ({
             name={`${name}_${index}`}
             data-id={index}
             value={codes[index]}
-            type="number"
+            /**
+             * Use `text` + `inputMode="numeric"` rather than `type="number"`: it shows the
+             * numeric keypad, avoids browser spin buttons / scroll-to-change quirks, and
+             * preserves leading zeros. Non-digits are still rejected by `updateValue`.
+             */
+            type="text"
             inputMode="numeric"
             pattern="[0-9]*"
-            autoComplete="off"
+            maxLength={1}
+            // `one-time-code` on the first box lets iOS/Android offer SMS OTP autofill.
+            autoComplete={index === 0 ? 'one-time-code' : 'off'}
+            aria-label={`Digit ${index + 1}`}
             onPaste={onPasteHandler}
             onInput={onInputHandler}
             onKeyDown={onKeyDownHandler}
           />
         ))}
       </div>
-      {error && <ErrorMessage className={styles.errorMessage}>{error}</ErrorMessage>}
+      {error && <ErrorMessage className="ms-0.5 mt-1">{error}</ErrorMessage>}
     </div>
   );
 };

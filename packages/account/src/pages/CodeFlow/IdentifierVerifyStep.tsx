@@ -12,8 +12,6 @@ import useApi from '@ac/hooks/use-api';
 import useErrorHandler from '@ac/hooks/use-error-handler';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 
-import styles from './index.module.scss';
-
 const resendCooldownSeconds = 60;
 
 type Props = {
@@ -130,19 +128,19 @@ const IdentifierVerifyStep = ({
       descriptionProps={translation.descriptionProps}
       onBack={onBack}
     >
-      <div className={styles.container}>
+      <div className="flex flex-col gap-4 w-full max-w-[400px]">
         <VerificationCodeInput
           name={codeInputName}
-          className={styles.codeInput}
+          className="w-full"
           value={codeInput}
           error={errorMessage}
           onChange={(code) => {
             setCodeInput(code);
           }}
         />
-        <div className={styles.message}>
+        <div className="flex items-center min-h-5 text-sm text-muted">
           {countdown > 0 ? (
-            <Trans components={{ span: <span className={styles.highlight} /> }}>
+            <Trans components={{ span: <span className="ms-1 text-primary" /> }}>
               {t('account_center.code_verification.resend_countdown', { seconds: countdown })}
             </Trans>
           ) : (
@@ -150,7 +148,7 @@ const IdentifierVerifyStep = ({
               components={{
                 a: (
                   <button
-                    className={styles.resendButton}
+                    className="ms-1 p-0 bg-transparent border-none text-sm text-primary cursor-pointer disabled:cursor-not-allowed disabled:text-muted"
                     type="button"
                     disabled={loading}
                     onClick={() => {
@@ -167,7 +165,7 @@ const IdentifierVerifyStep = ({
         <Button
           title="action.continue"
           type="primary"
-          className={styles.submit}
+          className="self-start"
           isLoading={loading}
           onClick={() => {
             clearErrorMessage?.();
@@ -181,7 +179,7 @@ const IdentifierVerifyStep = ({
           }}
         />
         {onSwitchMethod && (
-          <SwitchVerificationMethodLink className={styles.switchMethod} onClick={onSwitchMethod} />
+          <SwitchVerificationMethodLink className="mt-2" onClick={onSwitchMethod} />
         )}
       </div>
     </SecondaryPageLayout>

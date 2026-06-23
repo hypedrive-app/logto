@@ -89,6 +89,20 @@ export const auditLogEventTitle = Object.freeze({
     'Verify forgot-password SMS verification code',
   'Interaction.SignIn.Verification.IdpInitiatedSso.Create':
     'Create IdP-initiated SAML SSO authentication session',
+  'Interaction.StepUp.Create': 'Create step-up authentication interaction',
+  'Interaction.StepUp.Submit': 'Complete step-up authentication (ACR elevated)',
+  'Interaction.StepUp.Verification.Totp.Submit': 'Step-up: Verify TOTP code',
+  'Interaction.StepUp.Verification.WebAuthn.Create': 'Step-up: Create WebAuthn authentication',
+  'Interaction.StepUp.Verification.WebAuthn.Submit': 'Step-up: Verify WebAuthn authentication',
+  'Interaction.StepUp.Verification.BackupCode.Submit': 'Step-up: Verify backup code',
+  'Interaction.StepUp.Verification.EmailVerificationCode.Create':
+    'Step-up: Send email verification code',
+  'Interaction.StepUp.Verification.EmailVerificationCode.Submit':
+    'Step-up: Verify email verification code',
+  'Interaction.StepUp.Verification.PhoneVerificationCode.Create':
+    'Step-up: Send SMS verification code',
+  'Interaction.StepUp.Verification.PhoneVerificationCode.Submit':
+    'Step-up: Verify SMS verification code',
   'JwtCustomizer.AccessToken': 'Get custom user access token claims',
   'JwtCustomizer.ClientCredentials': 'Get custom M2M access token claims',
   'SamlApplication.AuthnRequest': 'Receive SAML application authentication request',

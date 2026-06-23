@@ -102,6 +102,18 @@ export enum CustomClientMetadataKey {
    * When exceeded, old sessions should be revoked according to server policy.
    */
   MaxAllowedGrants = 'maxAllowedGrants',
+  /**
+   * Default ACR (Authentication Context Class Reference) values to request for this application.
+   *
+   * When set, Logto will automatically include these values in the effective `acr_values` for
+   * authorization requests originating from this app (unless the client explicitly overrides them).
+   *
+   * Use {@link LogtoAcrValues} for the supported values, e.g. `['urn:logto:acr:mfa']` to
+   * require MFA by default for all users of this application.
+   *
+   * @see {@link https://www.rfc-editor.org/rfc/rfc9470 | RFC 9470 Step-Up Authentication}
+   */
+  DefaultAcrValues = 'defaultAcrValues',
 }
 
 export const customClientMetadataGuard = z.object({
@@ -115,6 +127,7 @@ export const customClientMetadataGuard = z.object({
   [CustomClientMetadataKey.AllowTokenExchange]: z.boolean().optional(),
   [CustomClientMetadataKey.IsDeviceFlow]: z.boolean().optional(),
   [CustomClientMetadataKey.MaxAllowedGrants]: z.number().int().positive().optional(),
+  [CustomClientMetadataKey.DefaultAcrValues]: z.string().array().optional(),
 } satisfies Record<CustomClientMetadataKey, z.ZodType>);
 
 /**

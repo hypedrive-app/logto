@@ -130,7 +130,10 @@ export default function koaAppSecretTranspilation<StateT, ContextT, ResponseBody
         `${clientId}:${result.originalSecret}`
       ).toString('base64')}`;
     } else if (ctx.method === 'POST') {
-      ctx.request.body.client_secret = result.originalSecret;
+      // koa-body 8 types the parsed body as `unknown`; for a POST token request it is a parsed
+      // form/JSON object, so we narrow it to a mutable record to inject the rewritten secret.
+      // eslint-disable-next-line no-restricted-syntax
+      (ctx.request.body as Record<string, unknown>).client_secret = result.originalSecret;
     } else {
       ctx.query.client_secret = result.originalSecret;
     }

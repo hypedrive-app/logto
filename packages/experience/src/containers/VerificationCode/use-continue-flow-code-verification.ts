@@ -2,7 +2,7 @@ import type { VerificationCodeIdentifier } from '@logto/schemas';
 import { InteractionEvent, MfaFactor, VerificationType } from '@logto/schemas';
 import { useCallback, useContext, useMemo } from 'react';
 import { useLocation, useSearchParams } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import { updateProfileWithVerificationCode } from '@/apis/experience';
@@ -118,7 +118,7 @@ const useContinueFlowCodeVerification = (
 
   const onSubmit = useCallback(
     async (code: string) => {
-      const [, mfaFlowState] = validate(state, mfaFlowStateGuard);
+      const { data: mfaFlowState } = mfaFlowStateGuard.safeParse(state);
       // Check if this is an email MFA binding flow
       if (
         mfaFlowState?.availableFactors.includes(MfaFactor.EmailVerificationCode) &&

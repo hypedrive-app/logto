@@ -124,6 +124,9 @@ export default function Steps({ children: reactChildren }: Props) {
           React.cloneElement(component, {
             key: component.props.title,
             index,
+            // Step is a forwardRef component, so `ref` is valid at runtime; TS 5.9's
+            // stricter cloneElement overload doesn't surface it in the props position.
+            // @ts-expect-error -- ref is accepted by the underlying forwardRef(Step).
             ref: (element: HTMLDivElement) => {
               // eslint-disable-next-line @silverhand/fp/no-mutation
               stepReferences.current[index] = element;

@@ -15,6 +15,9 @@
       ],
       "@logto/shared/universal": [
         "../shared/src/universal.ts"
+      ],
+      "styled-system/*": [
+        "./styled-system/*"
       ]
     }
   }

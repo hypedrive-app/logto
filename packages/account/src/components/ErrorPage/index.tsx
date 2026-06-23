@@ -1,9 +1,7 @@
-import EmptyStateDark from '@experience/assets/icons/empty-state-dark.svg';
-import EmptyState from '@experience/assets/icons/empty-state.svg';
+import ErrorScene from '@experience/components/illustrations/ErrorScene';
 import Button from '@experience/shared/components/Button';
 import DynamicT from '@experience/shared/components/DynamicT';
 import PageMeta from '@experience/shared/components/PageMeta';
-import { Theme } from '@logto/schemas';
 import type { TFuncKey } from 'i18next';
 import type { AnchorHTMLAttributes } from 'react';
 import { useContext } from 'react';
@@ -11,12 +9,10 @@ import { Trans } from 'react-i18next';
 
 import PageContext from '@ac/Providers/PageContextProvider/PageContext';
 
-import styles from './index.module.scss';
-
 type SupportLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & { readonly text: string };
 
 const SupportLink = ({ text, ...rest }: SupportLinkProps) => (
-  <a {...rest} className={styles.supportLink}>
+  <a {...rest} className="text-primary no-underline hover:underline">
     {text}
   </a>
 );
@@ -46,9 +42,9 @@ const SupportInfo = () => {
   }
 
   return (
-    <div className={styles.support}>
+    <div className="mt-2 grid gap-1 justify-items-center">
       {supportEmail && (
-        <div className={styles.supportItem}>
+        <div className="text-sm text-muted">
           <Trans
             i18nKey="description.support_email"
             components={{
@@ -58,7 +54,7 @@ const SupportInfo = () => {
         </div>
       )}
       {supportWebsiteUrl && (
-        <div className={styles.supportItem}>
+        <div className="text-sm text-muted">
           <Trans
             i18nKey="description.support_website"
             components={{
@@ -85,23 +81,25 @@ const ErrorPage = ({
   illustration,
   action,
 }: Props) => {
-  const { theme } = useContext(PageContext);
   const message = rawMessage ?? (messageKey ? <DynamicT forKey={messageKey} /> : undefined);
-  const resolvedIllustration =
-    illustration ?? (theme === Theme.Light ? EmptyState : EmptyStateDark);
 
   return (
-    <div className={styles.errorPage}>
+    <div className="flex flex-col items-center justify-center gap-4 text-center flex-1">
       <PageMeta titleKey={titleKey} />
-      <div className={styles.illustration}>
-        <img src={resolvedIllustration} alt="" role="presentation" />
-      </div>
-      <div className={styles.title}>
+      {/* A caller may pass a custom illustration URL; otherwise use the animated ErrorScene. */}
+      {illustration ? (
+        <div className="w-[194px] max-w-full self-center [&>img]:w-full [&>img]:h-auto">
+          <img src={illustration} alt="" role="presentation" />
+        </div>
+      ) : (
+        <ErrorScene />
+      )}
+      <div className="text-xl font-semibold text-ink">
         <DynamicT forKey={titleKey} />
       </div>
-      {message && <div className={styles.message}>{message}</div>}
+      {message && <div className="text-sm text-muted">{message}</div>}
       {action && (
-        <Button className={styles.action} title={action.titleKey} onClick={action.onClick} />
+        <Button className="self-center" title={action.titleKey} onClick={action.onClick} />
       )}
       <SupportInfo />
     </div>

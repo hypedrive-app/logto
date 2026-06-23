@@ -63,7 +63,7 @@ describe('identifier verification', () => {
     ),
   };
 
-  const interactionStorage = { event: InteractionEvent.SignIn };
+  const interactionStorage = { event: InteractionEvent.SignIn as const };
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -222,7 +222,7 @@ describe('identifier verification', () => {
 
   it('verified social email', async () => {
     const interactionRecord: AnonymousInteractionResult = {
-      event: InteractionEvent.SignIn,
+      event: InteractionEvent.SignIn as const,
       identifiers: [
         {
           key: 'social',
@@ -260,7 +260,7 @@ describe('identifier verification', () => {
 
   it('verified social email should throw if social identity not found', async () => {
     const interactionRecord: AnonymousInteractionResult = {
-      event: InteractionEvent.SignIn,
+      event: InteractionEvent.SignIn as const,
       identifiers: [
         {
           key: 'social',

@@ -41,8 +41,8 @@ const consentInfo: ConsentInfoResponse = {
   redirectUri: 'https://example.com/callback',
 };
 
-const createHttpError = (body: RequestErrorBody) =>
-  new HTTPError(
+const createHttpError = (body: RequestErrorBody) => {
+  const error = new HTTPError(
     {
       status: 400,
       statusText: 'Bad Request',
@@ -54,6 +54,11 @@ const createHttpError = (body: RequestErrorBody) =>
     {} as Request,
     {} as ConstructorParameters<typeof HTTPError>[2]
   );
+  // ky v2 exposes the pre-parsed body on error.data (the production code reads this).
+  // eslint-disable-next-line @silverhand/fp/no-mutation
+  error.data = body;
+  return error;
+};
 
 const accessDeniedError = () =>
   createHttpError({

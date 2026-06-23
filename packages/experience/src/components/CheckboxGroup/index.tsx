@@ -3,8 +3,6 @@ import classNames from 'classnames';
 
 import Checkbox from '../Checkbox';
 
-import styles from './index.module.scss';
-
 export type Option<T> = {
   title?: string;
   value: T;
@@ -37,7 +35,7 @@ const CheckboxGroup = <T extends string>({
 
   return (
     <>
-      <div className={classNames(styles.group, className)}>
+      <div className={classNames('flex flex-col gap-3', className)}>
         {options.map(({ title, value }) => (
           <Checkbox
             key={value}
@@ -49,8 +47,8 @@ const CheckboxGroup = <T extends string>({
           />
         ))}
       </div>
-      {description && <div className={styles.description}>{description}</div>}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+      {description && <div className="text-sm text-muted pt-1 ms-0.5">{description}</div>}
+      {errorMessage && <div className="mt-1 ms-0.5">{errorMessage}</div>}
     </>
   );
 };

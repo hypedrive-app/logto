@@ -26,9 +26,14 @@ const loadOidcValues = async (issuer: string, configs: LogtoOidcConfigType) => {
   const localJWKSet = createLocalJWKSet({ keys: publicJwks });
   const currentPrivateJwk = await exportJWK(currentPrivateKey);
 
-  // Use ES384 if it's an Elliptic Curve key, otherwise fall back to default
-  // It's for backwards compatibility since we were using RSA keys before v1.0.0-beta.20
-  const jwkSigningAlg = conditional(currentPrivateJwk.kty === 'EC' && 'ES384');
+  // Pick the JWA that matches the current signing key's type. Leaving it `undefined` lets
+  // `oidc-provider` fall back to its `RS256` default, which is only correct for RSA keys — hence the
+  // explicit mapping for EC (`ES384`) and Ed25519/OKP (`EdDSA`). Getting this wrong signs tokens with
+  // an algorithm that doesn't match the key, so verification fails.
+  // RSA intentionally stays `undefined` for backwards compatibility — we used RSA before v1.0.0-beta.20.
+  const jwkSigningAlg =
+    conditional(currentPrivateJwk.kty === 'EC' && 'ES384') ??
+    conditional(currentPrivateJwk.kty === 'OKP' && 'EdDSA');
 
   return Object.freeze({
     cookieKeys,

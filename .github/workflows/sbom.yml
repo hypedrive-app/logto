@@ -1,0 +1,32 @@
+name: SBOM
+
+# Generate a CycloneDX Software Bill of Materials (SBOM) for each tagged release and attach it as a
+# build artifact. Useful for downstream vulnerability management and enterprise procurement.
+
+on:
+  push:
+    tags:
+      - '**'
+  workflow_dispatch:
+
+jobs:
+  sbom:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: silverhand-io/actions-node-pnpm-run-steps@v5
+        with:
+          pnpm-version: 11
+          node-version: ^24.0.0
+
+      - name: Generate CycloneDX SBOM
+        run: pnpm dlx @cyclonedx/cyclonedx-npm@^4 --output-format JSON --output-file sbom.cdx.json
+
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: sbom.cdx.json
+          if-no-files-found: error

@@ -2,8 +2,6 @@ import classNames from 'classnames';
 import { cloneElement, isValidElement, type ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly children: ReactElement<HTMLElement>;
 };
@@ -31,7 +29,7 @@ function FlipOnRtl({ children }: Props) {
   }
 
   return cloneElement(children, {
-    className: classNames(children.props.className, isRtl && styles.flip),
+    className: classNames(children.props.className, isRtl && '-scale-x-100'),
   });
 }
 

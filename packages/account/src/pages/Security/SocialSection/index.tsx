@@ -21,8 +21,6 @@ import {
   getLocalizedConnectorName,
 } from '@ac/utils/social-connector';
 
-import styles from './index.module.scss';
-
 type SocialIdentityDetails = Partial<{
   name: string;
   email: string;
@@ -188,19 +186,38 @@ const SocialSection = () => {
 
   return (
     <>
-      <div className={classNames(styles.section, layoutClassNames.section)}>
-        <div className={classNames(styles.sectionTitle, layoutClassNames.sectionTitle)}>
+      <div className={classNames('flex flex-col gap-1.5', layoutClassNames.section)}>
+        <div
+          className={classNames(
+            'ps-1 text-sm font-medium text-ink mobile:ps-0',
+            layoutClassNames.sectionTitle
+          )}
+        >
           {t('account_center.security.social_sign_in')}
         </div>
-        <div className={classNames(styles.card, layoutClassNames.card)}>
+        <div
+          className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+        >
           {items.map(({ connector, connectorName, identity }) => {
             const profile = identity && getDisplayProfile(identity, connectorName);
 
             return (
-              <div key={connector.id} className={classNames(styles.row, layoutClassNames.row)}>
-                <div className={styles.connectorInfo}>
+              <div
+                key={connector.id}
+                className={classNames(
+                  'grid items-center not-last:border-b not-last:border-line',
+                  // Wide desktop: three columns.
+                  'desktop:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] desktop:[grid-auto-flow:dense] desktop:gap-x-4 desktop:px-6 desktop:py-[18px] desktop:min-h-[76px]',
+                  // Mobile: stacked two-column grid.
+                  'mobile:grid-cols-[minmax(0,1fr)_auto] mobile:min-h-0 mobile:gap-x-3 mobile:gap-y-2 mobile:p-4',
+                  // Narrow desktop (<=800px): same stacked layout as mobile.
+                  'desktop:max-[800px]:grid-cols-[minmax(0,1fr)_auto] desktop:max-[800px]:[grid-auto-flow:row] desktop:max-[800px]:gap-x-3 desktop:max-[800px]:gap-y-2 desktop:max-[800px]:p-4 desktop:max-[800px]:min-h-0',
+                  layoutClassNames.row
+                )}
+              >
+                <div className="flex items-center gap-4 min-w-0 desktop:col-start-1 desktop:max-[800px]:contents mobile:contents">
                   <img
-                    className={styles.connectorLogo}
+                    className="w-5 h-5 rounded-[8px] shrink-0 desktop:max-[800px]:col-start-1 desktop:max-[800px]:row-start-1 mobile:col-start-1 mobile:row-start-1"
                     src={getLogoUrl({
                       theme,
                       logoUrl: connector.logo,
@@ -209,38 +226,44 @@ const SocialSection = () => {
                     })}
                     alt={connectorName}
                   />
-                  <div className={styles.connectorName}>{connectorName}</div>
+                  <div className="min-w-0 text-sm font-medium text-ink overflow-hidden text-ellipsis whitespace-nowrap desktop:max-[800px]:col-span-full desktop:max-[800px]:row-start-2 desktop:max-[800px]:w-full desktop:max-[800px]:whitespace-normal desktop:max-[800px]:break-words desktop:max-[800px]:[overflow-wrap:anywhere] mobile:col-span-full mobile:row-start-2 mobile:w-full mobile:whitespace-normal mobile:break-words mobile:[overflow-wrap:anywhere]">
+                    {connectorName}
+                  </div>
                 </div>
-                <div className={styles.identityInfo}>
+                <div className="flex items-center gap-3 min-w-0 desktop:col-start-2 desktop:max-[800px]:col-span-full desktop:max-[800px]:row-start-3 desktop:max-[800px]:w-full desktop:max-[800px]:items-start mobile:col-span-full mobile:row-start-3 mobile:w-full mobile:items-start">
                   {profile ? (
                     <>
                       {profile.avatar && (
                         <img
-                          className={styles.avatar}
+                          className="w-8 h-8 rounded-full object-cover shrink-0"
                           src={profile.avatar}
                           alt={profile.primaryText}
                         />
                       )}
-                      <div className={styles.textGroup}>
-                        <div className={styles.primaryText}>{profile.primaryText}</div>
+                      <div className="min-w-0 flex-1">
+                        <div className="text-sm text-ink mobile:break-words mobile:[overflow-wrap:anywhere]">
+                          {profile.primaryText}
+                        </div>
                         {profile.secondaryText && (
-                          <div className={styles.secondaryText}>{profile.secondaryText}</div>
+                          <div className="mt-0.5 text-xs text-muted mobile:break-words mobile:[overflow-wrap:anywhere]">
+                            {profile.secondaryText}
+                          </div>
                         )}
                       </div>
                     </>
                   ) : (
-                    <div className={styles.notLinked}>
+                    <div className="min-w-0 text-sm text-muted mobile:w-full mobile:break-words mobile:[overflow-wrap:anywhere]">
                       {t('account_center.security.social_not_linked')}
                     </div>
                   )}
                 </div>
                 {socialControl === AccountCenterControlValue.Edit && (
-                  <div className={styles.actions}>
+                  <div className="flex items-center gap-4 shrink-0 desktop:col-start-3 desktop:max-[800px]:col-start-2 desktop:max-[800px]:row-start-1 desktop:max-[800px]:justify-self-end desktop:max-[800px]:justify-end mobile:col-start-2 mobile:row-start-1 mobile:justify-self-end mobile:justify-end">
                     {identity ? (
                       <>
                         <button
                           type="button"
-                          className={styles.actionButton}
+                          className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                           onClick={() => {
                             setPendingReturn(getPendingReturn() ?? currentPageUrl);
                             navigate(getSocialChangeRoute(connector.id));
@@ -250,7 +273,7 @@ const SocialSection = () => {
                         </button>
                         <button
                           type="button"
-                          className={`${styles.actionButton} ${styles.removeButton}`}
+                          className="text-sm font-medium text-danger cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                           onClick={() => {
                             setSelectedConnectorId(connector.id);
                           }}
@@ -261,7 +284,7 @@ const SocialSection = () => {
                     ) : (
                       <button
                         type="button"
-                        className={styles.actionButton}
+                        className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                         onClick={() => {
                           setPendingReturn(getPendingReturn() ?? currentPageUrl);
                           navigate(getSocialAddRoute(connector.id));

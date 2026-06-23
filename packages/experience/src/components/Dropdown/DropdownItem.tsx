@@ -4,7 +4,13 @@ import { forwardRef } from 'react';
 
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 
-import styles from './DropdownItem.module.scss';
+const itemClass =
+  'p-2 rounded-[11px] text-sm cursor-pointer flex items-center overflow-hidden gap-4 border border-transparent overlay-hover focus-visible:border-primary focus-visible:outline-none';
+
+const typeClass = {
+  default: '',
+  danger: 'text-danger',
+} as const;
 
 export type Props = {
   readonly className?: string;
@@ -30,7 +36,7 @@ const DropdownItem = (
 ) => (
   <div
     ref={ref}
-    className={classNames(styles.item, styles[type], className)}
+    className={classNames(itemClass, typeClass[type], className)}
     role="menuitem"
     tabIndex={0}
     onMouseDown={(event) => {
@@ -51,7 +57,7 @@ const DropdownItem = (
     }}
     onClick={onClick}
   >
-    {icon && <span className={classNames(styles.icon, iconClassName)}>{icon}</span>}
+    {icon && <span className={classNames('flex items-center', iconClassName)}>{icon}</span>}
     {children}
   </div>
 );

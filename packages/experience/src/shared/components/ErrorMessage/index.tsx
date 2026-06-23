@@ -3,8 +3,6 @@ import type { TFuncKey } from 'i18next';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import styles from './index.module.scss';
-
 type RemovePrefix<T extends string, Prefix extends T> = T extends `${Prefix}${string}` ? never : T;
 
 /**
@@ -38,7 +36,7 @@ const ErrorMessage = ({ error, className, children }: Props) => {
   };
 
   return (
-    <div role="alert" className={classNames(styles.error, className)}>
+    <div role="alert" className={classNames('text-sm text-danger [&_ul]:ps-4', className)}>
       {getMessage()}
     </div>
   );

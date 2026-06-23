@@ -1,7 +1,7 @@
 import Ring from '@/assets/icons/loading-ring.svg?react';
 
-import RotatingRingIconStyles from './RotatingRingIcon.module.scss';
-
-const RotatingRingIcon = () => <Ring className={RotatingRingIconStyles.icon} />;
+const RotatingRingIcon = () => (
+  <Ring className="animate-[rotating_1s_linear_infinite] motion-reduce:[animation-duration:2.4s]" />
+);
 
 export default RotatingRingIcon;

@@ -46,43 +46,55 @@ export const getDefaultCountryCode = (): CountryCode => {
 export const getDefaultCountryCallingCode = () => getCountryCallingCode(getDefaultCountryCode());
 
 /**
+ * Resolve the human-readable, localized country name for a country code using the
+ * platform `Intl.DisplayNames` API (built into every modern browser, no extra deps,
+ * automatically translated to the active locale). Falls back to the raw code if the
+ * API is unavailable or the region is unknown.
+ */
+export const getCountryName = (countryCode: CountryCode): string => {
+  try {
+    const displayNames = new Intl.DisplayNames([i18next.language], { type: 'region' });
+
+    return displayNames.of(countryCode) ?? countryCode;
+  } catch {
+    return countryCode;
+  }
+};
+
+/**
  * Provide Country Code Options
  */
 export type CountryMetaData = {
   countryCode: CountryCode;
   countryCallingCode: CountryCallingCode;
+  /** Localized, human-readable country name (e.g. "India"). */
+  countryName: string;
 };
+
+const buildCountryMetaData = (countryCode: CountryCode): CountryMetaData => ({
+  countryCode,
+  countryCallingCode: getCountryCallingCode(countryCode),
+  countryName: getCountryName(countryCode),
+});
 
 export const getCountryList = (): CountryMetaData[] => {
   const defaultCountryCode = getDefaultCountryCode();
-  const defaultCountryCallingCode = getCountryCallingCode(defaultCountryCode);
 
   const countryList = getCountries()
-    .map((code) => ({
-      countryCode: code,
-      countryCallingCode: getCountryCallingCode(code),
-    }))
-    // Filter the detected default countryCode & duplicates
-    .filter(({ countryCallingCode }, index, self) => {
-      if (countryCallingCode === defaultCountryCallingCode) {
-        return false;
-      }
+    .filter((code) => code !== defaultCountryCode)
+    .map((code) => buildCountryMetaData(code))
+    /**
+     * Sort alphabetically by localized country name so the list reads naturally.
+     * Note: we intentionally keep every country (no calling-code dedupe) so that
+     * regions sharing a calling code — e.g. US/Canada on +1 — are both selectable,
+     * distinguished by name and flag.
+     */
+    .sort((previous, next) =>
+      previous.countryName.localeCompare(next.countryName, i18next.language)
+    );
 
-      return (
-        self.findIndex((element) => element.countryCallingCode === countryCallingCode) === index
-      );
-    })
-    .slice()
-    // Sort by countryCallingCode
-    .sort((previous, next) => (next.countryCallingCode > previous.countryCallingCode ? -1 : 1));
-
-  return [
-    {
-      countryCode: defaultCountryCode,
-      countryCallingCode: defaultCountryCallingCode,
-    },
-    ...countryList,
-  ];
+  // Pin the detected/default country to the top for quick access.
+  return [buildCountryMetaData(defaultCountryCode), ...countryList];
 };
 
 export const formatPhoneNumberWithCountryCallingCode = (number: string) => {

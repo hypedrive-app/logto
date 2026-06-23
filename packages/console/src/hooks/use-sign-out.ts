@@ -7,7 +7,9 @@ import { useCallback } from 'react';
  *
  * Unless you have special needs, you should always use this hook instead of `useLogto` directly.
  */
-const useSignOut = () => {
+// Explicit return type: the inferred `signOut` type is not portable without referencing
+// `@silverhand/essentials` internals (TS2742).
+const useSignOut = (): { signOut: ReturnType<typeof useLogto>['signOut'] } => {
   const { signOut: logtoSignOut } = useLogto();
   const postHog = usePostHog();
 

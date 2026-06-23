@@ -5,23 +5,21 @@ import {
   translationGuard,
   customContentGuard,
 } from '@logto/schemas';
-import {
-  string,
-  boolean,
-  number,
-  object,
-  nativeEnum,
-  unknown,
-  literal,
-  union,
-  preprocess,
-} from 'zod';
+import { string, boolean, number, object, nativeEnum, unknown, literal, union, preprocess } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 
-import type { ZodStringCheck } from './zod.js';
 import { zodTypeToSwagger } from './zod.js';
 
+/**
+ * Note: `zodTypeToSwagger` is built on Zod 4's native `z.toJSONSchema` (target `openapi-3.0`).
+ * Compared to the previous hand-rolled converter, the output is more standards-correct:
+ * - string formats also emit a `pattern` (e.g. `email`, `uuid`), and `url` maps to the
+ *   OpenAPI-standard `uri` format;
+ * - literals use `enum: [value]` instead of a non-standard `format` string;
+ * - unions use `anyOf` instead of `oneOf`;
+ * - only non-Zod input throws (representable-as-`any` nodes no longer error).
+ */
 describe('zodTypeToSwagger', () => {
   it('arbitrary object guard', () => {
     expect(zodTypeToSwagger(jsonObjectGuard)).toEqual({
@@ -47,13 +45,6 @@ describe('zodTypeToSwagger', () => {
   describe('string type', () => {
     const notStartingWithDigitRegex = /^\D/;
 
-    it('nonempty check', () => {
-      expect(zodTypeToSwagger(string().min(1))).toEqual({
-        type: 'string',
-        minLength: 1,
-      });
-    });
-
     it('min check', () => {
       expect(zodTypeToSwagger(string().min(1))).toEqual({
         type: 'string',
@@ -71,47 +62,33 @@ describe('zodTypeToSwagger', () => {
     it('regex check', () => {
       expect(zodTypeToSwagger(string().regex(notStartingWithDigitRegex))).toEqual({
         type: 'string',
-        format: 'regex',
-        pattern: notStartingWithDigitRegex.toString(),
+        pattern: notStartingWithDigitRegex.source,
       });
     });
 
-    it('other kinds check', () => {
-      expect(zodTypeToSwagger(string().email())).toEqual({
+    it('format checks', () => {
+      expect(zodTypeToSwagger(string().email())).toMatchObject({
         type: 'string',
         format: 'email',
       });
-      expect(zodTypeToSwagger(string().url())).toEqual({
+      // `url` maps to the OpenAPI-standard `uri` format.
+      expect(zodTypeToSwagger(string().url())).toMatchObject({
         type: 'string',
-        format: 'url',
+        format: 'uri',
       });
-      expect(zodTypeToSwagger(string().uuid())).toEqual({
+      expect(zodTypeToSwagger(string().uuid())).toMatchObject({
         type: 'string',
         format: 'uuid',
       });
-      expect(zodTypeToSwagger(string().cuid())).toEqual({
-        type: 'string',
-        format: 'cuid',
-      });
     });
 
-    it('combination check', () => {
-      expect(
-        zodTypeToSwagger(string().min(1).max(128).email().uuid().regex(notStartingWithDigitRegex))
-      ).toEqual({
+    it('length constraints combine with formats', () => {
+      expect(zodTypeToSwagger(string().min(1).max(128).email())).toMatchObject({
         type: 'string',
-        format: 'email | uuid | regex',
         minLength: 1,
         maxLength: 128,
-        pattern: notStartingWithDigitRegex.toString(),
+        format: 'email',
       });
-    });
-
-    it('unexpected check', () => {
-      const unexpectedCheck = { kind: 'unexpected' };
-      expect(() =>
-        zodTypeToSwagger(string()._addCheck(unexpectedCheck as ZodStringCheck))
-      ).toMatchError(new RequestError('swagger.invalid_zod_type', unexpectedCheck));
     });
   });
 
@@ -155,12 +132,8 @@ describe('zodTypeToSwagger', () => {
     expect(zodTypeToSwagger(preprocess(String, string()))).toEqual({ type: 'string' });
   });
 
-  it('refinement type', () => {
-    expect(zodTypeToSwagger(string().refine(() => true))).toEqual({
-      type: 'object',
-      description: 'Validator function',
-      additionalProperties: true,
-    });
+  it('refinement type unwraps to the base schema', () => {
+    expect(zodTypeToSwagger(string().refine(() => true))).toEqual({ type: 'string' });
   });
 
   it('nullable type', () => {
@@ -171,67 +144,49 @@ describe('zodTypeToSwagger', () => {
     it('boolean', () => {
       expect(zodTypeToSwagger(literal(true))).toEqual({
         type: 'boolean',
-        format: 'true',
+        enum: [true],
       });
       expect(zodTypeToSwagger(literal(false))).toEqual({
         type: 'boolean',
-        format: 'false',
+        enum: [false],
       });
     });
 
     it('number', () => {
       expect(zodTypeToSwagger(literal(-1.25))).toEqual({
         type: 'number',
-        format: '-1.25',
+        enum: [-1.25],
       });
       expect(zodTypeToSwagger(literal(999))).toEqual({
         type: 'number',
-        format: '999',
+        enum: [999],
       });
     });
 
     it('string', () => {
       expect(zodTypeToSwagger(literal(''))).toEqual({
         type: 'string',
-        format: 'empty',
+        enum: [''],
       });
       expect(zodTypeToSwagger(literal('nonempty'))).toEqual({
         type: 'string',
-        format: '"nonempty"',
+        enum: ['nonempty'],
       });
-    });
-
-    it('unexpected', () => {
-      const bigIntLiteral = literal(BigInt(1_000_000_000));
-      expect(() => zodTypeToSwagger(bigIntLiteral)).toMatchError(
-        new RequestError('swagger.invalid_zod_type', bigIntLiteral)
-      );
-
-      // eslint-disable-next-line unicorn/no-useless-undefined
-      const undefinedLiteral = literal(undefined);
-      expect(() => zodTypeToSwagger(undefinedLiteral)).toMatchError(
-        new RequestError('swagger.invalid_zod_type', undefinedLiteral)
-      );
-
-      const nullLiteral = literal(null);
-      expect(() => zodTypeToSwagger(nullLiteral)).toMatchError(
-        new RequestError('swagger.invalid_zod_type', nullLiteral)
-      );
     });
   });
 
   it('unknown type', () => {
-    expect(zodTypeToSwagger(unknown())).toEqual({ example: {} });
+    expect(zodTypeToSwagger(unknown())).toEqual({});
   });
 
   it('union type', () => {
     expect(zodTypeToSwagger(number().or(boolean()))).toEqual({
-      oneOf: [{ type: 'number' }, { type: 'boolean' }],
+      anyOf: [{ type: 'number' }, { type: 'boolean' }],
     });
     expect(zodTypeToSwagger(union([literal('Logto'), literal(true)]))).toEqual({
-      oneOf: [
-        { type: 'string', format: '"Logto"' },
-        { type: 'boolean', format: 'true' },
+      anyOf: [
+        { type: 'string', enum: ['Logto'] },
+        { type: 'boolean', enum: [true] },
       ],
     });
   });
@@ -243,7 +198,7 @@ describe('zodTypeToSwagger', () => {
     });
   });
 
-  it('unexpected type', () => {
+  it('unexpected (non-Zod) type', () => {
     expect(() => zodTypeToSwagger('test')).toMatchError(
       new RequestError('swagger.invalid_zod_type', 'test')
     );

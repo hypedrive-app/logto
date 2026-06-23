@@ -10,8 +10,14 @@
  * The experience APIs can be used by developers to build custom user interaction experiences.
  */
 
-import { identificationApiPayloadGuard, InteractionEvent } from '@logto/schemas';
+import {
+  identificationApiPayloadGuard,
+  InteractionEvent,
+  type LogtoAcrValue,
+  LogtoAcrValues,
+} from '@logto/schemas';
 import type Router from 'koa-router';
+import { type Provider } from 'oidc-provider';
 import { z } from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
@@ -44,6 +50,29 @@ import webAuthnVerificationRoute from './verification-routes/web-authn-verificat
 
 type RouterContext<T> = T extends Router<unknown, infer Context> ? Context : never;
 
+const knownAcrValues = new Set<string>(Object.values(LogtoAcrValues));
+
+/**
+ * Resolve the step-up ACR for an interaction from the stored OIDC `acr_values` param.
+ *
+ * `acr_values` is space-separated per the OIDC spec; we return the highest-priority value that this
+ * AS actually supports (mirroring the resolution in `oidc/init.ts` `interactions.url`). Returns
+ * `undefined` when no supported ACR is present, so the caller falls through to the normal sign-in flow.
+ */
+const isLogtoAcrValue = (value: string): value is LogtoAcrValue => knownAcrValues.has(value);
+
+const resolveStepUpAcr = (
+  interactionDetails: Awaited<ReturnType<Provider['interactionDetails']>>
+): LogtoAcrValue | undefined => {
+  const rawAcrValues = interactionDetails.params.acr_values;
+
+  if (typeof rawAcrValues !== 'string' || !rawAcrValues) {
+    return undefined;
+  }
+
+  return rawAcrValues.split(' ').find((value) => isLogtoAcrValue(value));
+};
+
 export default function experienceApiRoutes<T extends AnonymousRouter>(
   ...[anonymousRouter, tenant]: RouterInitArgs<T>
 ) {
@@ -71,11 +100,32 @@ export default function experienceApiRoutes<T extends AnonymousRouter>(
     }),
     async (ctx, next) => {
       const { interactionEvent, captchaToken } = ctx.guard.body;
-      const { createLog } = ctx;
-
-      createLog(`Interaction.${interactionEvent}.Create`);
+      const { createLog, interactionDetails } = ctx;
 
       const experienceInteraction = new ExperienceInteraction(ctx, tenant, interactionEvent);
+
+      /**
+       * Step-up detection: when the OIDC authorization request carried `acr_values` (or the client's
+       * `defaultAcrValues`) and the session already has an authenticated account, bootstrap this
+       * interaction as a step-up flow so the experience app can skip the identifier/password step.
+       *
+       * Note: we resolve the ACR from the stored OIDC `acr_values` here rather than the `step_up_acr`
+       * extra param. `step_up_acr` is injected by `interactions.url` into the *redirect URL* for the
+       * front-end to read, but it is NOT persisted into the interaction's stored `params` — those
+       * retain the original `acr_values`. Reading `step_up_acr` here would therefore never match.
+       */
+      if (interactionEvent === InteractionEvent.SignIn) {
+        const sessionAccountId = interactionDetails.session?.accountId;
+        const resolvedAcr = resolveStepUpAcr(interactionDetails);
+
+        if (resolvedAcr && sessionAccountId) {
+          experienceInteraction.initStepUp(sessionAccountId, resolvedAcr);
+        }
+      }
+
+      // Log AFTER step-up detection so the audit entry reflects the actual event
+      // (StepUp rather than SignIn when the interaction was promoted).
+      createLog(`Interaction.${experienceInteraction.interactionEvent}.Create`);
 
       // Verify the captcha if provided, this is optional,
       // whether the captcha is required is determined and guarded when submitting the interaction.

@@ -61,7 +61,7 @@ export const identityGuard = z.object({
   userId: z.string(),
   details: jsonObjectGuard.optional(), // Connector's userinfo details, schemaless
 });
-export const identitiesGuard = z.record(identityGuard);
+export const identitiesGuard = z.record(z.string(), identityGuard);
 
 export type Identity = z.infer<typeof identityGuard>;
 export type Identities = z.infer<typeof identitiesGuard>;

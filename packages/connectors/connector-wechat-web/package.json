@@ -5,10 +5,10 @@
   "author": "Silverhand Inc. <contact@silverhand.io>",
   "dependencies": {
     "@logto/connector-kit": "workspace:^",
-    "@silverhand/essentials": "^2.9.1",
+    "@silverhand/essentials": "^2.9.3",
     "got": "^14.0.0",
     "snakecase-keys": "^8.0.1",
-    "zod": "3.24.3"
+    "zod": "catalog:"
   },
   "main": "./lib/index.js",
   "module": "./lib/index.js",
@@ -33,7 +33,7 @@
     "prepublishOnly": "pnpm build"
   },
   "engines": {
-    "node": "^22.14.0"
+    "node": "^22.14.0 || ^24.0.0"
   },
   "eslintConfig": {
     "extends": "@silverhand",
@@ -54,16 +54,16 @@
   "devDependencies": {
     "@silverhand/eslint-config": "6.0.1",
     "@silverhand/ts-config": "6.0.0",
-    "@types/node": "^22.14.0",
+    "@types/node": "^24.0.0",
     "@types/supertest": "^6.0.2",
-    "@vitest/coverage-v8": "^4.1.8",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.0.2",
-    "nock": "^14.0.3",
-    "prettier": "^3.5.3",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "lint-staged": "catalog:",
+    "nock": "catalog:",
+    "prettier": "catalog:",
     "supertest": "^7.0.0",
     "tsup": "^8.5.1",
-    "typescript": "^5.5.3",
-    "vitest": "^4.1.8"
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   }
 }

@@ -128,7 +128,10 @@ export class SignInExperienceValidator {
   }
 
   public async guardIdentificationMethod(
-    event: InteractionEvent.ForgotPassword | InteractionEvent.SignIn,
+    event:
+      | InteractionEvent.ForgotPassword
+      | InteractionEvent.SignIn
+      | InteractionEvent.StepUp,
     verificationRecord: VerificationRecord
   ) {
     const hasVerifiedOneTimeToken =
@@ -141,6 +144,8 @@ export class SignInExperienceValidator {
     await this.guardInteractionEvent(event);
 
     switch (event) {
+      // Step-up re-identifies an already-signed-in user, so it follows the sign-in verification rules.
+      case InteractionEvent.StepUp:
       case InteractionEvent.SignIn: {
         await this.guardSignInVerificationMethod(verificationRecord);
         break;

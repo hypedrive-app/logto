@@ -13,8 +13,6 @@ import type {
 } from '@/shared/components/InputFields/SmartInputField';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly className?: string;
   // eslint-disable-next-line react/boolean-prop-naming
@@ -78,7 +76,13 @@ const IdentifierProfileForm = ({
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -109,7 +113,7 @@ const IdentifierProfileForm = ({
           <SmartInputField
             autoComplete="off"
             autoFocus={autoFocus}
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             isDanger={!!errors.identifier || !!errorMessage}
             errorMessage={errors.identifier?.message}
@@ -118,7 +122,9 @@ const IdentifierProfileForm = ({
         )}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 -mt-3">{errorMessage}</ErrorMessage>
+      )}
 
       <Button title="action.continue" htmlType="submit" isLoading={isSubmitting} />
 

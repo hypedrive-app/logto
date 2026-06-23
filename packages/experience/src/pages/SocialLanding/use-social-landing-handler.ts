@@ -8,6 +8,7 @@ import { storeCallbackLink } from '@/utils/social-connectors';
 
 const useSocialLandingHandler = () => {
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
   const { setToast } = useToast();
   const { t } = useTranslation();
   const { search } = window.location;
@@ -18,6 +19,7 @@ const useSocialLandingHandler = () => {
 
       if (!redirectUri) {
         setLoading(false);
+        setError(true);
         setToast(t('error.invalid_connector_request'));
 
         return;
@@ -34,7 +36,7 @@ const useSocialLandingHandler = () => {
     [search, setToast, t]
   );
 
-  return { loading, socialLandingHandler };
+  return { loading, error, socialLandingHandler };
 };
 
 export default useSocialLandingHandler;

@@ -3,6 +3,8 @@ import {
   type CreateUser,
   encryptedTokenSetGuard,
   InteractionEvent,
+  type LogtoAcrValue,
+  LogtoAcrValues,
   secretEnterpriseSsoConnectorRelationPayloadGuard,
   secretSocialConnectorRelationPayloadGuard,
   type User,
@@ -190,6 +192,12 @@ export type InteractionStorage = {
     verified: boolean;
     skipped: boolean;
   };
+  /**
+   * The ACR value that was requested by the client via `acr_values` in the authorization
+   * request. Present only for step-up interactions (`interactionEvent === StepUp`).
+   * Used to determine which factor(s) the user must verify before token issuance.
+   */
+  stepUpAcr?: LogtoAcrValue;
 };
 
 export const interactionStorageGuard = z.object({
@@ -205,6 +213,7 @@ export const interactionStorageGuard = z.object({
       skipped: z.boolean(),
     })
     .optional(),
+  stepUpAcr: z.nativeEnum(LogtoAcrValues).optional(),
 }) satisfies ToZodObject<InteractionStorage>;
 
 export type SanitizedInteractionStorageData = {
@@ -218,6 +227,7 @@ export type SanitizedInteractionStorageData = {
     verified: boolean;
     skipped: boolean;
   };
+  stepUpAcr?: LogtoAcrValue;
 };
 
 /**
@@ -237,6 +247,7 @@ export const sanitizedInteractionStorageGuard = z.object({
       skipped: z.boolean(),
     })
     .optional(),
+  stepUpAcr: z.nativeEnum(LogtoAcrValues).optional(),
 }) satisfies ToZodObject<SanitizedInteractionStorageData>;
 
 export const webAuthnAuthenticationOptionsInteractionStorageGuard = z.object({

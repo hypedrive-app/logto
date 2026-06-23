@@ -30,7 +30,11 @@ const addSupportQuota = (logtoSkuResponse: LogtoSkuResponse) => {
  * - add support quota to the SKUs.
  * - Sort the SKUs by the order of `featuredPlanIdOrder`.
  */
-export const formatLogtoSkusResponses = (logtoSkus: LogtoSkuResponse[] | undefined) => {
+// Explicit return type: Zod 4's prebuilt `@logto/cloud` types leak a non-portable `LogtoSkuType`
+// name through inference (TS4023).
+export const formatLogtoSkusResponses = (
+  logtoSkus: LogtoSkuResponse[] | undefined
+): LogtoSkuResponse[] => {
   if (!logtoSkus) {
     return [];
   }

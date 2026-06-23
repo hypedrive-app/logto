@@ -7,6 +7,32 @@ import { inSeconds } from './date.js';
 
 export const tenantIdKey = 'tenant_id';
 
+/**
+ * Authentication Context Class Reference (ACR) values used for step-up authentication.
+ *
+ * Clients pass `acr_values=urn:logto:acr:mfa` in the authorization request to require MFA.
+ * The issued ID token will carry the `acr` claim reflecting what was actually performed.
+ *
+ * @see {@link https://www.rfc-editor.org/rfc/rfc9470 | RFC 9470 OAuth 2.0 Step Up Authentication Challenge Protocol}
+ */
+export const LogtoAcrValues = Object.freeze({
+  /** Password-only authentication (baseline). */
+  Password: 'urn:logto:acr:pwd',
+  /** Multi-factor authentication verified in the current session (any enrolled second factor). */
+  Mfa: 'urn:logto:acr:mfa',
+  /**
+   * Phishing-resistant authentication verified in the current session.
+   *
+   * Satisfied **only** by a verified WebAuthn factor (passkey / hardware security key).
+   * Phishable factors (TOTP, email/SMS codes, backup codes) do **not** satisfy this ACR,
+   * even when the user has them enrolled. This is a strictly stronger tier than
+   * {@link LogtoAcrValues.Mfa} and maps to the `hwk` AMR value on the issued token.
+   */
+  PhishingResistant: 'urn:logto:acr:phr',
+} as const);
+
+export type LogtoAcrValue = (typeof LogtoAcrValues)[keyof typeof LogtoAcrValues];
+
 export const oidcRoutes = Object.freeze({
   codeVerification: '/oidc/device',
 } as const);
@@ -77,6 +103,14 @@ export enum ExtraParamsKey {
    * The Google One Tap credential JWT token for external website integration.
    */
   GoogleOneTapCredential = 'google_one_tap_credential',
+  /**
+   * Signals to the experience app that this is a step-up request.
+   * Set automatically by the OIDC interaction URL builder when `acr_values` is present
+   * and the existing session does not yet satisfy the requested ACR.
+   *
+   * Value is one of {@link LogtoAcrValues}.
+   */
+  StepUpAcr = 'step_up_acr',
 }
 
 /** @deprecated Use {@link FirstScreen} instead. */
@@ -107,6 +141,7 @@ export const extraParamsObjectGuard = z
     [ExtraParamsKey.Identifier]: z.string(),
     [ExtraParamsKey.OneTimeToken]: z.string(),
     [ExtraParamsKey.GoogleOneTapCredential]: z.string(),
+    [ExtraParamsKey.StepUpAcr]: z.string(),
   })
   .partial() satisfies ToZodObject<ExtraParamsObject>;
 
@@ -120,4 +155,5 @@ export type ExtraParamsObject = Partial<{
   [ExtraParamsKey.Identifier]: string;
   [ExtraParamsKey.OneTimeToken]: string;
   [ExtraParamsKey.GoogleOneTapCredential]: string;
+  [ExtraParamsKey.StepUpAcr]: string;
 }>;

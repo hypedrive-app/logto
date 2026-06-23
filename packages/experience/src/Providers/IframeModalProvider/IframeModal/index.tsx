@@ -6,8 +6,6 @@ import LoadingBar from 'react-top-loading-bar';
 
 import NavBar from '@/shared/components/NavBar';
 
-import styles from './index.module.scss';
-
 type ModalProps = {
   readonly className?: string;
   readonly title?: string;
@@ -19,7 +17,11 @@ const IframeModal = ({ className, title = '', href = '', onClose }: ModalProps) 
   const [isLoaded, setIsLoaded] = useState(false);
   const loadingBarRef = useRef<LoadingBarRef>(null);
 
-  const brandingColor = document.body.style.getPropertyValue('--color-brand-default') || '#5d34f2';
+  // Read the live brand colour from the cascade (falls back to the near-black
+  // primary, never the old Logto purple).
+  const brandingColor =
+    getComputedStyle(document.documentElement).getPropertyValue('--color-brand-default').trim() ||
+    '#0e1116';
 
   return (
     <ReactModal
@@ -27,16 +29,19 @@ const IframeModal = ({ className, title = '', href = '', onClose }: ModalProps) 
       id="iframe-modal"
       role="dialog"
       isOpen={Boolean(href)}
-      className={classNames(styles.modal, className)}
-      overlayClassName={styles.overlay}
+      className={classNames(
+        'z-[var(--z-modal)] absolute inset-0 overflow-auto focus-visible:outline-none',
+        className
+      )}
+      overlayClassName="z-[var(--z-modal)]"
       closeTimeoutMS={300}
       onAfterOpen={() => {
         loadingBarRef.current?.continuousStart();
       }}
       onRequestClose={onClose}
     >
-      <div className={styles.container}>
-        <div className={styles.header}>
+      <div className="bg-elevated h-full flex flex-col items-stretch justify-center overflow-hidden focus-visible:outline-none">
+        <div className="py-2 px-5">
           <NavBar type="close" title={title} onClose={onClose} />
         </div>
         <LoadingBar
@@ -45,14 +50,17 @@ const IframeModal = ({ className, title = '', href = '', onClose }: ModalProps) 
           shadow={false}
           color={brandingColor}
           waitingTime={300}
-          className={styles.loader}
+          className="bg-primary"
         />
-        <div className={styles.content}>
+        <div className="flex-1 w-full">
           <iframe
             title={title}
             src={href}
             sandbox="allow-same-origin"
-            className={classNames(styles.iframe, isLoaded && styles.loaded)}
+            className={classNames(
+              'w-full h-full border-none bg-elevated opacity-0 transition-opacity duration-200 ease-in-out',
+              isLoaded && 'opacity-100'
+            )}
             onLoad={() => {
               setIsLoaded(true);
               loadingBarRef.current?.complete();

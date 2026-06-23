@@ -39,12 +39,11 @@ export class ExperienceClient extends MockClient {
   }
 
   public async updateInteractionEvent(payload: { interactionEvent: InteractionEvent }) {
-    return this.api
-      .put(`${experienceRoutes.prefix}/interaction-event`, {
-        headers: this.headers,
-        json: payload,
-      })
-      .json();
+    // The route responds `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+    return this.api.put(`${experienceRoutes.prefix}/interaction-event`, {
+      headers: this.headers,
+      json: payload,
+    });
   }
 
   public async initInteraction(payload: CreateExperienceApiPayload) {

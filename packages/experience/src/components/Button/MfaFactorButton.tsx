@@ -1,3 +1,4 @@
+import { ChevronRightIcon } from '@heroicons/react/24/outline';
 import { MfaFactor } from '@logto/schemas';
 import classNames from 'classnames';
 import { type TFuncKey } from 'i18next';
@@ -8,12 +9,11 @@ import FactorEmail from '@/assets/icons/factor-email.svg?react';
 import FactorPhone from '@/assets/icons/factor-phone.svg?react';
 import FactorTotp from '@/assets/icons/factor-totp.svg?react';
 import FactorWebAuthn from '@/assets/icons/factor-webauthn.svg?react';
-import ArrowNext from '@/shared/assets/icons/arrow-next.svg?react';
-import styles from '@/shared/components/Button/index.module.scss';
 import DynamicT from '@/shared/components/DynamicT';
 import FlipOnRtl from '@/shared/components/FlipOnRtl';
 
-import mfaFactorButtonStyles from './MfaFactorButton.module.scss';
+const buttonBaseClass =
+  'relative flex flex-row items-center justify-center h-12 px-4 rounded-[11px] cursor-pointer font-medium text-base overflow-hidden select-none appearance-none [-webkit-tap-highlight-color:transparent] transition-[background-color,border-color,transform,box-shadow] duration-200 ease-in-out active:not-disabled:scale-[0.985] active:not-disabled:duration-[80ms] desktop:text-[15px]';
 
 export type Props = {
   readonly factor: MfaFactor;
@@ -78,22 +78,22 @@ const MfaFactorButton = ({ factor, isBinding, isDisabled, maskedIdentifier, onCl
   return (
     <button
       className={classNames(
-        styles.button,
-        styles.secondary,
-        styles.large,
-        mfaFactorButtonStyles.mfaFactorButton,
-        isDisabled && mfaFactorButtonStyles.disabled
+        buttonBaseClass,
+        'btn-ghost',
+        'w-full',
+        'py-3 ps-3 pe-4 h-auto gap-4 rounded-[11px] border-line-strong',
+        isDisabled && 'disabled cursor-not-allowed border-line bg-surface-2'
       )}
       type="button"
       disabled={isDisabled}
       onClick={isDisabled ? undefined : onClick}
     >
-      <Icon className={mfaFactorButtonStyles.icon} />
-      <div className={mfaFactorButtonStyles.title}>
-        <div className={mfaFactorButtonStyles.name}>
+      <Icon className="w-5 h-5 text-muted" />
+      <div className="flex-1 flex flex-col items-start text-start">
+        <div className="text-base font-medium text-ink desktop:text-sm">
           <DynamicT forKey={factorName[factor]} />
         </div>
-        <div className={mfaFactorButtonStyles.description}>
+        <div className="text-sm text-muted">
           {maskedIdentifier ? (
             <span>{getDescriptionForMaskedIdentifier()}</span>
           ) : (
@@ -101,11 +101,9 @@ const MfaFactorButton = ({ factor, isBinding, isDisabled, maskedIdentifier, onCl
           )}
         </div>
       </div>
-      {!isDisabled && (
-        <FlipOnRtl>
-          <ArrowNext className={mfaFactorButtonStyles.icon} />
-        </FlipOnRtl>
-      )}
+      <FlipOnRtl>
+        <ChevronRightIcon className="w-4 h-4 text-faint [&]:[.disabled_&]:invisible" />
+      </FlipOnRtl>
     </button>
   );
 };

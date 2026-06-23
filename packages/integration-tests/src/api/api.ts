@@ -5,13 +5,13 @@ import ky from 'ky';
 import { logtoConsoleUrl, logtoUrl, logtoCloudUrl } from '#src/constants.js';
 
 const api = ky.extend({
-  prefixUrl: appendPath(new URL(logtoUrl), 'api'),
+  prefix: appendPath(new URL(logtoUrl), 'api'),
 });
 
 export default api;
 
 export const baseApi = ky.extend({
-  prefixUrl: new URL(logtoUrl),
+  prefix: new URL(logtoUrl),
 });
 
 // TODO: @gao rename
@@ -22,7 +22,7 @@ export const authedAdminApi = api.extend({
 });
 
 export const adminTenantApi = ky.extend({
-  prefixUrl: appendPath(new URL(logtoConsoleUrl), 'api'),
+  prefix: appendPath(new URL(logtoConsoleUrl), 'api'),
 });
 
 export const authedAdminTenantApi = adminTenantApi.extend({
@@ -32,10 +32,10 @@ export const authedAdminTenantApi = adminTenantApi.extend({
 });
 
 export const cloudApi = ky.extend({
-  prefixUrl: appendPath(new URL(logtoCloudUrl), 'api'),
+  prefix: appendPath(new URL(logtoCloudUrl), 'api'),
 });
 
 export const oidcApi = ky.extend({
   headers: formUrlEncodedHeaders,
-  prefixUrl: appendPath(new URL(logtoUrl), 'oidc'),
+  prefix: appendPath(new URL(logtoUrl), 'oidc'),
 });

@@ -171,7 +171,11 @@ type UserLogtoConfig = {
 export const getUserLogtoConfig = async (userId: string) =>
   authedAdminApi.get(`users/${userId}/logto-configs`).json<UserLogtoConfig>();
 
-export const updateUserLogtoConfig = async (userId: string, logtoConfig: UserLogtoConfig) =>
+// The endpoint is a PATCH (partial update), so any subset of the config keys may be sent.
+export const updateUserLogtoConfig = async (
+  userId: string,
+  logtoConfig: Partial<UserLogtoConfig>
+) =>
   authedAdminApi
     .patch(`users/${userId}/logto-configs`, { json: logtoConfig })
     .json<UserLogtoConfig>();

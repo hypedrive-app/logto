@@ -14,6 +14,7 @@ import {
   LogtoJwtTokenKey,
   LogtoOidcConfigKey,
   OidcSigningKeyStatus,
+  SupportedSigningKeyAlgorithm,
   cloudApiIndicator,
   cloudConnectionDataGuard,
   normalizeOidcPrivateKeys,
@@ -120,7 +121,15 @@ export const createLogtoConfigLibrary = ({
       });
     }
 
-    return z.object({ value: jwtCustomizerConfigGuard[key] }).parse(rows[0]).value;
+    // `jwtCustomizerConfigGuard[key]` is the abstract `ZodType<JwtCustomizerType[key]>`, whose output
+    // type Zod 4 can no longer thread through `z.object(...).parse()` (see
+    // https://github.com/colinhacks/zod/issues/4817). Assert the known shape of the parsed row.
+    // eslint-disable-next-line no-restricted-syntax
+    const { value } = z.object({ value: jwtCustomizerConfigGuard[key] }).parse(rows[0]) as {
+      value: JwtCustomizerType[T];
+    };
+
+    return value;
   };
 
   const getJwtCustomizers = async (consoleLog: ConsoleLog): Promise<Partial<JwtCustomizerType>> => {
@@ -185,7 +194,9 @@ export const createLogtoConfigLibrary = ({
               status === OidcSigningKeyStatus.Next
                 ? signingKeyRotationState?.signingKeyRotationAt
                 : undefined,
-            signingKeyAlgorithm: jwk.kty,
+            // The JWK `kty` matches the algorithm enum for RSA/EC, but Ed25519 keys report
+            // `kty: 'OKP'` and must be surfaced as `EdDSA` (the JWA / our enum member).
+            signingKeyAlgorithm: jwk.kty === 'OKP' ? SupportedSigningKeyAlgorithm.EdDSA : jwk.kty,
             status,
           });
 

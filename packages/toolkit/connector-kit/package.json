@@ -36,28 +36,28 @@
   },
   "dependencies": {
     "@logto/language-kit": "workspace:^",
-    "@silverhand/essentials": "^2.9.1",
+    "@silverhand/essentials": "^2.9.3",
     "@withtyped/client": "^0.8.8",
     "@withtyped/server": "^0.14.0"
   },
   "optionalDependencies": {
-    "zod": "3.24.3"
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@silverhand/eslint-config": "6.0.1",
     "@silverhand/ts-config": "6.0.0",
-    "@types/node": "^22.14.0",
-    "@vitest/coverage-v8": "^4.1.8",
-    "eslint": "^8.56.0",
-    "ky": "^1.2.3",
-    "lint-staged": "^15.0.0",
-    "nock": "^14.0.6",
-    "prettier": "^3.5.3",
-    "typescript": "^5.5.3",
-    "vitest": "^4.1.8"
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "catalog:",
+    "eslint": "catalog:",
+    "ky": "catalog:",
+    "lint-staged": "catalog:",
+    "nock": "catalog:",
+    "prettier": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
   },
   "engines": {
-    "node": "^22.14.0"
+    "node": "^22.14.0 || ^24.0.0"
   },
   "eslintConfig": {
     "extends": "@silverhand"
@@ -67,6 +67,6 @@
     "access": "public"
   },
   "peerDependencies": {
-    "ky": "^1.2.3"
+    "ky": "catalog:"
   }
 }

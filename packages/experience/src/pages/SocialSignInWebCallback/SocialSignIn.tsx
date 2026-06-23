@@ -1,3 +1,4 @@
+import ErrorPage from '@/pages/ErrorPage';
 import LoadingLayer from '@/shared/components/LoadingLayer';
 
 import useSocialSignInListener from './use-social-sign-in-listener';
@@ -12,7 +13,7 @@ type Props = {
 const SocialSignIn = ({ connectorId }: Props) => {
   const { loading } = useSocialSignInListener(connectorId);
 
-  return loading ? <LoadingLayer /> : null;
+  return loading ? <LoadingLayer /> : <ErrorPage title="error.invalid_session" />;
 };
 
 export default SocialSignIn;

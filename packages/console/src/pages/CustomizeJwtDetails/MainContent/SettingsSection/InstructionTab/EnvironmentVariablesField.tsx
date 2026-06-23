@@ -88,12 +88,12 @@ function EnvironmentVariablesField({ className }: Props) {
     () => ({
       key: (index: number) =>
         register(`environmentVariables.${index}.key`, {
-          validate: (key) => keyValidator(key, index),
+          validate: (key) => keyValidator(key ?? '', index),
           onChange: revalidate,
         }),
       value: (index: number) =>
         register(`environmentVariables.${index}.value`, {
-          validate: (value) => valueValidator(value, index),
+          validate: (value) => valueValidator(value ?? '', index),
           onChange: revalidate,
         }),
     }),

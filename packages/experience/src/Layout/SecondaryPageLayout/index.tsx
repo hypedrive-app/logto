@@ -9,8 +9,6 @@ import PageMeta from '@/shared/components/PageMeta';
 
 import { InlineNotification } from '../../components/Notification';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly title: TFuncKey;
   readonly description?: TFuncKey | ReactElement | '';
@@ -35,8 +33,11 @@ const SecondaryPageLayout = ({
   const { isMobile } = usePlatform();
   const navigate = useNavigateWithPreservedSearchParams();
 
+  const notificationClass =
+    'mobile:-mx-5 mobile:mb-6 desktop:mx-auto desktop:mt-6 desktop:w-full desktop:max-w-[var(--max-w)] desktop:rounded-[13px]';
+
   return (
-    <div className={styles.wrapper}>
+    <div className="flex-1 self-stretch">
       <PageMeta titleKey={title} />
       <NavBar
         isHidden={isNavBarHidden}
@@ -46,15 +47,15 @@ const SecondaryPageLayout = ({
         }}
       />
       {isMobile && notification && (
-        <InlineNotification message={notification} className={styles.notification} />
+        <InlineNotification message={notification} className={notificationClass} />
       )}
-      <div className={styles.container}>
-        <div className={styles.header}>
-          <div className={styles.title}>
+      <div className="mx-auto my-2 w-full max-w-[var(--max-w)] animate-[content-enter_0.35s_ease-out_both] desktop:my-12">
+        <div className="mb-7 desktop:mb-5">
+          <div className="-tracking-[0.01em] text-ink mobile:text-[28px]/[36px] mobile:font-semibold desktop:text-2xl desktop:font-semibold">
             <DynamicT forKey={title} interpolation={titleProps} />
           </div>
           {description && (
-            <div className={styles.description}>
+            <div className="mt-2 text-sm text-muted">
               {typeof description === 'string' ? (
                 <DynamicT forKey={description} interpolation={descriptionProps} />
               ) : (
@@ -66,7 +67,7 @@ const SecondaryPageLayout = ({
         {children}
       </div>
       {!isMobile && notification && (
-        <InlineNotification message={notification} className={styles.notification} />
+        <InlineNotification message={notification} className={notificationClass} />
       )}
     </div>
   );

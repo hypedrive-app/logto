@@ -1,10 +1,12 @@
 import LogtoSignature from '@experience/shared/components/LogtoSignature';
+import classNames from 'classnames';
 import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PageContext from '@ac/Providers/PageContextProvider/PageContext';
 
-import styles from './index.module.scss';
+const linkClass =
+  'text-sm font-medium text-muted no-underline whitespace-nowrap hover:text-ink mobile:whitespace-normal';
 
 const PageFooter = () => {
   const { t } = useTranslation();
@@ -19,25 +21,32 @@ const PageFooter = () => {
   const hasLinks = termsOfUseUrl || privacyPolicyUrl || supportLink;
 
   return (
-    <footer className={hasLinks ? styles.footer : styles.footerNoLinks}>
-      <div className={styles.links}>
+    <footer
+      className={classNames(
+        'w-full min-w-0 box-border flex items-center py-1 px-2 mobile:flex-wrap mobile:justify-center mobile:gap-x-3 mobile:gap-y-1',
+        hasLinks ? 'justify-between' : 'justify-center'
+      )}
+    >
+      <div className="min-w-0 flex items-center gap-6 mobile:flex-wrap mobile:justify-center mobile:gap-x-4 mobile:gap-y-1">
         {termsOfUseUrl && (
-          <a href={termsOfUseUrl} target="_blank" rel="noopener noreferrer">
+          <a className={linkClass} href={termsOfUseUrl} target="_blank" rel="noopener noreferrer">
             {t('description.terms_of_use')}
           </a>
         )}
         {privacyPolicyUrl && (
-          <a href={privacyPolicyUrl} target="_blank" rel="noopener noreferrer">
+          <a className={linkClass} href={privacyPolicyUrl} target="_blank" rel="noopener noreferrer">
             {t('description.privacy_policy')}
           </a>
         )}
         {supportLink && (
-          <a href={supportLink} target="_blank" rel="noopener noreferrer">
+          <a className={linkClass} href={supportLink} target="_blank" rel="noopener noreferrer">
             {t('account_center.page.support')}
           </a>
         )}
       </div>
-      {!hideLogtoBranding && <LogtoSignature className={styles.signature} theme={theme} />}
+      {!hideLogtoBranding && (
+        <LogtoSignature className="flex-shrink-0 max-w-full" theme={theme} />
+      )}
     </footer>
   );
 };

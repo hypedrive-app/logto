@@ -1,11 +1,13 @@
-import { InteractionEvent, type WebAuthnRegistrationOptions } from '@logto/schemas';
+import { InteractionEvent } from '@logto/schemas';
 import { browserSupportsWebAuthn } from '@simplewebauthn/browser';
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import SectionLayout from '@/Layout/SectionLayout';
+import PasskeyScene from '@/components/illustrations/PasskeyScene';
 import { createSignInPasskeyRegistrationOptions, skipPasskeyBinding } from '@/apis/experience';
 import useApi from '@/hooks/use-api';
 import useErrorHandler from '@/hooks/use-error-handler';
@@ -13,25 +15,17 @@ import useGlobalRedirectTo from '@/hooks/use-global-redirect-to';
 import usePasskeySignIn from '@/hooks/use-passkey-sign-in';
 import useSubmitInteractionErrorHandler from '@/hooks/use-submit-interaction-error-handler';
 import ErrorPage from '@/pages/ErrorPage';
+import { queryKeys } from '@/query-client';
 import Button from '@/shared/components/Button';
 import { continueFlowStateGuard } from '@/types/guard';
-
-import styles from './index.module.scss';
-
-type RegistrationState = {
-  verificationId: string;
-  options: WebAuthnRegistrationOptions;
-};
 
 const PasskeySetup = () => {
   const { state } = useLocation();
   const redirectTo = useGlobalRedirectTo();
-  const [, continueFlowState] = validate(state, continueFlowStateGuard);
+  const { data: continueFlowState } = continueFlowStateGuard.safeParse(state);
 
   const { handleBindPasskey } = usePasskeySignIn();
-  const asyncCreateRegistrationOptions = useApi(createSignInPasskeyRegistrationOptions);
 
-  const [registrationResult, setRegistrationResult] = useState<RegistrationState>();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleError = useErrorHandler();
@@ -44,24 +38,19 @@ const PasskeySetup = () => {
 
   const asyncSkipPasskeyBinding = useApi(skipPasskeyBinding);
 
+  // Fetch the WebAuthn registration options on mount via TanStack Query, only when the
+  // browser supports WebAuthn. Replaces the manual useState + useEffect fetch.
+  const { data: registrationResult, error: registrationOptionsError } = useQuery({
+    queryKey: queryKeys.passkeyRegistrationOptions,
+    queryFn: createSignInPasskeyRegistrationOptions,
+    enabled: browserSupportsWebAuthn(),
+  });
+
   useEffect(() => {
-    if (!browserSupportsWebAuthn()) {
-      return;
+    if (registrationOptionsError) {
+      void handleError(registrationOptionsError);
     }
-
-    (async () => {
-      const [error, result] = await asyncCreateRegistrationOptions();
-
-      if (error) {
-        await handleError(error);
-        return;
-      }
-
-      if (result) {
-        setRegistrationResult(result);
-      }
-    })();
-  }, [asyncCreateRegistrationOptions, handleError]);
+  }, [registrationOptionsError, handleError]);
 
   const onCreatePasskey = useCallback(async () => {
     if (!registrationResult) {
@@ -100,8 +89,9 @@ const PasskeySetup = () => {
         title="passkey_sign_in.setup_page.subtitle"
         description="passkey_sign_in.setup_page.description"
       >
+        <PasskeyScene />
         <Button
-          className={styles.button}
+          className="my-4"
           title="passkey_sign_in.setup_page.subtitle"
           isLoading={isSubmitting}
           disabled={!registrationResult}

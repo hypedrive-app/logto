@@ -207,8 +207,7 @@ const expectPasswordIssues = async (promise: ResponsePromise, issueCodes: string
       throw error;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const body: { result: false; issues: Array<{ code: string }> } = await error.response.json();
+    const body = error.data as { result: false; issues: Array<{ code: string }> };
     expect(body.result).toEqual(false);
     expect(body.issues.map((issue: { code: string }) => issue.code)).toEqual(issueCodes);
   }
@@ -242,7 +241,7 @@ describe('password policy', () => {
         throw error;
       }
 
-      const body: unknown = await error.response.json();
+      const body: unknown = error.data;
 
       console.log(body);
       expect(body).toMatchObject({

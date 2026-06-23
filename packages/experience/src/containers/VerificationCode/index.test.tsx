@@ -52,17 +52,20 @@ jest.mock('@/apis/experience', () => ({
 
 /**
  * Build a ky `HTTPError` carrying a Logto error code, so it is recognized by `useErrorHandler`
- * (which reads `error.response.json()`). A minimal fake response is enough here, since the
- * handler only relies on `instanceof HTTPError` and `response.json()`.
+ * (which, in ky v2, reads the pre-parsed body from `error.data`).
  */
 const createRequestError = (code: string) => {
+  const body = { code, message: code };
   const response = {
     status: 404,
     statusText: 'Not Found',
-    json: async () => ({ code, message: code }),
+    json: async () => body,
   } as unknown as Response;
 
-  return new HTTPError(response, {} as Request, {} as never);
+  const error = new HTTPError(response, {} as Request, {} as never);
+  // eslint-disable-next-line @silverhand/fp/no-mutation
+  error.data = body;
+  return error;
 };
 
 const fillVerificationCode = (container: HTMLElement) => {

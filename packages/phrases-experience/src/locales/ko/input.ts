@@ -8,6 +8,14 @@ const input = {
   backup_code: '백업 코드',
   code: '코드',
   label_with_optional: '{{label}} (선택사항)',
+  caps_lock_on: 'Caps Lock is on',
+  password_strength: {
+    label: 'Password strength: {{strength}}',
+    weak: 'Weak',
+    fair: 'Fair',
+    good: 'Good',
+    strong: 'Strong',
+  },
 };
 
 export default Object.freeze(input);

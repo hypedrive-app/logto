@@ -10,8 +10,6 @@ import { Helmet } from 'react-helmet';
 
 import PageContext from '@ac/Providers/PageContextProvider/PageContext';
 
-import styles from './index.module.scss';
-
 const themeToFavicon = Object.freeze({
   [Theme.Light]: 'favicon',
   [Theme.Dark]: 'darkFavicon',
@@ -45,7 +43,7 @@ const AppMeta = () => {
       <body
         className={classNames(
           platform === 'mobile' ? 'mobile' : 'desktop',
-          conditionalString(styles[theme])
+          conditionalString(theme === Theme.Dark ? 'dark' : 'light')
         )}
       />
     </Helmet>

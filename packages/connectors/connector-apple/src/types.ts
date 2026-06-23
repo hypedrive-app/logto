@@ -8,7 +8,7 @@ export const appleConfigGuard = z.object({
 export type AppleConfig = z.infer<typeof appleConfigGuard>;
 
 const stringToJson = () =>
-  z.string().transform((value, ctx): z.ZodType<JSON> => {
+  z.string().transform((value, ctx): unknown => {
     try {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       return JSON.parse(value);

@@ -19,8 +19,6 @@ import useIdentifierParam from '@ac/hooks/use-identifier-param';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from '../CodeFlow/index.module.scss';
-
 const Username = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -139,12 +137,12 @@ const Username = () => {
       }
       descriptionProps={{ requirements: usernamePolicyDescription }}
     >
-      <form className={styles.container} onSubmit={handleSubmit}>
+      <form className="flex flex-col gap-4 w-full max-w-[400px]" onSubmit={handleSubmit}>
         <SmartInputField
           key={inputKey}
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
-          className={styles.identifierInput}
+          className="w-full"
           name="username"
           label={t('input.username')}
           defaultValue={pendingUsername}
@@ -156,7 +154,7 @@ const Username = () => {
           }}
         />
         <Button
-          className={styles.submit}
+          className="self-start"
           title="action.save"
           htmlType="submit"
           isLoading={loading}

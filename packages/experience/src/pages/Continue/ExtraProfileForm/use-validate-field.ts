@@ -8,42 +8,46 @@ import {
 import { format, parse, isValid } from 'date-fns';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import { dateFieldConfigGuard } from '@/types/guard';
 
 import useFieldLabel from './use-field-label';
 
 const isValidDateField = (value: unknown, config: CustomProfileFieldBaseConfig): boolean => {
-  s.assert(value, s.string());
-  s.assert(config, dateFieldConfigGuard);
-  const dateFormat =
-    config.format === SupportedDateFormat.Custom ? config.customFormat : config.format;
-  s.assert(dateFormat, s.string());
-  const parsedDate = parse(value, dateFormat, new Date(), {
+  const stringValue = z.string().parse(value);
+  const parsedConfig = dateFieldConfigGuard.parse(config);
+  const dateFormat = z
+    .string()
+    .parse(
+      parsedConfig.format === SupportedDateFormat.Custom
+        ? parsedConfig.customFormat
+        : parsedConfig.format
+    );
+  const parsedDate = parse(stringValue, dateFormat, new Date(), {
     useAdditionalDayOfYearTokens: true,
     useAdditionalWeekYearTokens: true,
   });
 
-  return isValid(parsedDate) && format(parsedDate, dateFormat) === value;
+  return isValid(parsedDate) && format(parsedDate, dateFormat) === stringValue;
 };
 
 const isValidRegexField = (value: unknown, config: CustomProfileFieldBaseConfig): boolean => {
-  s.assert(value, s.string());
-  s.assert(config.format, s.string());
-  const regex = new RegExp(config.format);
-  return regex.test(value);
+  const stringValue = z.string().parse(value);
+  const regexString = z.string().parse(config.format);
+  const regex = new RegExp(regexString);
+  return regex.test(stringValue);
 };
 
 const isValidUrlField = (value: unknown): boolean => {
-  s.assert(value, s.string());
+  const stringValue = z.string().parse(value);
 
-  return isValidUrl(value);
+  return isValidUrl(stringValue);
 };
 
 const isValidNumberRange = (value: unknown, config: CustomProfileFieldBaseConfig): boolean => {
-  s.assert(value, s.string());
-  const parsedNumber = Number(value);
+  const stringValue = z.string().parse(value);
+  const parsedNumber = Number(stringValue);
   return (
     !Number.isNaN(parsedNumber) &&
     (config.minValue === undefined || parsedNumber >= config.minValue) &&
@@ -52,11 +56,11 @@ const isValidNumberRange = (value: unknown, config: CustomProfileFieldBaseConfig
 };
 
 const isValidTextLengthRange = (value: unknown, config: CustomProfileFieldBaseConfig): boolean => {
-  s.assert(value, s.string());
+  const stringValue = z.string().parse(value);
 
   return (
-    (!config.maxLength || value.length <= config.maxLength) &&
-    (!config.minLength || value.length >= config.minLength)
+    (!config.maxLength || stringValue.length <= config.maxLength) &&
+    (!config.minLength || stringValue.length >= config.minLength)
   );
 };
 

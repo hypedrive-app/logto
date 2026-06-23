@@ -71,7 +71,12 @@ describe('client authentication', () => {
       .post('token', {
         headers: removeUndefinedKeys({
           Authorization: authorization,
-          'Content-Type': charset
+          // Use the lowercase `content-type` key to OVERRIDE the form-urlencoded default that
+          // `oidcApi` sets. With a capitalized `Content-Type` key, `ky` would merge it as a separate
+          // header and undici sends a duplicate `content-type`; the charset-less default then wins and
+          // the server decodes the charset-encoded body as UTF-8, corrupting it (→ 400). Matching the
+          // base header's casing replaces it cleanly.
+          'content-type': charset
             ? `application/x-www-form-urlencoded; charset=${charset}`
             : undefined,
         }),
@@ -90,7 +95,7 @@ describe('client authentication', () => {
     expect(error.response.status).toBe(status);
 
     if (json) {
-      expect(await error.response.json()).toMatchObject(json);
+      expect(error.data).toMatchObject(json);
     }
   };
 

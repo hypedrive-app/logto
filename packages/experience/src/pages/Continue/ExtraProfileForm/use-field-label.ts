@@ -1,6 +1,6 @@
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import { extraProfileFieldNamesGuard } from '@/types/guard';
 
@@ -10,8 +10,8 @@ const useFieldLabel = () => {
   const getFieldLabel = useCallback(
     (fieldName: string, label = '') => {
       try {
-        s.assert(fieldName, extraProfileFieldNamesGuard);
-        return label || t(`profile.${fieldName}`);
+        const parsedFieldName = extraProfileFieldNamesGuard.parse(fieldName);
+        return label || t(`profile.${parsedFieldName}`);
       } catch {
         return label;
       }

@@ -1,3 +1,4 @@
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { SignInIdentifier } from '@logto/schemas';
 import { useContext } from 'react';
 
@@ -6,7 +7,6 @@ import UserInteractionContext from '@/Providers/UserInteractionContextProvider/U
 import FactorEmail from '@/assets/icons/factor-email.svg?react';
 import FactorPhone from '@/assets/icons/factor-phone.svg?react';
 import FactorWebAuthn from '@/assets/icons/factor-webauthn.svg?react';
-import LockIcon from '@/assets/icons/lock.svg?react';
 import useVerificationCodeLink from '@/components/SwitchToVerificationMethodsLink/use-verification-code-link';
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import { useSieMethods } from '@/hooks/use-sie';
@@ -16,7 +16,6 @@ import { UserFlow } from '@/types';
 import ErrorPage from '../ErrorPage';
 
 import VerificationMethodCard from './VerificationMethodCard';
-import styles from './index.module.scss';
 
 /**
  * Page that shows all available verification methods for sign-in.
@@ -53,7 +52,7 @@ const SignInVerificationMethods = () => {
       title="description.verify_identity"
       description="description.choose_verification_method"
     >
-      <div className={styles.methodList}>
+      <div className="flex flex-col items-center justify-center gap-3">
         {passkeySignIn?.enabled && hasBoundPasskey && (
           <VerificationMethodCard
             titleKey="description.verification_method.passkey"
@@ -71,7 +70,7 @@ const SignInVerificationMethods = () => {
           <VerificationMethodCard
             titleKey="description.verification_method.password"
             descriptionKey="description.verification_method.password_description"
-            Icon={LockIcon}
+            Icon={LockClosedIcon}
             onClick={() => {
               navigate({ pathname: `/${UserFlow.SignIn}/password` });
             }}

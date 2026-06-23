@@ -1,4 +1,4 @@
-import { type PasswordPolicy, passwordPolicyGuard } from '@logto/core-kit';
+import { type PasswordPolicy } from '@logto/core-kit';
 import { type DeepPartial } from '@silverhand/essentials';
 import { z } from 'zod';
 
@@ -80,7 +80,24 @@ export const logContextPayloadGuard = z
 
 export type PartialPasswordPolicy = DeepPartial<PasswordPolicy>;
 
-export const partialPasswordPolicyGuard = passwordPolicyGuard.deepPartial();
+// Zod 4 removed `.deepPartial()`, and a shallow `.partial()` is wrong here: the nested objects in
+// `passwordPolicyGuard` use `.prefault({})`, so a stored `{}` would be back-filled with the full
+// default policy instead of staying empty. Mirror the guard's shape with every field deeply optional
+// and no defaults so a partial stored value round-trips unchanged.
+export const partialPasswordPolicyGuard = z
+  .object({
+    length: z.object({ min: z.number().int().min(1), max: z.number().int().min(1) }).partial(),
+    characterTypes: z.object({ min: z.number().int().min(1).max(4) }).partial(),
+    rejects: z
+      .object({
+        pwned: z.boolean(),
+        repetitionAndSequence: z.boolean(),
+        userInfo: z.boolean(),
+        words: z.string().array(),
+      })
+      .partial(),
+  })
+  .partial() satisfies z.ZodType<PartialPasswordPolicy>;
 
 /**
  * The basic log context type. It's more about a type hint instead of forcing the log shape.

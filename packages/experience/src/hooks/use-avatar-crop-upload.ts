@@ -70,7 +70,8 @@ const useAvatarCropUpload = ({ upload, onChange, onBlur }: Options) => {
     async (error: unknown) => {
       if (error instanceof HTTPError) {
         try {
-          const errorBody = await error.response.json<RequestErrorBody>();
+          // v2: error body is pre-parsed synchronously on error.data.
+          const errorBody = error.data as RequestErrorBody;
           setUploadError(getAvatarUploadErrorMessage(errorBody, tAvatar));
           return;
         } catch {
@@ -87,7 +88,8 @@ const useAvatarCropUpload = ({ upload, onChange, onBlur }: Options) => {
     async (error: unknown) => {
       if (error instanceof HTTPError) {
         try {
-          const errorBody = await error.response.json<RequestErrorBody>();
+          // v2: error body is pre-parsed synchronously on error.data.
+          const errorBody = error.data as RequestErrorBody;
           setUploadError(getAvatarPersistErrorMessage(errorBody, tAvatar));
           return;
         } catch {

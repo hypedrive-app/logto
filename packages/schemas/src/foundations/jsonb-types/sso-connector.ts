@@ -23,7 +23,7 @@ export type IdpInitiatedAuthParams = z.infer<typeof idpInitiatedAuthParamsGuard>
 export const ssoSamlAssertionContentGuard = z
   .object({
     nameID: z.string().optional(),
-    attributes: z.record(z.string().or(z.array(z.string()))).optional(),
+    attributes: z.record(z.string(), z.string().or(z.array(z.string()))).optional(),
     conditions: z
       .object({
         notBefore: z.string().optional(),

@@ -1,6 +1,6 @@
 import { SignInIdentifier } from '@logto/schemas';
 import { Globals } from '@react-spring/web';
-import { assert } from '@silverhand/essentials';
+import { assert, type Nullable } from '@silverhand/essentials';
 import { renderHook } from '@testing-library/react';
 
 import UserInteractionContextProvider from '@/Providers/UserInteractionContextProvider';
@@ -22,6 +22,15 @@ jest.mock('react-router-dom', () => ({
   useNavigate: jest.fn(),
   useLocation: jest.fn(() => ({})),
 }));
+
+/**
+ * The country-code prefix width is a `react-spring` animated inline style. When collapsed its target
+ * width is the number `0`, which `react-spring` doesn't reliably serialize to `"0px"` under jsdom (it
+ * can leave `style.width` unset). All of these mean "collapsed", so assert on the collapsed state.
+ */
+const expectPrefixCollapsed = (prefix: Nullable<HTMLElement>) => {
+  expect(['', '0px', undefined]).toContain(prefix?.style.width);
+};
 
 describe('ForgotPassword', () => {
   const renderPage = (settings?: SignInExperienceResponse['forgotPassword']) =>
@@ -105,12 +114,12 @@ describe('ForgotPassword', () => {
         } else if (identifier.type === SignInIdentifier.Phone) {
           // Phone Number not enabled
           expect(inputField.getAttribute('value')).toBe('');
-          expect(countryCodeSelectorPrefix?.style.width).toBe('0px');
+          expectPrefixCollapsed(countryCodeSelectorPrefix);
         }
 
         if (identifier.type === SignInIdentifier.Email && settings.email) {
           expect(inputField.getAttribute('value')).toBe(email);
-          expect(countryCodeSelectorPrefix?.style.width).toBe('0px');
+          expectPrefixCollapsed(countryCodeSelectorPrefix);
         } else if (identifier.type === SignInIdentifier.Email) {
           // Only PhoneNumber is enabled
           expect(inputField.getAttribute('value')).toBe('');
@@ -119,7 +128,7 @@ describe('ForgotPassword', () => {
 
         if (identifier.type === SignInIdentifier.Username && settings.email) {
           expect(inputField.getAttribute('value')).toBe('');
-          expect(countryCodeSelectorPrefix?.style.width).toBe('0px');
+          expectPrefixCollapsed(countryCodeSelectorPrefix);
         } else if (identifier.type === SignInIdentifier.Username) {
           // Only PhoneNumber is enabled
           expect(inputField.getAttribute('value')).toBe('');

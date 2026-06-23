@@ -1,16 +1,13 @@
+import { XMarkIcon } from '@heroicons/react/24/outline';
 import classNames from 'classnames';
 import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactModal from 'react-modal';
 
-import CloseIcon from '@/assets/icons/close-icon.svg?react';
 import Button from '@/shared/components/Button';
 import IconButton from '@/shared/components/IconButton';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 
-import modalStyles from '../../scss/modal.module.scss';
-
-import styles from './Acmodal.module.scss';
 import type { ModalProps } from './type';
 
 const AcModal = ({
@@ -38,8 +35,14 @@ const AcModal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
       role="dialog"
       isOpen={isOpen}
-      className={classNames(styles.modal, className)}
-      overlayClassName={classNames(modalStyles.overlay, styles.overlay)}
+      className={classNames(
+        'absolute w-[600px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none max-[640px]:w-[calc(100%-40px)]',
+        className
+      )}
+      overlayClassName={classNames(
+        'fixed inset-0 bg-[var(--color-bg-mask)]',
+        'z-[var(--z-modal)]'
+      )}
       onAfterOpen={() => {
         contentRef.current?.focus();
       }}
@@ -47,7 +50,7 @@ const AcModal = ({
     >
       <div
         ref={contentRef}
-        className={styles.container}
+        className="bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none"
         role="button"
         tabIndex={0}
         onKeyDown={onKeyDownHandler({
@@ -56,14 +59,14 @@ const AcModal = ({
           Escape: onClose,
         })}
       >
-        <div className={styles.header}>
+        <div className="flex items-center justify-between text-lg font-semibold text-ink mb-4 [&_svg]:w-6 [&_svg]:h-6">
           {t('description.reminder')}
           <IconButton onClick={onClose}>
-            <CloseIcon />
+            <XMarkIcon />
           </IconButton>
         </div>
-        <div className={styles.content}>{children}</div>
-        <div className={styles.footer}>
+        <div className="text-sm text-ink mb-6">{children}</div>
+        <div className="flex items-center justify-end [&>*]:shrink [&>button:first-child]:me-3">
           <Button
             title={cancelText}
             type="secondary"

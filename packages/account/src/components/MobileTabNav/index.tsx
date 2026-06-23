@@ -6,8 +6,6 @@ import { layoutClassNames } from '@ac/constants/layout';
 
 import type { AccountNavItem } from '../account-nav-items';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly items: readonly AccountNavItem[];
 };
@@ -20,13 +18,25 @@ const MobileTabNav = ({ items }: Props) => {
   }
 
   return (
-    <nav className={classNames(styles.tabNav, layoutClassNames.mobileTabNav)}>
+    <nav
+      className={classNames(
+        'hidden mobile:flex mobile:items-end mobile:gap-6 mobile:px-5 mobile:border-b mobile:border-[var(--color-line-divider)] mobile:bg-bg',
+        layoutClassNames.mobileTabNav
+      )}
+    >
       {items.map(({ to, labelKey }) => (
         <NavLink
           key={to}
           to={to}
           className={({ isActive }) =>
-            classNames(styles.tab, isActive && styles.active, layoutClassNames.mobileTabNavItem)
+            classNames(
+              'relative py-3 text-sm font-medium no-underline whitespace-nowrap',
+              'after:content-[""] after:absolute after:left-0 after:right-0 after:-bottom-px after:h-0.5 after:rounded-t-sm',
+              isActive
+                ? 'text-primary after:bg-primary'
+                : 'text-ink after:bg-transparent',
+              layoutClassNames.mobileTabNavItem
+            )
           }
         >
           {t(labelKey)}

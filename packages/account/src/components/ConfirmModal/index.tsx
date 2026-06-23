@@ -4,8 +4,6 @@ import type { TFuncKey } from 'i18next';
 import type { ReactNode } from 'react';
 import ReactModal from 'react-modal';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly isOpen: boolean;
   readonly title: TFuncKey;
@@ -34,15 +32,15 @@ const ConfirmModal = ({
       shouldCloseOnEsc
       shouldCloseOnOverlayClick
       isOpen={isOpen}
-      className={styles.modal}
-      overlayClassName={styles.overlay}
+      className="bg-elevated rounded-[16px] p-6 max-w-[400px] w-[calc(100%-32px)] shadow-[var(--sh-float)]"
+      overlayClassName="fixed inset-0 bg-[var(--color-bg-mask)] flex items-center justify-center z-[200]"
       onRequestClose={onCancel}
     >
-      <div className={styles.header}>
+      <div className="text-lg font-semibold text-ink mb-3">
         <DynamicT forKey={title} />
       </div>
-      <div className={styles.content}>{children}</div>
-      <div className={styles.footer}>
+      <div className="text-sm text-muted mb-6">{children}</div>
+      <div className="flex justify-end gap-3">
         <Button title={cancelText} type="secondary" onClick={onCancel} />
         <Button
           title={confirmText}

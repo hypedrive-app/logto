@@ -24,7 +24,7 @@ describe('personal access tokens', () => {
 
     expect(response).toBeInstanceOf(HTTPError);
     expect(response).toHaveProperty('response.status', 422);
-    expect(await (response as HTTPError).response.json()).toHaveProperty(
+    expect((response as HTTPError).data).toHaveProperty(
       'code',
       'user.personal_access_token_name_exists'
     );

@@ -2,7 +2,7 @@
  * Provides a hook to access the session storage.
  */
 import { useCallback } from 'react';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import {
   identifierInputValueGuard,
@@ -21,15 +21,15 @@ export enum StorageKeys {
 }
 
 const valueGuard = Object.freeze({
-  [StorageKeys.SsoEmail]: s.string(),
-  [StorageKeys.SsoConnectors]: s.array(ssoConnectorMetadataGuard),
+  [StorageKeys.SsoEmail]: z.string(),
+  [StorageKeys.SsoConnectors]: z.array(ssoConnectorMetadataGuard),
   [StorageKeys.IdentifierInputValue]: identifierInputValueGuard,
   [StorageKeys.ForgotPasswordIdentifierInputValue]: identifierInputValueGuard,
   [StorageKeys.verificationIds]: verificationIdsMapGuard,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- we  don't care about the superstruct details
-} satisfies { [key in StorageKeys]: s.Struct<any> });
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the per-guard output type is irrelevant here
+} satisfies { [key in StorageKeys]: z.ZodType<any> });
 
-type StorageValueType<K extends StorageKeys> = s.Infer<(typeof valueGuard)[K]>;
+type StorageValueType<K extends StorageKeys> = z.infer<(typeof valueGuard)[K]>;
 
 const useSessionStorage = () => {
   const set = useCallback(<T extends StorageKeys>(key: T, value: StorageValueType<T>) => {
@@ -53,10 +53,9 @@ const useSessionStorage = () => {
         return;
       }
 
-      const [error, rawValue] = valueGuard[key].validate(
+      const { error, data: rawValue } = valueGuard[key].safeParse(
         (() => {
           try {
-            // eslint-disable-next-line no-restricted-syntax -- we use superstruct to validate the value
             return JSON.parse(value) as unknown;
           } catch {
             return value;
@@ -70,7 +69,11 @@ const useSessionStorage = () => {
         return;
       }
 
-      return rawValue;
+      // `valueGuard[key]` is indexed by the generic `T`, so zod infers the parsed value as the union
+      // of every guard's output. The guard for `key` validated the matching shape at runtime, so we
+      // assert the per-key type here.
+      // eslint-disable-next-line no-restricted-syntax
+      return rawValue as StorageValueType<T>;
     },
     [remove]
   );

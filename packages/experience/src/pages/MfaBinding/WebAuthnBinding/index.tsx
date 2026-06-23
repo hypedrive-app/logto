@@ -1,8 +1,9 @@
 import { VerificationType } from '@logto/schemas';
+import { browserSupportsWebAuthn } from '@simplewebauthn/browser';
 import { conditional } from '@silverhand/essentials';
 import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -15,17 +16,19 @@ import { UserMfaFlow } from '@/types';
 import { webAuthnStateGuard } from '@/types/guard';
 import { isWebAuthnOptions } from '@/utils/webauthn';
 
-import styles from './index.module.scss';
-
 const WebAuthnBinding = () => {
   const { state } = useLocation();
-  const [, webAuthnState] = validate(state, webAuthnStateGuard);
+  const { data: webAuthnState } = webAuthnStateGuard.safeParse(state);
   const { verificationIdsMap } = useContext(UserInteractionContext);
   const verificationId = verificationIdsMap[VerificationType.WebAuthn];
 
   const handleWebAuthn = useWebAuthnOperation();
   const skipMfa = useSkipMfa();
   const [isCreatingPasskey, setIsCreatingPasskey] = useState(false);
+
+  if (!browserSupportsWebAuthn()) {
+    return <ErrorPage title="mfa.webauthn_not_supported" />;
+  }
 
   if (!webAuthnState || !verificationId) {
     return <ErrorPage title="error.invalid_session" />;
@@ -55,7 +58,7 @@ const WebAuthnBinding = () => {
       <SwitchMfaFactorsLink
         flow={UserMfaFlow.MfaBinding}
         flowState={{ availableFactors, skippable }}
-        className={styles.switchLink}
+        className="mt-6"
       />
     </SecondaryPageLayout>
   );

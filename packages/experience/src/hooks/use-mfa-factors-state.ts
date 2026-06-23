@@ -1,11 +1,11 @@
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import { mfaFlowStateGuard } from '@/types/guard';
 
 const useMfaFlowState = () => {
   const { state } = useLocation();
-  const [, mfaFlowState] = validate(state, mfaFlowStateGuard);
+  const { data: mfaFlowState } = mfaFlowStateGuard.safeParse(state);
 
   return mfaFlowState;
 };

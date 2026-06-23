@@ -5,8 +5,6 @@ import type { TFuncKey } from 'i18next';
 import ConnectIcon from '@/assets/icons/connect-icon.svg?react';
 import DynamicT from '@/shared/components/DynamicT';
 
-import styles from './index.module.scss';
-
 export type Props = {
   readonly className?: string;
   readonly logo?: Nullable<string>;
@@ -24,21 +22,45 @@ const BrandingHeader = ({
 }: Props) => {
   const shouldShowLogo = Boolean(thirdPartyLogo ?? logo);
   const shouldConnectSvg = Boolean(thirdPartyLogo && logo);
+  // A third-party "connect" pair is a relationship visual → keep it centered.
+  // A plain headline / single app logo reads as a page heading → left-align it.
+  const isConnectPair = shouldConnectSvg;
 
   return (
-    <div className={classNames(styles.container, className)}>
+    <div
+      className={classNames(
+        'w-full flex flex-col justify-center mobile:h-[15vh] mobile:min-h-[92px] mobile:max-h-[148px]',
+        isConnectPair ? 'items-center' : 'items-start text-left',
+        className
+      )}
+    >
       {shouldShowLogo && (
-        <div className={styles.logoWrapper}>
+        <div className="flex items-center mobile:not-last:mb-2 desktop:not-last:mb-3">
           {thirdPartyLogo && (
-            <img className={styles.logo} alt="third party logo" src={thirdPartyLogo} />
+            <img
+              className="h-10 w-auto object-contain object-center"
+              alt="third party logo"
+              src={thirdPartyLogo}
+            />
           )}
-          {shouldConnectSvg && <ConnectIcon className={styles.connectIcon} />}
-          {logo && <img className={styles.logo} alt="app logo" src={logo} />}
+          {shouldConnectSvg && <ConnectIcon className="text-line-strong mx-3" />}
+          {logo && (
+            <img
+              className="h-10 w-auto object-contain object-center"
+              alt="app logo"
+              src={logo}
+            />
+          )}
         </div>
       )}
 
       {headline && (
-        <div className={styles.headline}>
+        <div
+          className={classNames(
+            'shrink-0 text-ink line-clamp-2 tracking-[-0.018em] mobile:text-2xl mobile:font-semibold desktop:text-xl desktop:font-semibold',
+            isConnectPair && 'text-center'
+          )}
+        >
           <DynamicT forKey={headline} interpolation={headlineInterpolation} />
         </div>
       )}

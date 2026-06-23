@@ -3,13 +3,13 @@
   "compilerOptions": {
     "baseUrl": "./",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"],
+      "styled-system/*": ["./styled-system/*"]
     }
   },
   "include": [
     "src",
+    "styled-system",
     "*.config.ts"
   ]
 }

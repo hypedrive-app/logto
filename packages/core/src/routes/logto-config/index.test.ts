@@ -11,7 +11,7 @@ import { createRequester } from '#src/utils/test-utils.js';
 
 const { jest } = import.meta;
 
-const { mockEsmWithActual, mockEsmDefault } = createMockUtils(jest);
+const { mockEsm, mockEsmWithActual } = createMockUtils(jest);
 
 const newPrivateKey = {
   id: generateStandardId(),
@@ -30,7 +30,10 @@ const previousPrivateKey = {
 };
 const signingKeyRotationAt = 1_777_777_777_000;
 
-const { exportJWK } = await mockEsmWithActual('#src/utils/jwks.js', () => ({
+// Full-mock (not `WithActual`) so the real `jwks.js` is never evaluated. The real module imports
+// `jose` v6, which ships pure ESM with no CJS build; loading it under Jest's experimental-vm-modules
+// fails on `jose`'s `node:crypto` named imports. This test only needs `exportJWK` stubbed.
+const { exportJWK } = mockEsm('#src/utils/jwks.js', () => ({
   exportJWK: jest.fn(async () => ({ kty: 'EC' })),
 }));
 
@@ -42,7 +45,13 @@ const { generateOidcPrivateKey } = await mockEsmWithActual(
   })
 );
 
-mockEsmDefault('node:crypto', () => ({
+// Preserve the real `node:crypto` named exports (other modules in the graph import `createHash`,
+// `createHmac`, etc.) and only override `createPrivateKey`. A bare default-only mock would drop the
+// named exports and break linking under Jest's experimental-vm-modules.
+const actualCrypto = await import('node:crypto');
+mockEsm('node:crypto', () => ({
+  ...actualCrypto,
+  default: { ...actualCrypto.default, createPrivateKey: jest.fn((value) => value) },
   createPrivateKey: jest.fn((value) => value),
 }));
 

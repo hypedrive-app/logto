@@ -2,7 +2,7 @@ import { socialUserInfoGuard } from '@logto/connector-kit';
 import { validateRedirectUrl } from '@logto/core-kit';
 import {
   bindMfaGuard,
-  eventGuard,
+  InteractionEvent,
   verifyMfaResultGuard,
   pendingMfaGuard,
   profileGuard,
@@ -46,8 +46,20 @@ export const identifierGuard = z.discriminatedUnion('key', [
   socialIdentifierGuard,
 ]);
 
+/**
+ * The legacy interaction flow predates step-up authentication and only supports
+ * sign-in / register / forgot-password. `StepUp` lives exclusively in the new experience flow
+ * (`routes/experience`), so it is excluded from the legacy event guard — both at the type level
+ * and at runtime (a stored `StepUp` event would fail validation here).
+ */
+export const legacyEventGuard = z.enum([
+  InteractionEvent.SignIn,
+  InteractionEvent.Register,
+  InteractionEvent.ForgotPassword,
+]);
+
 export const anonymousInteractionResultGuard = z.object({
-  event: eventGuard,
+  event: legacyEventGuard,
   profile: profileGuard.optional(),
   accountId: z.string().optional(),
   identifiers: z.array(identifierGuard).optional(),

@@ -1,3 +1,4 @@
+import { XCircleIcon } from '@heroicons/react/24/outline';
 import { SignInIdentifier } from '@logto/schemas';
 import { animated, config, useSpring } from '@react-spring/web';
 import type { Nullable } from '@silverhand/essentials';
@@ -5,7 +6,6 @@ import type { HTMLProps, Ref } from 'react';
 import { useEffect, useImperativeHandle, useRef, forwardRef, useMemo } from 'react';
 
 import usePasskeyAutofillConditionalUI from '@/hooks/use-passkey-autofill-conditional-ui';
-import ClearIcon from '@/shared/assets/icons/clear-icon.svg?react';
 import IconButton from '@/shared/components/IconButton';
 import InputField from '@/shared/components/InputFields/InputField';
 
@@ -67,7 +67,10 @@ const SmartInputField = (
     const { autoComplete, ...rest } = getInputHtmlProps(enabledTypes, identifierType);
     return {
       ...rest,
-      autoComplete: isPasskeyAutofillEnabled ? `username webauthn` : autoComplete,
+      // Compose the type-specific token (email/tel/username) with `webauthn` so the
+      // browser keeps both email autofill AND passkey autofill working together.
+      // A flat `username webauthn` discarded the field-type token (e.g. `email`).
+      autoComplete: isPasskeyAutofillEnabled ? `${autoComplete} webauthn` : autoComplete,
     };
   }, [enabledTypes, identifierType, isPasskeyAutofillEnabled]);
 
@@ -112,7 +115,7 @@ const SmartInputField = (
             }}
             onClick={onInputValueClear}
           >
-            <ClearIcon />
+            <XCircleIcon className="w-5 h-5" />
           </IconButton>
         ) : undefined
       }

@@ -1,4 +1,5 @@
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
+import MfaScene from '@/components/illustrations/MfaScene';
 import useEnableMfa from '@/hooks/use-enable-mfa';
 import useSkipMfa from '@/hooks/use-skip-mfa';
 import Button from '@/shared/components/Button';
@@ -13,6 +14,7 @@ const MfaOnboarding = () => {
       description="mfa.onboarding_description"
       onSkip={skipMfa}
     >
+      <MfaScene />
       <Button type="primary" title="mfa.enable_mfa" onClick={enableMfa} />
     </SecondaryPageLayout>
   );

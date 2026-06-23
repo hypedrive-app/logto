@@ -11,9 +11,10 @@ import PasskeyIcon from '@/assets/icons/passkey-icon.svg?react';
 import usePasskeySignIn from '@/hooks/use-passkey-sign-in';
 import useSubmitInteractionErrorHandler from '@/hooks/use-submit-interaction-error-handler';
 import RotatingRingIcon from '@/shared/components/Button/RotatingRingIcon';
-import buttonStyles from '@/shared/components/Button/index.module.scss';
 
-import styles from './index.module.scss';
+const buttonBaseClass =
+  'relative flex flex-row items-center justify-center h-12 px-4 rounded-[11px] cursor-pointer font-medium text-base overflow-hidden select-none appearance-none [-webkit-tap-highlight-color:transparent] transition-[background-color,border-color,transform,box-shadow] duration-200 ease-in-out active:not-disabled:scale-[0.985] active:not-disabled:duration-[80ms] desktop:text-[15px]';
+const buttonDisabledClass = 'opacity-100 [&]:cursor-not-allowed';
 
 const PasskeySignInButton = () => {
   const { t } = useTranslation();
@@ -69,26 +70,24 @@ const PasskeySignInButton = () => {
     <button
       disabled={isDisabled && !isPreview}
       className={classNames(
-        buttonStyles.button,
-        buttonStyles.secondary,
-        buttonStyles.large,
-        styles.button,
-        isDisabled && !isPreview && buttonStyles.disabled
+        buttonBaseClass,
+        'btn-ghost',
+        'w-full',
+        'grid grid-cols-[auto_1fr] items-center px-4 gap-3',
+        isDisabled && !isPreview && buttonDisabledClass
       )}
       type="button"
       onClick={onPasskeySignIn}
     >
-      {!isLoadingActive && <PasskeyIcon className={styles.icon} />}
+      {!isLoadingActive && <PasskeyIcon className="w-6 h-6 text-ink" />}
       {isLoadingActive && (
-        <span className={styles.loadingIcon}>
+        <span className="block text-0 leading-none text-[var(--color-brand-loading)]">
           <RotatingRingIcon />
         </span>
       )}
-      <div className={styles.name}>
-        <div className={styles.placeHolder} />
-        <span>{t('action.sign_in_with', { name: t('mfa.webauthn').toLowerCase() })}</span>
-        <div className={styles.placeHolder} />
-      </div>
+      <span className="text-center leading-5 desktop:leading-4 line-clamp-2">
+        {t('action.sign_in_with', { name: t('mfa.webauthn').toLowerCase() })}
+      </span>
     </button>
   );
 };

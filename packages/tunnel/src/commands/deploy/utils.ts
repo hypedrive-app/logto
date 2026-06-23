@@ -156,7 +156,10 @@ const getAccessToken = async (auth: string, endpoint: URL, managementApiResource
 
 const uploadCustomUiAssets = async (accessToken: string, endpoint: URL, zipBuffer: Uint8Array) => {
   const form = new FormData();
-  const blob = new Blob([zipBuffer], { type: 'application/zip' });
+  // TypeScript 5.9 types `Uint8Array` as `Uint8Array<ArrayBufferLike>`, which no longer matches
+  // `BlobPart` directly even though it is a valid blob part at runtime.
+  // eslint-disable-next-line no-restricted-syntax
+  const blob = new Blob([zipBuffer as BlobPart], { type: 'application/zip' });
   const timestamp = Math.floor(Date.now() / 1000);
   form.append('file', blob, `custom-ui-${timestamp}.zip`);
 

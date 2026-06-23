@@ -1,14 +1,26 @@
-import classNames from 'classnames';
+import { ChevronLeftIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import ArrowPrev from '@/shared/assets/icons/arrow-prev.svg?react';
-import NavClose from '@/shared/assets/icons/nav-close.svg?react';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 
 import FlipOnRtl from '../FlipOnRtl';
 
-import styles from './index.module.scss';
+const navBarClass =
+  'w-full min-h-[44px] flex items-center justify-center py-3 px-10 relative text-ink [&>svg]:fill-current ' +
+  'mobile:data-[hidden]:invisible desktop:data-[hidden]:hidden';
+
+const navButtonClass =
+  'absolute start-0 top-1/2 -translate-y-1/2 text-sm font-medium flex items-center cursor-pointer gap-1 py-1 px-2 -ms-2 rounded-[11px] ' +
+  'transition-[background-color] duration-150 ease-in-out motion-reduce:transition-none ' +
+  'overlay-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand-default)] focus-visible:outline-offset-1 ' +
+  'mobile:[&>span]:hidden';
+
+const skipButtonClass =
+  'absolute end-0 top-1/2 -translate-y-1/2 text-base font-medium cursor-pointer text-primary py-1 px-2 -me-1 rounded-[11px] ' +
+  'transition-[background-color] duration-150 ease-in-out motion-reduce:transition-none ' +
+  'overlay-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--color-brand-default)] focus-visible:outline-offset-1 ' +
+  'desktop:text-sm';
 
 type Props = {
   readonly title?: string;
@@ -50,29 +62,29 @@ const NavBar = ({ title, type = 'back', isHidden, onClose, onBack, onSkip }: Pro
   }, [handleBack, isClosable, onClose]);
 
   return (
-    <div className={classNames(styles.navBar, isHidden && styles.hidden)}>
+    <div className={navBarClass} data-hidden={isHidden || undefined}>
       <div
         role="button"
         tabIndex={0}
-        className={styles.navButton}
+        className={navButtonClass}
         onKeyDown={onKeyDownHandler(clickHandler)}
         onClick={clickHandler}
       >
         {isClosable ? (
-          <NavClose />
+          <XMarkIcon className="w-5 h-5" />
         ) : (
           <FlipOnRtl>
-            <ArrowPrev />
+            <ChevronLeftIcon className="w-5 h-5" />
           </FlipOnRtl>
         )}
         {!isClosable && <span>{t('action.nav_back')}</span>}
       </div>
-      {title && <div className={styles.title}>{title}</div>}
+      {title && <div className="navBarTitle truncate max-w-[60%] mx-auto">{title}</div>}
       {onSkip && (
         <div
           role="button"
           tabIndex={0}
-          className={styles.skipButton}
+          className={skipButtonClass}
           onKeyDown={onKeyDownHandler(onSkip)}
           onClick={onSkip}
         >

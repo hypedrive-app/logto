@@ -16,7 +16,7 @@ type DeviceAuthorizationResponse = {
 
 describe('device flow shortcut', () => {
   const baseApi = ky.extend({
-    prefixUrl: new URL(logtoUrl),
+    prefix: new URL(logtoUrl),
     redirect: 'manual',
     throwHttpErrors: false,
   });

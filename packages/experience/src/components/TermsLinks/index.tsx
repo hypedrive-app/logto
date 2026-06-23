@@ -2,8 +2,6 @@ import { useTranslation } from 'react-i18next';
 
 import TextLink, { type Props as TextLinkProps } from '@/components/TextLink';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly linkType?: TextLinkProps['type'];
   // eslint-disable-next-line react/boolean-prop-naming
@@ -19,7 +17,7 @@ const TermsLinks = ({ inline, termsOfUseUrl, privacyPolicyUrl, linkType = 'secon
     <>
       {termsOfUseUrl && (
         <TextLink
-          className={styles.link}
+          className="inline"
           text="description.terms_of_use"
           href={termsOfUseUrl}
           type={linkType}
@@ -30,10 +28,12 @@ const TermsLinks = ({ inline, termsOfUseUrl, privacyPolicyUrl, linkType = 'secon
         />
       )}
       {termsOfUseUrl && privacyPolicyUrl && inline && ` ${t('description.and')} `}
-      {termsOfUseUrl && privacyPolicyUrl && !inline && <i className={styles.divider} />}
+      {termsOfUseUrl && privacyPolicyUrl && !inline && (
+        <i className='w-px mx-3 relative after:content-[""] after:block after:w-px after:h-2.5 after:absolute after:top-1/2 after:left-1/2 after:bg-line after:-translate-x-1/2 after:-translate-y-1/2' />
+      )}
       {privacyPolicyUrl && (
         <TextLink
-          className={styles.link}
+          className="inline"
           text="description.privacy_policy"
           href={privacyPolicyUrl}
           type={linkType}

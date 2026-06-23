@@ -22,7 +22,12 @@ import { formatLogtoSkusResponses } from '@/utils/subscription';
  * e.g. For enterprise tenant who have their own private SKUs, and all grandfathered plan tenants,
  * use the logtoSkus from the {@link SubscriptionDataContext} instead.
  */
-const useLogtoSkus = () => {
+// Zod 4's prebuilt `@logto/cloud` types surface non-portable names through inference (TS4023), so
+// the response type is pinned explicitly here.
+const useLogtoSkus = (): Omit<
+  ReturnType<typeof useSWRImmutable<LogtoSkuResponse[], Error>>,
+  'data'
+> & { data: Optional<LogtoSkuResponse[]> } => {
   const cloudApi = useCloudApi();
 
   const useSwrResponse = useSWRImmutable<LogtoSkuResponse[], Error>(

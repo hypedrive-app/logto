@@ -15,6 +15,7 @@ import { noop } from '@silverhand/essentials';
 import type { Queries, queries, RenderOptions } from '@testing-library/react';
 import { render } from '@testing-library/react';
 import type { ReactElement } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { MemoryRouter } from 'react-router-dom';
 
 import LoadingContext, {
@@ -205,11 +206,17 @@ const renderWithPageContext = <
   const { pageContext, loadingContext, ...renderOptions } = options;
 
   return render<Q, Container>(
-    <MemoryRouter {...memoryRouterProps}>
-      <LoadingContext.Provider value={createMockLoadingContext(loadingContext)}>
-        <PageContext.Provider value={createMockPageContext(pageContext)}>{ui}</PageContext.Provider>
-      </LoadingContext.Provider>
-    </MemoryRouter>,
+    // Shared experience components (imported via @experience/*) now use react-helmet-async,
+    // which requires a HelmetProvider in the tree.
+    <HelmetProvider>
+      <MemoryRouter {...memoryRouterProps}>
+        <LoadingContext.Provider value={createMockLoadingContext(loadingContext)}>
+          <PageContext.Provider value={createMockPageContext(pageContext)}>
+            {ui}
+          </PageContext.Provider>
+        </LoadingContext.Provider>
+      </MemoryRouter>
+    </HelmetProvider>,
     renderOptions
   );
 };

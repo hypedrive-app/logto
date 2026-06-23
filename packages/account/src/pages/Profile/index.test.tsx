@@ -184,12 +184,7 @@ const renderProfile = ({
 
   return renderWithPageContext(
     <Profile />,
-    {
-      future: {
-        v7_relativeSplatPath: true,
-        v7_startTransition: true,
-      },
-    },
+    {},
     {
       pageContext: {
         accountCenterSettings: {

@@ -7,7 +7,7 @@ import { logtoUrl } from '#src/constants.js';
 
 describe('content-type: application/json compatibility', () => {
   const api = ky.extend({
-    prefixUrl: new URL('/oidc', logtoUrl),
+    prefix: new URL('/oidc', logtoUrl),
   });
 
   const expectErrorMessageForPayload = async (
@@ -24,7 +24,7 @@ describe('content-type: application/json compatibility', () => {
         if (!(error instanceof HTTPError)) {
           throw new TypeError('Error is not a HTTPError instance.');
         }
-        expect(await error.response.json()).toHaveProperty('error_description', errorMessage);
+        expect(error.data).toHaveProperty('error_description', errorMessage);
       }
     );
   };
@@ -67,7 +67,7 @@ describe('content-type: application/json compatibility', () => {
 
         // 400 means the request has been processed, we just need to ensure no 500 error
         expect(error.response.status).toBe(400);
-        expect(await error.response.json()).toHaveProperty(
+        expect(error.data).toHaveProperty(
           'error_description',
           'no client authentication mechanism provided'
         );
@@ -93,7 +93,7 @@ describe('content-type: application/json compatibility', () => {
 
         // The null byte must be rejected cleanly, not surface as a 500.
         expect(error.response.status).toBe(400);
-        expect(await error.response.json()).toHaveProperty(
+        expect(error.data).toHaveProperty(
           'error_description',
           'null bytes are not allowed in the request body'
         );

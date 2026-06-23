@@ -21,7 +21,9 @@ const useErrorHandler = () => {
     async (error: unknown, errorHandlers?: ErrorHandlers) => {
       if (error instanceof HTTPError) {
         try {
-          const logtoError = await error.response.json<RequestErrorBody>();
+          // v2: error body is pre-parsed and available on error.data (response body
+          // is already consumed — awaiting error.response.json() would throw).
+          const logtoError = error.data as RequestErrorBody;
 
           const { code, message } = logtoError;
 

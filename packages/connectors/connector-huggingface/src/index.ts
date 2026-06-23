@@ -134,7 +134,14 @@ const getUserInfo =
           throw new ConnectorError(ConnectorErrorCodes.SocialAccessTokenInvalid);
         }
 
-        throw new ConnectorError(ConnectorErrorCodes.General, await response.text());
+        // `ky` consumes the response body to populate `error.data`, so re-reading it via
+        // `response.text()` throws `Body is unusable: Body has already been read` on current
+        // runtimes. Read the pre-parsed body instead, preserving the previous text semantics.
+        const { data } = error;
+        throw new ConnectorError(
+          ConnectorErrorCodes.General,
+          typeof data === 'string' ? data : data === undefined ? '' : JSON.stringify(data)
+        );
       }
 
       throw error;

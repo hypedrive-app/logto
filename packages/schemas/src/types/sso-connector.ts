@@ -84,7 +84,7 @@ export const ssoConnectorWithProviderConfigGuard = SsoConnectors.guard
       // SSO connection config parsed from the provider.
       // - OIDC: connection config fetched from the OIDC provider.
       // - SAML: connection config fetched from the metadata url or metadata file.
-      providerConfig: z.record(z.unknown()).optional(),
+      providerConfig: z.record(z.string(), z.unknown()).optional(),
     })
   );
 

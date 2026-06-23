@@ -23,11 +23,28 @@ export const generateOidcPrivateKey = async (
     return buildOidcKeyFromRawString(privateKey);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
   if (type === SupportedSigningKeyAlgorithm.EC) {
     const { privateKey } = await promisify(generateKeyPair)('ec', {
       // https://security.stackexchange.com/questions/78621/which-elliptic-curve-should-i-use
       namedCurve: 'secp384r1',
+      publicKeyEncoding: {
+        type: 'spki',
+        format: 'pem',
+      },
+      privateKeyEncoding: {
+        type: 'pkcs8',
+        format: 'pem',
+      },
+    });
+
+    return buildOidcKeyFromRawString(privateKey);
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+  if (type === SupportedSigningKeyAlgorithm.EdDSA) {
+    // Ed25519 keys (JWK `kty: OKP`) are smaller and faster to verify than RSA/EC, and are signed
+    // with the `EdDSA` JWA. Node's `crypto` supports them natively; no curve/length options needed.
+    const { privateKey } = await promisify(generateKeyPair)('ed25519', {
       publicKeyEncoding: {
         type: 'spki',
         format: 'pem',

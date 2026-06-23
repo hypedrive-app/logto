@@ -54,8 +54,11 @@ export const smtp2goEmailConfigGuard = z.object({
       ].every((requiredType) =>
         templates.map((template) => template.usageType).includes(requiredType)
       ),
-    (templates) => ({
-      message: `Template with UsageType (${[
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      error: (issue) => {
+        const templates = issue.input as Array<{ usageType: string }>;
+        return `Template with UsageType (${[
         TemplateType.Register,
         TemplateType.SignIn,
         TemplateType.ForgotPassword,
@@ -64,8 +67,9 @@ export const smtp2goEmailConfigGuard = z.object({
         .filter(
           (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
         )
-        .join(', ')}) should be provided!`,
-    })
+        .join(', ')}) should be provided!`;
+      },
+    }
   ),
 });
 

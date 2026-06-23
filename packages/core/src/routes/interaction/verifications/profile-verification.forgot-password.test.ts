@@ -25,7 +25,7 @@ const verifyProfile = await pickDefault(import('./profile-verification.js'));
 
 describe('forgot password interaction profile verification', () => {
   const baseInteraction = {
-    event: InteractionEvent.ForgotPassword,
+    event: InteractionEvent.ForgotPassword as const,
     identifiers: [{ key: 'accountId', value: 'foo' }] as Identifier[],
     accountId: 'foo',
   };

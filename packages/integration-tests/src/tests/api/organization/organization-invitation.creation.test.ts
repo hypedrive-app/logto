@@ -14,7 +14,7 @@ const randomId = () => generateStandardId(4);
 const expectErrorResponse = async (error: unknown, statusCode: number, code: string) => {
   assert(error instanceof HTTPError);
   expect(error.response.status).toBe(statusCode);
-  expect(await error.response.json()).toMatchObject({ code });
+  expect(error.data).toMatchObject({ code });
 };
 
 describe('organization invitation creation', () => {

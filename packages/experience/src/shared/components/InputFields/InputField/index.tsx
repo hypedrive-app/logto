@@ -1,21 +1,30 @@
 import { condString, type Nullable } from '@silverhand/essentials';
 import classNames from 'classnames';
-import type { HTMLProps, ReactElement, Ref, AnimationEvent } from 'react';
-import {
-  forwardRef,
-  cloneElement,
-  useState,
-  useImperativeHandle,
-  useRef,
-  useEffect,
-  useCallback,
-} from 'react';
+import type { HTMLProps, ReactElement, Ref } from 'react';
+import { forwardRef, cloneElement, useState, useImperativeHandle, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ErrorMessage from '@/shared/components/ErrorMessage';
 
-import NotchedBorder from './NotchedBorder';
-import styles from './index.module.scss';
+/**
+ * Modern text input — a static label above a cleanly-bordered field.
+ * Replaces the old Material-style "notched border" (where the label cut into
+ * the border) with the Stripe/Linear convention: a small label, then a 10px
+ * rounded box that gains a near-black border + soft focus ring on focus.
+ *
+ * The <input> is reached via `[&_input]` descendant variants; placeholder /
+ * caret / autofill behaviour is preserved from the original component.
+ */
+const fieldBoxClass =
+  'relative flex items-stretch h-12 rounded-[11px] border bg-elevated overflow-hidden ' +
+  'shadow-[var(--sh-input)] transition-[border-color,box-shadow] duration-150 ease-out ' +
+  '[&_input]:flex-1 [&_input]:px-3.5 [&_input]:bg-transparent [&_input]:outline-none ' +
+  '[&_input]:text-base desktop:[&_input]:text-sm [&_input]:text-ink [&_input]:[caret-color:var(--color-brand-default)] ' +
+  '[&_input::placeholder]:text-faint ' +
+  '[&_input:-webkit-autofill]:[-webkit-text-fill-color:var(--color-type-primary)] ' +
+  '[&_input:-webkit-autofill]:[transition:background-color_999999s_ease-in-out_0s] ' +
+  '[&_input:-webkit-autofill]:[animation:onAutoFillStart_0.01s_forwards] ' +
+  '[&_input:not(:-webkit-autofill)]:[animation:onAutoFillCancel_0.01s_forwards]';
 
 export type Props = Omit<HTMLProps<HTMLInputElement>, 'prefix'> & {
   readonly className?: string;
@@ -51,7 +60,7 @@ const InputField = (
   }: Props,
   reference: Ref<Nullable<HTMLInputElement>>
 ) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const innerRef = useRef<HTMLInputElement>(null);
 
   useImperativeHandle(reference, () => innerRef.current);
@@ -59,92 +68,56 @@ const InputField = (
   const errorMessages = errorMessage?.split('\n');
 
   const [isFocused, setIsFocused] = useState(false);
-  const [hasValue, setHasValue] = useState(false);
 
-  useEffect(() => {
-    /**
-     * Should listen to the value prop to update the hasValue state.
-     */
-    setHasValue(Boolean(value));
-  }, [value]);
-
-  /**
-   * Fix the issue that the input field doesn't have the active style when the autofill value is set.
-   * We have define a void transition css rule on the input element once it is `:-webkit-autofill`ed.
-   * Hook onto this 'animationstart' event to detect the autofill start.
-   * see https://stackoverflow.com/questions/11708092/detecting-browser-autofill/41530164#41530164
-   */
-  const handleAnimationStart = useCallback((event: AnimationEvent<HTMLInputElement>) => {
-    /**
-     * Because SCSS adds some random characters to the animation name during the build process,
-     * we can't use the exact name here.
-     */
-    if (event.animationName.includes('onAutoFillStart')) {
-      setHasValue(true);
-    }
-
-    if (event.animationName.includes('onAutoFillCancel')) {
-      setHasValue(Boolean(innerRef.current?.value));
-    }
-  }, []);
-
-  const isActive = Boolean(isPrefixVisible) || hasValue || isFocused;
   const labelWithOptionalSuffix = required
     ? label
     : condString(label && t('input.label_with_optional', { label }));
 
   return (
-    <div className={className}>
+    <div className={classNames('w-full', className)}>
+      {label && (
+        <label className="mb-1.5 block text-sm font-medium text-ink-2">
+          {labelWithOptionalSuffix}
+        </label>
+      )}
       <div
         className={classNames(
-          styles.container,
-          isDanger && styles.danger,
-          isActive && styles.active,
-          !label && styles.noLabel
+          fieldBoxClass,
+          // Resting / focus / danger border + ring
+          isDanger ? 'border-danger' : isFocused ? 'border-primary' : 'border-line-strong',
+          isFocused && !isDanger && 'shadow-[var(--sh-input),0_0_0_3px_var(--primary-tint)]',
+          isFocused && isDanger && 'shadow-[var(--sh-input),0_0_0_3px_var(--danger-soft)]',
+          isDanger && '[&_input]:[caret-color:var(--color-danger-default)]',
+          isSuffixFocusVisible && 'focus-within:[&_input]:pe-10 [&:focus-within_.suffix]:flex',
+          inputFieldClassName
         )}
       >
-        <div
-          className={classNames(
-            styles.inputField,
-            isSuffixFocusVisible && styles.isSuffixFocusVisible,
-            inputFieldClassName,
-            styles[i18n.dir()]
-          )}
-        >
-          {prefix}
-          <input
-            {...props}
-            ref={innerRef}
-            value={value}
-            onAnimationStart={handleAnimationStart}
-            onFocus={(event) => {
-              setIsFocused(true);
-              return onFocus?.(event);
-            }}
-            onBlur={(event) => {
-              setIsFocused(false);
-              return onBlur?.(event);
-            }}
-            onChange={(event) => {
-              setHasValue(Boolean(event.target.value));
-              return onChange?.(event);
-            }}
-          />
-          {suffix &&
-            cloneElement(suffix, {
-              className: classNames([suffix.props.className, styles.suffix]),
-            })}
-        </div>
-        <NotchedBorder
-          label={labelWithOptionalSuffix ?? ''}
-          isActive={isActive}
-          isDanger={Boolean(isDanger)}
-          isFocused={isFocused}
+        {prefix}
+        <input
+          {...props}
+          ref={innerRef}
+          value={value}
+          onFocus={(event) => {
+            setIsFocused(true);
+            return onFocus?.(event);
+          }}
+          onBlur={(event) => {
+            setIsFocused(false);
+            return onBlur?.(event);
+          }}
+          onChange={onChange}
         />
+        {suffix &&
+          cloneElement(suffix, {
+            className: classNames([
+              suffix.props.className,
+              'suffix absolute end-2 top-1/2 -translate-y-1/2 w-8 h-8 hidden z-[1]',
+            ]),
+          })}
       </div>
-      {description && <div className={styles.description}>{description}</div>}
+      {description && <div className="text-sm text-muted pt-1 ms-0.5">{description}</div>}
       {errorMessages && (
-        <ErrorMessage className={styles.errorMessage}>
+        <ErrorMessage className="mt-1.5 ms-0.5">
           {errorMessages.length > 1 ? (
             <ul>
               {errorMessages.map((message) => (

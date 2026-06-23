@@ -13,8 +13,6 @@ import { backupCodesRegenerateRoute } from '@ac/constants/routes';
 import useApi from '@ac/hooks/use-api';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 
-import styles from './index.module.scss';
-
 const isBackupCodeEnabled = (mfa?: Mfa) => mfa?.factors.includes(MfaFactor.BackupCode) ?? false;
 
 const BackupCodeView = () => {
@@ -103,15 +101,15 @@ const BackupCodeView = () => {
       title="account_center.backup_code.title"
       description="account_center.backup_code.description"
     >
-      <div className={styles.container}>
-        <div className={styles.backupCodes}>
+      <div className="flex flex-col gap-4">
+        <div className="grid grid-cols-2 p-4 text-sm font-medium text-center rounded-[13px] bg-surface text-ink gap-y-2">
           {codes.map(({ code, usedAt }) => (
-            <span key={code} className={usedAt ? styles.used : undefined}>
+            <span key={code} className={usedAt ? 'line-through text-muted' : undefined}>
               {code}
             </span>
           ))}
         </div>
-        <div className={styles.actions}>
+        <div className="flex flex-row gap-4">
           <Button
             title="action.download"
             type="secondary"
@@ -127,12 +125,12 @@ const BackupCodeView = () => {
             }}
           />
         </div>
-        <div className={styles.hint}>
+        <div className="text-sm text-muted">
           <DynamicT forKey="account_center.backup_code.copy_hint" />
         </div>
-        <div className={styles.divider} />
-        <div className={styles.generateSection}>
-          <div className={styles.generateTitle}>
+        <div className="h-px bg-line my-2" />
+        <div className="flex flex-col gap-3">
+          <div className="text-lg font-semibold text-ink">
             <DynamicT forKey="account_center.backup_code.generate_new_title" />
           </div>
           <Button

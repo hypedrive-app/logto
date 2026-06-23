@@ -23,7 +23,12 @@ import {
   type HookMetadata,
   type HookContext,
 } from './context-manager.js';
-import { generateHookTestPayload, parseResponse, sendWebhookRequest } from './utils.js';
+import {
+  generateHookTestPayload,
+  parseHttpError,
+  parseResponse,
+  sendWebhookRequest,
+} from './utils.js';
 
 type BetterOmit<T, Ignore> = {
   [key in keyof T as key extends Ignore ? never : key]: T[key];
@@ -70,7 +75,7 @@ export const createHookLibrary = (queries: Queries) => {
     } catch (error: unknown) {
       logEntry.append({
         result: LogResult.Error,
-        response: conditional(error instanceof HTTPError && (await parseResponse(error.response))),
+        response: conditional(error instanceof HTTPError && parseHttpError(error)),
         error: String(normalizeError(error)),
       });
     }
@@ -237,7 +242,11 @@ export const createHookLibrary = (queries: Queries) => {
           },
           {
             responseStatus: error.response.status,
-            responseBody: await error.response.text(),
+            // `ky` v2 consumes the response body onto `error.data`; reading `error.response.text()`
+            // again would throw `Body has already been read`. `error.data` is the parsed JSON when
+            // the response is JSON, otherwise the raw string — re-serialize objects back to a string.
+            responseBody:
+              typeof error.data === 'string' ? error.data : JSON.stringify(error.data ?? ''),
           } satisfies HookTestErrorResponseData
         );
       }

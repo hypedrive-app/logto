@@ -41,7 +41,9 @@ export const postConnector = async (
     .json<Connector>();
 
 export const deleteConnectorById = async (id: string, api: KyInstance = authedAdminApi) =>
-  api.delete(`connectors/${id}`).json();
+  // `DELETE` returns `204 No Content` with an empty body; calling `.json()` on it throws
+  // `Unexpected end of JSON input` on newer runtimes, so resolve the request without parsing.
+  api.delete(`connectors/${id}`);
 
 export const updateConnectorConfig = async (
   id: string,

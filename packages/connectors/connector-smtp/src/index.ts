@@ -17,9 +17,7 @@ import {
   replaceSendMessageHandlebars,
   getConfigTemplateByType,
 } from '@logto/connector-kit';
-import nodemailer from 'nodemailer';
-import type Mail from 'nodemailer/lib/mailer';
-import type SMTPTransport from 'nodemailer/lib/smtp-transport';
+import nodemailer, { type SendMailOptions, type TransportOptions } from 'nodemailer';
 
 import { defaultMetadata } from './constant.js';
 import { ContextType, type SmtpConfig, smtpConfigGuard } from './types.js';
@@ -29,7 +27,7 @@ const buildMailOptions = (
   template: SmtpConfig['templates'][number] | EmailTemplateDetails,
   payload: SendMessagePayload,
   to: string
-): Mail.Options => {
+): SendMailOptions => {
   return {
     to,
     replyTo:
@@ -76,7 +74,7 @@ const sendMessage =
     );
 
     // eslint-disable-next-line no-restricted-syntax -- nodemailer's `AuthenticationTypeLogin` types `user`/`pass` as required strings, but at runtime it treats them as optional (skipping auth when absent). Our schema widens these to support relays that authorize by source.
-    const configOptions = config as SMTPTransport.Options;
+    const configOptions = config as TransportOptions;
     const transporter = nodemailer.createTransport(configOptions);
     const mailOptions = buildMailOptions(config, template, payload, to);
 

@@ -73,7 +73,7 @@ describe('application secrets', () => {
         const response = await secretPromise.catch((error: unknown) => error);
         expect(response).toBeInstanceOf(HTTPError);
         expect(response).toHaveProperty('response.status', 422);
-        expect(await (response as HTTPError).response.json()).toHaveProperty(
+        expect((response as HTTPError).data).toHaveProperty(
           'code',
           'entity.db_constraint_violated'
         );
@@ -93,10 +93,7 @@ describe('application secrets', () => {
 
     expect(response).toBeInstanceOf(HTTPError);
     expect(response).toHaveProperty('response.status', 422);
-    expect(await (response as HTTPError).response.json()).toHaveProperty(
-      'code',
-      'application.secret_name_exists'
-    );
+    expect((response as HTTPError).data).toHaveProperty('code', 'application.secret_name_exists');
   });
 
   it('should throw error when creating application secret with invalid application id', async () => {

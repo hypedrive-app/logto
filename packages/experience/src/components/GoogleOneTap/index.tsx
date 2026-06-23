@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { createPortal } from 'react-dom';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 

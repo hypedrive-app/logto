@@ -41,6 +41,20 @@ jest.mock('react-router-dom', () => ({
   useNavigate: () => mockedNavigate,
 }));
 
+// Build a ky v2 HTTPError carrying a Logto error body on `error.data` (the property the
+// production error handler reads after the v2 upgrade).
+const createHttpError = (code: string) => {
+  const body = { code, message: code };
+  const error = new HTTPError(
+    { json: async () => body } as Response,
+    {} as Request,
+    {} as never
+  );
+  // eslint-disable-next-line @silverhand/fp/no-mutation
+  error.data = body;
+  return error;
+};
+
 describe('UsernamePasswordSignInForm', () => {
   afterEach(() => {
     jest.clearAllMocks();
@@ -198,16 +212,7 @@ describe('UsernamePasswordSignInForm', () => {
 
   test('should show expired password alert and navigate to forgot-password only after user action', async () => {
     (signInWithPasswordIdentifier as jest.Mock).mockRejectedValueOnce(
-      new HTTPError(
-        {
-          json: async () => ({
-            code: 'password.expired',
-            message: 'password.expired',
-          }),
-        } as Response,
-        {} as Request,
-        {} as never
-      )
+      createHttpError('password.expired')
     );
 
     const { getByText, queryByText, container } = renderPasswordSignInForm([
@@ -253,16 +258,7 @@ describe('UsernamePasswordSignInForm', () => {
 
   test('should not show password expiration modal when forgot password is disabled', async () => {
     (signInWithPasswordIdentifier as jest.Mock).mockRejectedValueOnce(
-      new HTTPError(
-        {
-          json: async () => ({
-            code: 'password.expired',
-            message: 'password.expired',
-          }),
-        } as Response,
-        {} as Request,
-        {} as never
-      )
+      createHttpError('password.expired')
     );
 
     const { getByText, queryByText, container } = renderPasswordSignInForm(

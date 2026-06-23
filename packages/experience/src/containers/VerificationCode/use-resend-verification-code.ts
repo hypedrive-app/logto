@@ -29,7 +29,6 @@ const useResendVerificationCode = (flow: UserFlow, identifier: VerificationCodeI
   const interactionEvent = useMemo<InteractionEvent>(() => {
     if (flow === UserFlow.Continue) {
       const interactionEvent = getInteractionEventFromState(state);
-      console.log('interactionEvent', interactionEvent);
       return interactionEvent ?? InteractionEvent.SignIn;
     }
 

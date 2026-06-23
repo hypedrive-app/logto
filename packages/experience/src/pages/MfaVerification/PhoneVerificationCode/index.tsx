@@ -11,8 +11,6 @@ import ErrorPage from '@/pages/ErrorPage';
 import { UserMfaFlow } from '@/types';
 import { codeVerificationTypeMap } from '@/utils/sign-in-experience';
 
-import styles from './index.module.scss';
-
 const PhoneVerificationCode = () => {
   const flowState = useMfaFlowState();
   const { verificationIdsMap } = useContext(UserInteractionContext);
@@ -24,7 +22,7 @@ const PhoneVerificationCode = () => {
   // VerificationId not found
   const verificationId = verificationIdsMap[codeVerificationTypeMap.phone];
   if (!verificationId) {
-    return <ErrorPage title="error.invalid_session" rawMessage="Verification ID not found" />;
+    return <ErrorPage title="error.invalid_session" />;
   }
 
   const maskedPhone = flowState.maskedIdentifiers?.[MfaFactor.PhoneVerificationCode];
@@ -46,7 +44,7 @@ const PhoneVerificationCode = () => {
       <SwitchMfaFactorsLink
         flow={UserMfaFlow.MfaVerification}
         flowState={flowState}
-        className={styles.switchFactorLink}
+        className="mt-6"
       />
     </SecondaryPageLayout>
   );

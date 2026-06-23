@@ -9,8 +9,6 @@ import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-pres
 import useSingleSignOn from '@/hooks/use-single-sign-on';
 import { getLogoUrl } from '@/shared/utils/logo';
 
-import styles from './index.module.scss';
-
 const SingleSignOnConnectors = () => {
   const { theme } = useContext(PageContext);
   const { ssoEmail, ssoConnectors } = useContext(UserInteractionContext);
@@ -43,14 +41,13 @@ const SingleSignOnConnectors = () => {
       description="description.single_sign_on_connectors_list"
       descriptionProps={{ email: ssoEmail }}
     >
-      <div className={styles.ssoLinkList}>
+      <div className="flex flex-col items-center justify-center gap-4">
         {ssoConnectors.map((connector) => {
           const { id, connectorName, logo: logoUrl, darkLogo: darkLogoUrl } = connector;
 
           return (
             <SocialLinkButton
               key={id}
-              className={styles.ssoLinkButton}
               name={{ en: connectorName }} // I18n support for connectorName not supported yet, always display the plain text
               logo={getLogoUrl({ theme, logoUrl, darkLogoUrl })}
               target={connectorName}

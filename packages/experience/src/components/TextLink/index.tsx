@@ -11,7 +11,15 @@ import { usePreserveSearchParams } from '@/hooks/use-navigate-with-preserved-sea
 import usePlatform from '@/hooks/use-platform';
 import DynamicT from '@/shared/components/DynamicT';
 
-import styles from './index.module.scss';
+const linkClass =
+  'cursor-pointer [-webkit-tap-highlight-color:transparent] inline-flex justify-center [text-underline-offset:2px] transition-colors duration-200 ease-in-out rounded motion-reduce:transition-none focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--color-overlay-brand-focused,var(--primary))] [&>svg]:me-2';
+
+const typeClass = {
+  primary:
+    'text-sm font-medium text-primary no-underline active:text-primary-hover desktop:hover:text-primary-hover',
+  secondary:
+    'text-ink font-[inherit] no-underline desktop:hover:text-primary desktop:active:text-primary',
+} as const;
 
 export type Props = AnchorHTMLAttributes<HTMLAnchorElement> & {
   readonly className?: string;
@@ -55,7 +63,11 @@ const TextLink = ({ className, children, text, icon, type = 'primary', to, ...re
 
   if (to) {
     return (
-      <Link className={classNames(styles.link, styles[type], className)} to={getTo(to)} {...rest}>
+      <Link
+        className={classNames(linkClass, typeClass[type], className)}
+        to={getTo(to)}
+        {...rest}
+      >
         {icon}
         {children ?? <DynamicT forKey={text} />}
       </Link>
@@ -64,7 +76,7 @@ const TextLink = ({ className, children, text, icon, type = 'primary', to, ...re
 
   return (
     <a
-      className={classNames(styles.link, styles[type], className)}
+      className={classNames(linkClass, typeClass[type], className)}
       {...hyperLinkProps}
       rel="noopener"
     >

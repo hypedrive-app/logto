@@ -28,6 +28,14 @@ export enum InteractionEvent {
   SignIn = 'SignIn',
   Register = 'Register',
   ForgotPassword = 'ForgotPassword',
+  /**
+   * Step-up authentication: elevate an existing session to a higher ACR level
+   * (e.g. password-only → MFA-verified) without requiring full re-login.
+   *
+   * Reuses the already-identified user from the OIDC session and asks only for
+   * the additional factor(s) needed to satisfy the requested `acr_values`.
+   */
+  StepUp = 'StepUp',
 }
 
 export type VerificationIdentifier = {

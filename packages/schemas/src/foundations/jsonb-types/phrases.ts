@@ -5,5 +5,5 @@ export type Translation = {
 };
 
 export const translationGuard: z.ZodType<Translation> = z.lazy(() =>
-  z.record(z.string().or(translationGuard))
+  z.record(z.string(), z.string().or(translationGuard))
 );

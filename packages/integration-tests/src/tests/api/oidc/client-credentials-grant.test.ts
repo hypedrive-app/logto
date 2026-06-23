@@ -85,7 +85,9 @@ describe('client credentials grant', () => {
     expect(error.response.status).toBe(status);
 
     if (json) {
-      expect(await error.response.json()).toMatchObject(json);
+      // `ky` v2 consumes the response body to pre-parse it onto `error.data`, so reading
+      // `error.response.json()` again throws "Body has already been read". Use `error.data`.
+      expect(error.data).toMatchObject(json);
     }
   };
 

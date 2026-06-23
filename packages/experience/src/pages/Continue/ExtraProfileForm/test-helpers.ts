@@ -59,7 +59,9 @@ export const openAndSetDate = async (
 };
 
 export const collectErrorTexts = (root: HTMLElement | Document): string[] => {
-  const elements = Array.from(root.querySelectorAll('[role="alert"], .errorMessage, .error'));
+  // Error messages render as danger-styled containers (Tailwind `text-danger`) across the profile
+  // field components; also match the legacy `[role="alert"]` for any field that still uses it.
+  const elements = Array.from(root.querySelectorAll('[role="alert"], .text-danger'));
   return elements.map((element) => element.textContent?.trim() ?? '').filter(Boolean);
 };
 

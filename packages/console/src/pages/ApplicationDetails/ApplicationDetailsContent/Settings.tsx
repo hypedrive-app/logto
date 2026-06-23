@@ -1,6 +1,6 @@
 import { validateRedirectUrl } from '@logto/core-kit';
 import type { Application } from '@logto/schemas';
-import { ApplicationType } from '@logto/schemas';
+import { ApplicationType, CustomClientMetadataKey, LogtoAcrValues } from '@logto/schemas';
 import { useContext } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
@@ -102,8 +102,8 @@ function Settings({ data }: Props) {
       message: t('errors.invalid_uri_format'),
     },
   };
-  const redirectUris = watch('oidcClientMetadata.redirectUris');
-  const postLogoutRedirectUris = watch('oidcClientMetadata.postLogoutRedirectUris');
+  const redirectUris = watch('oidcClientMetadata.redirectUris') ?? [];
+  const postLogoutRedirectUris = watch('oidcClientMetadata.postLogoutRedirectUris') ?? [];
   const showRedirectUriMixedWarning = hasMixedUriProtocols(applicationType, redirectUris);
   const showPostLogoutUriMixedWarning = hasMixedUriProtocols(
     applicationType,
@@ -254,6 +254,23 @@ function Settings({ data }: Props) {
               value={value}
               error={convertRhfErrorMessage(error?.message)}
               placeholder={t('application_details.cors_allowed_origins_placeholder')}
+              onChange={onChange}
+            />
+          )}
+        />
+      )}
+      {applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow && (
+        <Controller
+          name={`customClientMetadata.${CustomClientMetadataKey.DefaultAcrValues}`}
+          control={control}
+          defaultValue={[]}
+          render={({ field: { onChange, value }, fieldState: { error } }) => (
+            <MultiTextInputField
+              title="application_details.default_acr_values"
+              tip={t('application_details.default_acr_values_tip')}
+              value={(value as string[] | undefined) ?? []}
+              error={convertRhfErrorMessage(error?.message)}
+              placeholder={LogtoAcrValues.Mfa}
               onChange={onChange}
             />
           )}

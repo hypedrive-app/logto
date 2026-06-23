@@ -1,3 +1,5 @@
+import { CheckIcon, MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { DynamicFlag, FlagUtils } from '@sankyu/react-circle-flags';
 import { conditional } from '@silverhand/essentials';
 import classNames from 'classnames';
 import type { KeyboardEventHandler } from 'react';
@@ -5,16 +7,12 @@ import { useCallback, useLayoutEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import ReactModal from 'react-modal';
 
-import CheckMark from '@/assets/icons/check-mark.svg?react';
-import SearchIcon from '@/assets/icons/search-icon.svg?react';
 import useDebounce from '@/hooks/use-debounce';
 import usePlatform from '@/hooks/use-platform';
 import InputField from '@/shared/components/InputFields/InputField';
 import NavBar from '@/shared/components/NavBar';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
 import type { CountryMetaData } from '@/utils/country-code';
-
-import styles from './index.module.scss';
 
 type Props = {
   readonly isOpen: boolean;
@@ -100,17 +98,47 @@ const CountryCodeDropdown = ({
     };
   }, [updatePosition]);
 
-  const filteredCountryList = useMemo(
-    () =>
-      countryList.filter(({ countryCallingCode }) => {
-        const searchValue = debouncedSearchValue.startsWith('+')
-          ? debouncedSearchValue.slice(1)
-          : debouncedSearchValue;
+  const filteredCountryList = useMemo(() => {
+    const query = debouncedSearchValue.trim().toLowerCase();
 
-        return countryCallingCode.startsWith(searchValue);
-      }),
-    [countryList, debouncedSearchValue]
-  );
+    if (!query) {
+      return countryList;
+    }
+
+    // Match by country name (e.g. "india") OR calling code (with or without a leading "+").
+    const numericQuery = query.startsWith('+') ? query.slice(1) : query;
+
+    /**
+     * Rank matches so the most relevant result is first (and thus the keyboard-highlighted
+     * default): exact name > name starts-with > calling-code starts-with > name contains.
+     * Without this, a substring match like "British Indian Ocean Territory" could outrank
+     * "India" when the user types "india".
+     */
+    const score = ({ countryName, countryCallingCode }: CountryMetaData): number => {
+      const name = countryName.toLowerCase();
+
+      if (name === query) {
+        return 0;
+      }
+      if (name.startsWith(query)) {
+        return 1;
+      }
+      if (countryCallingCode.startsWith(numericQuery)) {
+        return 2;
+      }
+      if (name.includes(query)) {
+        return 3;
+      }
+      return Number.POSITIVE_INFINITY;
+    };
+
+    return countryList
+      .map((country) => ({ country, rank: score(country) }))
+      .filter(({ rank }) => Number.isFinite(rank))
+      // Stable sort by rank; within a rank the original alphabetical order is preserved.
+      .sort((previous, next) => previous.rank - next.rank)
+      .map(({ country }) => country);
+  }, [countryList, debouncedSearchValue]);
 
   useLayoutEffect(() => {
     if (!debouncedSearchValue) {
@@ -119,8 +147,9 @@ const CountryCodeDropdown = ({
       return;
     }
 
-    // Auto Focus on the first available element
-    const firstCountryCode = filteredCountryList[0]?.countryCallingCode;
+    // Auto-highlight the first available result. We track the unique ISO `countryCode`
+    // (not the calling code) because multiple countries can share a calling code (e.g. +1).
+    const firstCountryCode = filteredCountryList[0]?.countryCode;
     setSelectedCountryCode(firstCountryCode ?? '');
   }, [filteredCountryList, debouncedSearchValue]);
 
@@ -134,8 +163,12 @@ const CountryCodeDropdown = ({
           event.preventDefault();
           event.stopPropagation();
 
-          if (selectedCountryCode) {
-            onCodeChange(selectedCountryCode);
+          const selected = filteredCountryList.find(
+            ({ countryCode }) => countryCode === selectedCountryCode
+          );
+
+          if (selected) {
+            onCodeChange(selected.countryCallingCode);
           }
           break;
         }
@@ -151,23 +184,16 @@ const CountryCodeDropdown = ({
           event.stopPropagation();
 
           const currentSelectedIndex = filteredCountryList.findIndex(
-            ({ countryCallingCode }) => countryCallingCode === selectedCountryCode
+            ({ countryCode }) => countryCode === selectedCountryCode
           );
 
           if (currentSelectedIndex <= 0) {
             return;
           }
 
-          const nextSelectedCountryCode = filteredCountryList[currentSelectedIndex - 1];
+          const nextSelected = filteredCountryList[currentSelectedIndex - 1];
 
-          setSelectedCountryCode(nextSelectedCountryCode?.countryCallingCode ?? '');
-          break;
-        }
-        case '-':
-        case 'e':
-        case '.': {
-          event.preventDefault();
-          event.stopPropagation();
+          setSelectedCountryCode(nextSelected?.countryCode ?? '');
           break;
         }
         case 'ArrowRight':
@@ -176,15 +202,15 @@ const CountryCodeDropdown = ({
           event.stopPropagation();
 
           const currentSelectedIndex = filteredCountryList.findIndex(
-            ({ countryCallingCode }) => countryCallingCode === selectedCountryCode
+            ({ countryCode }) => countryCode === selectedCountryCode
           );
 
           if (currentSelectedIndex >= filteredCountryList.length - 1) {
             return;
           }
 
-          const nextSelectedCountryCode = filteredCountryList[currentSelectedIndex + 1];
-          setSelectedCountryCode(nextSelectedCountryCode?.countryCallingCode ?? '');
+          const nextSelected = filteredCountryList[currentSelectedIndex + 1];
+          setSelectedCountryCode(nextSelected?.countryCode ?? '');
           break;
         }
         default: {
@@ -207,8 +233,8 @@ const CountryCodeDropdown = ({
     <ReactModal
       id="country-code-dropdown"
       isOpen={isOpen}
-      overlayClassName={styles.dropdownOverlay}
-      className={styles.dropdownModal}
+      overlayClassName="bg-transparent fixed inset-0 z-40 mobile:z-[var(--z-dropdown)]"
+      className="absolute z-50 focus-visible:outline-none mobile:inset-0"
       style={{
         content: {
           ...position,
@@ -221,7 +247,7 @@ const CountryCodeDropdown = ({
       }}
     >
       <div
-        className={styles.dropdownContent}
+        className="bg-elevated py-2 px-3 desktop:border desktop:border-line-strong desktop:shadow-[var(--sh-float)] desktop:rounded-[13px] desktop:py-3 mobile:flex mobile:flex-col mobile:items-stretch mobile:h-full"
         role="button"
         tabIndex={0}
         onClick={(event) => {
@@ -239,29 +265,33 @@ const CountryCodeDropdown = ({
         <InputField
           autoFocus
           name="country-code-search"
-          type="number"
-          min={0}
-          prefix={<SearchIcon />}
+          type="text"
+          inputMode="text"
+          prefix={<MagnifyingGlassIcon className="w-5 h-5" />}
           value={searchValue}
-          className={styles.searchInputField}
-          inputFieldClassName={styles.innerInputFiled}
+          className="mb-2 [&_input]:ps-2 [&_svg]:text-muted [&_svg]:self-center mobile:[&:not(:first-child)]:mt-2"
+          inputFieldClassName="desktop:py-1.5 desktop:px-3 desktop:h-auto mobile:ps-4"
           placeholder={t('input.search_region_code')}
           onChange={onSearchChange}
           onKeyDown={onInputKeyDown}
         />
-        <ul className={styles.countryList}>
-          {filteredCountryList.map(({ countryCallingCode, countryCode: countryKeyCode }) => {
+        <ul className="-mx-3 px-3 list-none overflow-y-auto desktop:max-h-[400px] mobile:text-base mobile:overflow-auto mobile:flex-1">
+          {filteredCountryList.map(({ countryCallingCode, countryCode: countryKeyCode, countryName }) => {
             const isActive = countryCallingCode === countryCode;
-            const isSelected = countryCallingCode === selectedCountryCode;
+            const isSelected = countryKeyCode === selectedCountryCode;
 
             return (
               <li
                 key={countryKeyCode}
                 tabIndex={0}
-                data-id={countryCallingCode}
+                data-id={countryKeyCode}
+                // Expose the keyboard highlight semantically so assistive tech (and tests) can
+                // observe which result is active independent of the visual highlight styling.
+                aria-selected={isSelected}
                 className={classNames(
-                  conditional(isActive && styles.active),
-                  conditional(isSelected && styles.selected)
+                  'flex items-center gap-3 py-2.5 px-3 rounded-[11px] cursor-pointer',
+                  conditional(isActive && '[&_.calling-code]:text-primary'),
+                  conditional(isSelected && 'bg-[var(--color-overlay-neutral-hover)]')
                 )}
                 // eslint-disable-next-line jsx-a11y/no-noninteractive-element-to-interactive-role
                 role="button"
@@ -274,20 +304,32 @@ const CountryCodeDropdown = ({
                   onCodeChange(countryCallingCode);
                 }}
                 onMouseEnter={() => {
-                  setSelectedCountryCode(countryCallingCode);
+                  setSelectedCountryCode(countryKeyCode);
                 }}
                 onMouseLeave={() => {
                   setSelectedCountryCode('');
                 }}
               >
-                {isActive && <CheckMark />}
-                {`+${countryCallingCode}`}
+                {FlagUtils.isValidCountryCode(countryKeyCode) && (
+                  <DynamicFlag
+                    code={countryKeyCode.toLowerCase()}
+                    width={24}
+                    height={24}
+                    aria-hidden="true"
+                    className="shrink-0 w-6 h-6 rounded-full shadow-[0_0_0_1px_var(--color-line-divider)]"
+                  />
+                )}
+                <span className="flex-1 truncate text-ink">{countryName}</span>
+                <span className="calling-code shrink-0 text-muted [font-variant-numeric:tabular-nums]">{`+${countryCallingCode}`}</span>
+                {isActive && <CheckIcon className="shrink-0 ms-1 w-5 h-5 text-primary" />}
               </li>
             );
           })}
         </ul>
         {filteredCountryList.length === 0 && (
-          <div className={styles.notFound}>{t('description.no_region_code_found')}</div>
+          <div className="text-muted py-1 px-2 text-center">
+            {t('description.no_region_code_found')}
+          </div>
         )}
       </div>
     </ReactModal>

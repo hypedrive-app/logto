@@ -78,7 +78,7 @@ export default function singleSignOnRoutes<T extends IRouterParamContext>(
       params: z.object({
         connectorId: z.string(),
       }),
-      body: z.record(z.unknown()),
+      body: z.record(z.string(), z.unknown()),
       status: [200, 404, 422, 500],
       response: z.object({
         redirectTo: z.string(),

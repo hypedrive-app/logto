@@ -241,7 +241,14 @@ export default class SchemaRouter<
     RelationCreateSchema extends Partial<SchemaLike<string> & { id: string }>,
     RelationSchema extends SchemaLike<string> & { id: string },
   >(
+    /**
+     * Zod 4 infers a generated `Guard`'s output as `$InferObjectOutput<…>` (a structurally-equal
+     * `Record<…, unknown>`) instead of the exact `Schema`, so `typeof this.schema` no longer
+     * provably satisfies `TwoRelationsQueries`'s `TableInfo` constraint even though it does at
+     * runtime. See https://github.com/colinhacks/zod/issues/4817 (fix tracked in zod PR #4822).
+     */
     relationQueries: TwoRelationsQueries<
+      // @ts-expect-error -- see note above; remove once zod#4817 lands.
       typeof this.schema,
       GeneratedSchema<string, RelationCreateSchema, RelationSchema>
     >,
@@ -447,7 +454,15 @@ export default class SchemaRouter<
         }),
         this.#assembleQualifiedMiddlewares('patch'),
         async (ctx, next) => {
-          ctx.body = await queries.updateById(ctx.guard.params.id, ctx.guard.body);
+          // Zod 4 infers a generic `ZodObject`'s output as `$InferObjectOutput<...>` rather than
+          // threading it back to the exact `Partial<Schema>` the guard was built from, so the body
+          // type no longer lines up with `updateById`. See https://github.com/colinhacks/zod/issues/4817
+          // (fix tracked in zod PR #4822). Assert the known guard output until it lands.
+          // eslint-disable-next-line no-restricted-syntax
+          ctx.body = await queries.updateById(
+            ctx.guard.params.id,
+            ctx.guard.body as Partial<Schema>
+          );
           return next();
         }
       );

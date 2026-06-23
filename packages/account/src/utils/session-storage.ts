@@ -1,4 +1,4 @@
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 const storagePrefix = 'logto:account-center:';
 const pendingReturnTtl = 10 * 60 * 1000;
@@ -56,29 +56,29 @@ type StoredSocialFlowRecordData =
       mode?: 'add' | 'change';
     };
 
-const storedVerificationRecordGuard = s.object({
-  verificationId: s.string(),
-  expiresAt: s.string(),
+const storedVerificationRecordGuard = z.object({
+  verificationId: z.string(),
+  expiresAt: z.string(),
 });
 
-const storedPathStateGuard = s.object({
-  path: s.string(),
-  createdAt: s.number(),
+const storedPathStateGuard = z.object({
+  path: z.string(),
+  createdAt: z.number(),
 });
 
-const storedSocialFlowRecordGuard = s.union([
-  s.object({
-    status: s.literal('pending'),
-    verificationRecordId: s.string(),
-    expiresAt: s.string(),
-    state: s.string(),
-    mode: s.optional(s.union([s.literal('add'), s.literal('change')])),
+const storedSocialFlowRecordGuard = z.union([
+  z.object({
+    status: z.literal('pending'),
+    verificationRecordId: z.string(),
+    expiresAt: z.string(),
+    state: z.string(),
+    mode: (z.union([z.literal('add'), z.literal('change')])).optional(),
   }),
-  s.object({
-    status: s.literal('verified'),
-    verificationRecordId: s.string(),
-    expiresAt: s.string(),
-    mode: s.optional(s.union([s.literal('add'), s.literal('change')])),
+  z.object({
+    status: z.literal('verified'),
+    verificationRecordId: z.string(),
+    expiresAt: z.string(),
+    mode: (z.union([z.literal('add'), z.literal('change')])).optional(),
   }),
 ]);
 
@@ -116,7 +116,7 @@ const removeItem = (key: string, type: 'session' | 'local') => {
 
 const getStructuredValue = <T>(
   key: string,
-  guard: s.Struct<T>,
+  guard: z.ZodType<T>,
   type: 'session' | 'local'
 ): T | undefined => {
   const raw = getString(key, type);
@@ -126,7 +126,7 @@ const getStructuredValue = <T>(
   }
 
   try {
-    const [, result] = s.validate(JSON.parse(raw), guard);
+    const { data: result } = guard.safeParse(JSON.parse(raw));
 
     if (!result) {
       removeItem(key, type);

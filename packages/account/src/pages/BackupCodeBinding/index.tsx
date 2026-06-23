@@ -27,8 +27,6 @@ import useErrorHandler from '@ac/hooks/use-error-handler';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from './index.module.scss';
-
 const isBackupCodeEnabled = (mfa?: Mfa) => mfa?.factors.includes(MfaFactor.BackupCode) ?? false;
 
 const hasOtherMfaFactor = (mfaVerifications: UserMfaVerificationResponse) => {
@@ -258,11 +256,11 @@ const BackupCodeBinding = ({ isRegenerate }: Props) => {
         isRegenerate ? <InlineNotification message="mfa.new_backup_codes_generated" /> : undefined
       }
     >
-      <div className={styles.container}>
-        <div className={styles.backupCodes}>
+      <div className="flex flex-col gap-4 w-full max-w-[400px]">
+        <div className="grid grid-cols-2 p-4 text-sm font-medium text-center rounded-[13px] bg-surface text-ink gap-y-2">
           {codes?.map((code) => <span key={code}>{code}</span>)}
         </div>
-        <div className={styles.actions}>
+        <div className="flex flex-row gap-4">
           <Button
             title="action.download"
             type="secondary"
@@ -278,13 +276,13 @@ const BackupCodeBinding = ({ isRegenerate }: Props) => {
             }}
           />
         </div>
-        <div className={styles.hint}>
+        <div className="text-sm text-muted">
           <DynamicT forKey="mfa.backup_code_hint" />
         </div>
         <Button
           title="action.continue"
           type="primary"
-          className={styles.submitButton}
+          className="mt-2 self-start"
           isLoading={loading}
           onClick={() => {
             void handleSubmit();

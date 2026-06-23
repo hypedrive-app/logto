@@ -1,6 +1,6 @@
 import Button from '@experience/shared/components/Button';
 import InputField from '@experience/shared/components/InputFields/InputField';
-import { AccountCenterControlValue, MfaFactor } from '@logto/schemas';
+import { AccountCenterControlValue, MfaFactor, type WebAuthnRegistrationOptions } from '@logto/schemas';
 import { trySafe } from '@silverhand/essentials';
 import { browserSupportsWebAuthn, startRegistration, WebAuthnError } from '@simplewebauthn/browser';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -24,8 +24,6 @@ import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 import { isWebAuthnConfigurable } from '@ac/utils/security-page';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from './index.module.scss';
-
 const PasskeyBinding = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -42,7 +40,7 @@ const PasskeyBinding = () => {
   // synchronously in the click handler (required for iOS Safari/WKWebView user gesture)
   const [registrationData, setRegistrationData] = useState<{
     verificationRecordId: string;
-    registrationOptions: Parameters<typeof startRegistration>[0];
+    registrationOptions: WebAuthnRegistrationOptions;
   }>();
   // State for the naming step
   const [webAuthnVerificationRecordId, setWebAuthnVerificationRecordId] = useState<string>();
@@ -101,7 +99,7 @@ const PasskeyBinding = () => {
     // Step 1: Call WebAuthn browser API synchronously after click (required for iOS Safari)
     // Registration options were pre-fetched to avoid async operations before this call
     const credential = await trySafe(
-      async () => startRegistration(registrationOptions),
+      async () => startRegistration({ optionsJSON: registrationOptions }),
       (error) => {
         // User cancelled the WebAuthn dialog, no need to show error
         if (
@@ -236,7 +234,7 @@ const PasskeyBinding = () => {
         title="account_center.passkey.name_this_passkey"
         description="account_center.passkey.name_passkey_description"
       >
-        <div className={styles.container}>
+        <div className="flex flex-col gap-4 w-full max-w-[400px]">
           <InputField
             name="passkeyName"
             label={t('account_center.passkey.name_input_label')}
@@ -248,7 +246,7 @@ const PasskeyBinding = () => {
           <Button
             title="action.continue"
             type="primary"
-            className={styles.submitButton}
+            className="mt-2 self-start"
             isLoading={loading}
             onClick={() => {
               void handleSubmitName();
@@ -261,11 +259,11 @@ const PasskeyBinding = () => {
 
   return (
     <SecondaryPageLayout title="mfa.create_a_passkey" description="mfa.create_passkey_description">
-      <div className={styles.container}>
+      <div className="flex flex-col gap-4 w-full max-w-[400px]">
         <Button
           title="action.continue"
           type="primary"
-          className={styles.submitButton}
+          className="mt-2 self-start"
           isLoading={loading}
           isDisabled={!registrationData}
           onClick={() => {

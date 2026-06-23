@@ -35,7 +35,7 @@ const templateConfigGuard = z.union([
   }),
   z.object({
     template: z.string(),
-    variables: z.record(z.unknown()).optional(),
+    variables: z.record(z.string(), z.unknown()).optional(),
     subject: z.string().optional(),
     replyTo: z.string().optional(),
   }),
@@ -62,5 +62,5 @@ export const mailgunConfigGuard = z.object({
   domain: z.string(),
   apiKey: z.string(),
   from: z.string(),
-  deliveries: z.record(templateConfigGuard),
+  deliveries: z.record(z.string(), templateConfigGuard),
 }) satisfies z.ZodType<MailgunConfig>;

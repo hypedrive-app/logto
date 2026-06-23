@@ -10,8 +10,6 @@ import useAvatarCropUpload from '@/hooks/use-avatar-crop-upload';
 import RotatingRingIcon from '@/shared/components/Button/RotatingRingIcon';
 import { avatarFileAccept, formatFileSizeLimit } from '@/utils/avatar-upload';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly className?: string;
   readonly name: string;
@@ -91,34 +89,34 @@ const AvatarUploadField = ({
   const showHint = !displayError && !isUploading;
 
   return (
-    <div className={classNames(styles.container, className)}>
-      <div className={styles.row}>
-        <div className={styles.avatarSlot}>
+    <div className={classNames('flex flex-col gap-1', className)}>
+      <div className="flex items-start gap-3">
+        <div className="shrink-0 w-20 h-20 flex items-center justify-center">
           {isUploading ? (
-            <div className={styles.loadingIcon}>
+            <div className="w-6 h-6 text-primary">
               <RotatingRingIcon />
             </div>
           ) : value ? (
             <img
-              className={styles.avatar}
+              className="w-20 h-20 rounded-[8px] object-cover object-center"
               src={value}
               alt={label ?? name}
               referrerPolicy="no-referrer"
             />
           ) : (
-            <UserAvatar className={styles.placeholder} />
+            <UserAvatar className="w-20 h-20 rounded-[8px]" />
           )}
         </div>
-        <div className={styles.controls}>
+        <div className="flex flex-1 flex-col items-start gap-2 min-w-0 min-h-20">
           {labelWithOptionalSuffix && (
-            <label className={styles.label} htmlFor={inputId}>
+            <label className="text-xs text-muted" htmlFor={inputId}>
               {labelWithOptionalSuffix}
             </label>
           )}
-          <div className={styles.buttonRow}>
+          <div className="flex flex-wrap items-center gap-3">
             <button
               type="button"
-              className={styles.uploadButton}
+              className="cursor-pointer text-sm font-medium text-ink bg-surface border border-line-strong rounded-[11px] py-1.5 px-4 min-h-8 disabled:cursor-not-allowed disabled:opacity-50"
               disabled={isUploading}
               onClick={openFilePicker}
             >
@@ -127,7 +125,7 @@ const AvatarUploadField = ({
             {showRemove && (
               <button
                 type="button"
-                className={styles.removeButton}
+                className="cursor-pointer text-sm font-medium text-danger bg-none border-none p-0"
                 onClick={() => {
                   void handleRemove();
                 }}
@@ -137,23 +135,23 @@ const AvatarUploadField = ({
             )}
           </div>
           {displayError ? (
-            <span className={styles.errorText} role="alert">
+            <span className="text-xs text-danger mt-auto" role="alert">
               {displayError}
             </span>
           ) : (
             showHint && (
-              <span className={styles.hint}>
+              <span className="text-xs text-muted mt-auto">
                 {tAvatar('hint', { limit: formatFileSizeLimit(maxUploadFileSize) })}
               </span>
             )
           )}
-          {description && <span className={styles.description}>{description}</span>}
+          {description && <span className="text-xs text-muted">{description}</span>}
         </div>
         <input
           key={fileInputKey}
           ref={inputRef}
           id={inputId}
-          className={styles.hiddenInput}
+          className="hidden"
           type="file"
           name={name}
           accept={avatarFileAccept}

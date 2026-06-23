@@ -3,8 +3,6 @@ import type { TFuncKey } from 'i18next';
 
 import DynamicT from '@/shared/components/DynamicT';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly className?: string;
   readonly message: TFuncKey;
@@ -12,7 +10,12 @@ type Props = {
 
 const InlineNotification = ({ className, message }: Props) => {
   return (
-    <div className={classNames(styles.notification, className)}>
+    <div
+      className={classNames(
+        'flex items-center p-3 text-sm mx-auto mb-2 surface-warning',
+        className
+      )}
+    >
       <DynamicT forKey={message} />
     </div>
   );

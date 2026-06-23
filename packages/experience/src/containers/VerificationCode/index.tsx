@@ -9,7 +9,6 @@ import Button from '@/shared/components/Button';
 import VerificationCodeInput, { defaultLength } from '@/shared/components/VerificationCode';
 import { UserFlow } from '@/types';
 
-import styles from './index.module.scss';
 import useResendVerificationCode from './use-resend-verification-code';
 import { getCodeVerificationHookByFlow } from './utils';
 
@@ -97,15 +96,20 @@ const VerificationCode = ({
   }, [codeInput, isCodeInputReady]);
 
   return (
-    <form className={classNames(styles.form, className)}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+    >
       <VerificationCodeInput
         name="passcode"
-        className={classNames(styles.inputField, errorMessage && styles.withError)}
+        className={classNames(errorMessage ? 'mb-2' : 'mb-8')}
         value={codeInput}
         error={errorMessage}
         onChange={setCodeInput}
       />
-      <div className={styles.message}>
+      <div className="text-sm text-muted w-auto self-start">
         {isRunning ? (
           <Trans components={{ span: <span key="counter" /> }}>
             {t('description.resend_after_seconds', { seconds })}
@@ -115,7 +119,7 @@ const VerificationCode = ({
             components={{
               a: (
                 <TextLink
-                  className={styles.link}
+                  className="w-auto self-start"
                   onClick={async () => {
                     clearErrorMessage();
                     await onResendVerificationCode();
@@ -134,14 +138,14 @@ const VerificationCode = ({
           hasPassword={hasPasswordButton}
           identifier={identifier.type}
           value={identifier.value}
-          className={styles.switch}
+          className="w-auto self-start mt-6"
         />
       )}
       <Button
         title="action.continue"
         type="primary"
         isLoading={isSubmitting}
-        className={styles.continueButton}
+        className="mt-6"
         onClick={() => {
           if (!isCodeInputReady) {
             setInputErrorMessage(t('error.invalid_passcode'));

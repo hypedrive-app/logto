@@ -69,6 +69,11 @@ const mfa = {
   no_sms_connector_error:
     'Cannot enable SMS verification code MFA without an SMS connector. Please configure an SMS connector first.',
   setup_link: 'Set up',
+  step_up_auth: 'Step-up authentication',
+  step_up_auth_description:
+    'How MFA factors map to ACR (Authentication Context Class Reference) levels.',
+  step_up_auth_info:
+    'When a user completes MFA in this tenant, their session is marked with <code>acr: urn:logto:acr:mfa</code>. Applications can request this level by passing <code>acr_values=urn:logto:acr:mfa</code> in the authorization request, which triggers a step-up prompt (MFA only, no re-login) for users whose current session does not satisfy it.',
 };
 
 export default Object.freeze(mfa);

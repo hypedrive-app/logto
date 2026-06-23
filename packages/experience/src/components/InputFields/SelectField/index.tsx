@@ -1,13 +1,11 @@
+import { ChevronDownIcon } from '@heroicons/react/24/outline';
 import { type Nullable } from '@silverhand/essentials';
 import classNames from 'classnames';
 import { useRef, useState, useEffect } from 'react';
 
-import ArrowDown from '@/assets/icons/arrow-down.svg?react';
 import Dropdown, { DropdownItem } from '@/components/Dropdown';
 import InputField from '@/shared/components/InputFields/InputField';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
-
-import styles from './index.module.scss';
 
 type Props = {
   readonly className?: string;
@@ -90,11 +88,14 @@ const SelectField = ({
   };
 
   return (
-    <div className={classNames(styles.selectContainer, className)}>
-      <div ref={ref} className={styles.select}>
+    <div className={classNames('flex flex-col w-full gap-1', className)}>
+      <div
+        ref={ref}
+        className="cursor-pointer relative [&_.inputWrapper_input]:text-ellipsis [&_.inputWrapper_input]:pe-8 [&_.inputWrapper_input]:cursor-pointer"
+      >
         <InputField
           readOnly
-          className={styles.inputWrapper}
+          className="inputWrapper"
           name={name}
           label={label}
           placeholder={placeholder}
@@ -122,7 +123,7 @@ const SelectField = ({
         <Dropdown
           isFullWidth
           anchorRef={ref}
-          className={styles.dropdown}
+          className="p-1 max-h-[288px]"
           isOpen={isOpen}
           horizontalAlign="start"
           onClose={() => {
@@ -150,7 +151,10 @@ const SelectField = ({
         <div
           tabIndex={0}
           role="button"
-          className={classNames(styles.arrow, isOpen && styles.up)}
+          className={classNames(
+            'absolute inset-inline-end-2 top-1/2 -translate-y-1/2 flex items-center justify-center w-5 h-5 text-muted transition-transform duration-200 ease-in-out focus-visible:rounded-[11px] focus-visible:outline focus-visible:outline-1 focus-visible:outline-primary',
+            isOpen && 'rotate-180'
+          )}
           onKeyDown={(event) => {
             if (event.key === 'Escape') {
               setIsOpen(false);
@@ -167,11 +171,11 @@ const SelectField = ({
             handleArrowNavigation(event);
           }}
         >
-          <ArrowDown />
+          <ChevronDownIcon className="w-5 h-5" />
         </div>
       </div>
-      {description && <div className={styles.description}>{description}</div>}
-      {errorMessage && <div className={styles.errorMessage}>{errorMessage}</div>}
+      {description && <div className="ms-0.5 text-sm text-muted">{description}</div>}
+      {errorMessage && <div className="ms-0.5 text-sm text-danger">{errorMessage}</div>}
     </div>
   );
 };

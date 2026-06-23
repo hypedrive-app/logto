@@ -4,7 +4,7 @@ import { has } from '@silverhand/essentials';
 import type { MiddlewareType } from 'koa';
 import { koaBody } from 'koa-body';
 import type { IMiddleware, IRouterParamContext } from 'koa-router';
-import type { ZodType, ZodTypeDef } from 'zod';
+import type { ZodType } from 'zod';
 
 import { EnvSet } from '#src/env-set/index.js';
 import RequestError from '#src/errors/RequestError/index.js';
@@ -24,7 +24,7 @@ export type GuardConfig<QueryT, BodyT, ParametersT, ResponseT, FilesT> = {
    * // e.g. parse '?key1=foo'
    * z.object({ key1: z.string() })
    */
-  query?: ZodType<QueryT, ZodTypeDef, unknown>;
+  query?: ZodType<QueryT, unknown>;
   /**
    * Guard JSON request body. You can treat the body like a normal object.
    *
@@ -34,7 +34,7 @@ export type GuardConfig<QueryT, BodyT, ParametersT, ResponseT, FilesT> = {
    *   key2: z.object({ key3: z.number() }).array(),
    * })
    */
-  body?: ZodType<BodyT, ZodTypeDef, unknown>;
+  body?: ZodType<BodyT, unknown>;
   /**
    * Guard `koa-router` path parameters (i.e. `ctx.params`).
    *
@@ -42,13 +42,13 @@ export type GuardConfig<QueryT, BodyT, ParametersT, ResponseT, FilesT> = {
    * // e.g. parse '/foo/:key1'
    * z.object({ key1: z.string() })
    */
-  params?: ZodType<ParametersT, ZodTypeDef, unknown>;
+  params?: ZodType<ParametersT, unknown>;
   /**
    * Guard response body.
    *
    * @example z.object({ key1: z.string() })
    */
-  response?: ZodType<ResponseT, ZodTypeDef, unknown>;
+  response?: ZodType<ResponseT, unknown>;
   /**
    * Guard response status code. It produces a `ServerError` (500) if the response does not satisfy
    * any of the given value(s).
@@ -57,7 +57,7 @@ export type GuardConfig<QueryT, BodyT, ParametersT, ResponseT, FilesT> = {
    * middleware.
    */
   status?: number | number[];
-  files?: ZodType<FilesT, ZodTypeDef, unknown>;
+  files?: ZodType<FilesT, unknown>;
 };
 
 export type GuardedRequest<QueryT, BodyT, ParametersT, FilesT> = {
@@ -98,9 +98,9 @@ export const isGuardMiddleware = <Type extends IMiddleware>(
  * It can not properly infer the output type to be `Output` even if the guard is provided,
  * which brings additional but unnecessary type checks.
  */
-export const parse = <Output, Definition extends ZodTypeDef, Input>(
+export const parse = <Output, Input>(
   type: 'query' | 'body' | 'params' | 'files',
-  guard: ZodType<Output, Definition, Input>,
+  guard: ZodType<Output, Input>,
   data: unknown
 ) => {
   try {
@@ -110,9 +110,9 @@ export const parse = <Output, Definition extends ZodTypeDef, Input>(
   }
 };
 
-const tryParse = <Output, Definition extends ZodTypeDef, Input>(
+const tryParse = <Output, Input>(
   type: 'query' | 'body' | 'params' | 'files',
-  guard: Optional<ZodType<Output, Definition, Input>>,
+  guard: Optional<ZodType<Output, Input>>,
   data: unknown
 ) => {
   if (!guard) {

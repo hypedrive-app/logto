@@ -42,6 +42,9 @@ export type SocialIdentifier = z.infer<typeof socialIdentifierGuard>;
 export type Identifier = z.infer<typeof identifierGuard>;
 
 // Interaction Result
+//
+// The guard's `event` already excludes `StepUp` (legacy flow predates step-up auth), so the
+// inferred result type only covers sign-in / register / forgot-password.
 export type AnonymousInteractionResult = z.infer<typeof anonymousInteractionResultGuard>;
 
 export type RegisterInteractionResult = Omit<AnonymousInteractionResult, 'event'> & {

@@ -45,7 +45,7 @@ const valueGuards: { [Key in WellKnownCacheType]: ZodType<WellKnownMap[Key]> } =
   'connectors-well-known': connectorWellKnownGuard.array(),
   'email-templates': EmailTemplates.guard.nullable(),
   'resource-by-indicator': Resources.guard.nullable(),
-  'custom-phrases': z.record(z.unknown()),
+  'custom-phrases': z.record(z.string(), z.unknown()),
   'custom-phrases-tags': z.string().array(),
   'tenant-cache-expires-at': z.number(),
   'signing-key-rotation-state': signingKeyRotationStateGuard.nullable(),

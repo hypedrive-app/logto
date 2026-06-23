@@ -1,12 +1,10 @@
+import { CheckIcon } from '@heroicons/react/24/outline';
 import { type ConsentInfoResponse } from '@logto/schemas';
 import classNames from 'classnames';
 import { type ReactNode } from 'react';
 
-import CheckMark from '@/assets/icons/check-mark.svg?react';
 import OrganizationIcon from '@/assets/icons/organization-icon.svg?react';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
-
-import styles from './index.module.scss';
 
 export type Organization = Exclude<ConsentInfoResponse['organizations'], undefined>[number];
 
@@ -27,7 +25,11 @@ const OrganizationItem = ({
 }: OrganizationItemProps) => {
   return (
     <div
-      className={classNames(styles.organizationItem, className)}
+      className={classNames(
+        'group rounded-[11px] py-2.5 px-2 cursor-pointer flex items-center overlay-hover data-[selected=true]:text-primary',
+        className
+      )}
+      data-organization-item
       data-selected={isSelected}
       {...(onSelect && {
         role: 'button',
@@ -41,11 +43,11 @@ const OrganizationItem = ({
       })}
     >
       {isSelected ? (
-        <CheckMark className={styles.icon} />
+        <CheckIcon className="w-5 h-5 text-muted me-2 group-data-[selected=true]:text-primary" />
       ) : (
-        <OrganizationIcon className={styles.icon} />
+        <OrganizationIcon className="w-5 h-5 text-muted me-2 group-data-[selected=true]:text-primary" />
       )}
-      <div className={styles.organizationName}>{organization.name}</div>
+      <div className="text-sm flex-1">{organization.name}</div>
       {suffixElement}
     </div>
   );

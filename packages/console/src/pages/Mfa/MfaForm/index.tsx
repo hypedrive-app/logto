@@ -444,6 +444,18 @@ function MfaForm({ data, adaptiveMfa, signInMethods, onMfaUpdated }: Props) {
             </FormField>
           )}
         </FormCard>
+        <FormCard
+          title="mfa.step_up_auth"
+          description="mfa.step_up_auth_description"
+        >
+          <InlineNotification>
+            <Trans
+              components={{ code: <code /> }}
+            >
+              {t('mfa.step_up_auth_info')}
+            </Trans>
+          </InlineNotification>
+        </FormCard>
       </DetailsForm>
       <UnsavedChangesAlertModal hasUnsavedChanges={isDirty} />
     </>

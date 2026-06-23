@@ -60,13 +60,17 @@ export const whatsappSmsConfigGuard = z.object({
       requiredTemplateUsageTypes.every((requiredType) =>
         templates.map((template) => template.usageType).includes(requiredType)
       ),
-    (templates) => ({
-      message: `Template with UsageType (${requiredTemplateUsageTypes
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      error: (issue) => {
+        const templates = issue.input as Array<{ usageType: string }>;
+        return `Template with UsageType (${requiredTemplateUsageTypes
         .filter(
           (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
         )
-        .join(', ')}) should be provided!`,
-    })
+        .join(', ')}) should be provided!`;
+      },
+    }
   ),
 });
 

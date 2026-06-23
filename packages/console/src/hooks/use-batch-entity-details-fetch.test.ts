@@ -2,10 +2,11 @@ import { renderHook, waitFor } from '@testing-library/react';
 
 import useApi from './use-api';
 import useBatchEntityDetailsFetch from './use-batch-entity-details-fetch';
+import { vi } from 'vitest';
 
-jest.mock('./use-api', () => ({
+vi.mock('./use-api', () => ({
   __esModule: true,
-  default: jest.fn(),
+  default: vi.fn(),
 }));
 
 type TestEntity = {
@@ -13,10 +14,10 @@ type TestEntity = {
   name: string;
 };
 
-const mockedUseApi = jest.mocked(useApi);
+const mockedUseApi = vi.mocked(useApi);
 
 const createApi = () => ({
-  get: jest.fn((pathname: string) => ({
+  get: vi.fn((pathname: string) => ({
     json: async () => {
       const id = pathname.split('/').at(-1) ?? '';
 
@@ -61,7 +62,7 @@ describe('useBatchEntityDetailsFetch', () => {
 
   it('supports a custom fetcher', async () => {
     const api = createApi();
-    const fetchEntity = jest.fn(async ({ id }: { id: string }) => ({
+    const fetchEntity = vi.fn(async ({ id }: { id: string }) => ({
       id,
       name: `custom-${id}`,
     }));
@@ -96,7 +97,7 @@ describe('useBatchEntityDetailsFetch', () => {
   it('respects the concurrency limit', async () => {
     const pendingEntities = new Map<string, ReturnType<typeof createDeferredEntity>>();
     const api = {
-      get: jest.fn((pathname: string) => {
+      get: vi.fn((pathname: string) => {
         const id = pathname.split('/').at(-1) ?? '';
         const deferredEntity = createDeferredEntity(id);
         pendingEntities.set(id, deferredEntity);
@@ -157,7 +158,7 @@ describe('useBatchEntityDetailsFetch', () => {
 
   it('stops remaining batches when a batch request fails', async () => {
     const api = {
-      get: jest.fn((pathname: string) => ({
+      get: vi.fn((pathname: string) => ({
         json: async () => {
           const id = pathname.split('/').at(-1) ?? '';
 

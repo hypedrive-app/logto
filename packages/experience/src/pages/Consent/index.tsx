@@ -1,5 +1,5 @@
 import { ReservedResource } from '@logto/core-kit';
-import { type ConsentInfoResponse } from '@logto/schemas';
+import { useQuery } from '@tanstack/react-query';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -11,13 +11,13 @@ import useApi from '@/hooks/use-api';
 import useErrorHandler, { type ErrorHandlers } from '@/hooks/use-error-handler';
 import useGlobalRedirectTo from '@/hooks/use-global-redirect-to';
 import ErrorPage from '@/pages/ErrorPage';
+import { queryKeys } from '@/query-client';
 import Button from '@/shared/components/Button';
 import { searchKeys } from '@/shared/utils/search-parameters';
 
 import OrganizationSelector, { type Organization } from './OrganizationSelector';
 import ScopesListCard from './ScopesListCard';
 import UserProfile from './UserProfile';
-import styles from './index.module.scss';
 import { getRedirectUriOrigin } from './util';
 
 const Consent = () => {
@@ -26,13 +26,10 @@ const Consent = () => {
   const { t } = useTranslation();
   const redirectTo = useGlobalRedirectTo();
 
-  const [consentData, setConsentData] = useState<ConsentInfoResponse>();
   const [selectedOrganization, setSelectedOrganization] = useState<Organization>();
   const [isAccessDenied, setIsAccessDenied] = useState(false);
 
   const [isConsentLoading, setIsConsentLoading] = useState(false);
-
-  const asyncGetConsentInfo = useApi(getConsentInfo);
 
   const consentErrorHandlers: ErrorHandlers = useMemo(
     () => ({
@@ -49,6 +46,31 @@ const Consent = () => {
     },
     [consentErrorHandlers, handleError]
   );
+
+  /**
+   * Consent info fetch via TanStack Query — replaces the manual
+   * useState(data) + useState(loading) + useEffect pattern. Loading/error/caching
+   * are handled by the query; errors are routed through the existing error handler.
+   */
+  const { data: consentData, error: consentInfoError } = useQuery({
+    queryKey: queryKeys.consentInfo,
+    queryFn: getConsentInfo,
+  });
+
+  useEffect(() => {
+    if (consentInfoError) {
+      void handleConsentError(consentInfoError);
+    }
+  }, [consentInfoError, handleConsentError]);
+
+  // Initialize the default organization selection once consent info loads.
+  useEffect(() => {
+    const [firstOrganization] = consentData?.organizations ?? [];
+
+    if (firstOrganization) {
+      setSelectedOrganization(firstOrganization);
+    }
+  }, [consentData]);
 
   const signOut = useCallback(() => {
     const applicationId =
@@ -78,29 +100,6 @@ const Consent = () => {
       await redirectTo(result.redirectTo);
     }
   }, [asyncConsent, handleConsentError, redirectTo, selectedOrganization?.id]);
-
-  useEffect(() => {
-    const getConsentInfoHandler = async () => {
-      const [error, result] = await asyncGetConsentInfo();
-
-      if (error) {
-        await handleConsentError(error);
-
-        return;
-      }
-
-      setConsentData(result);
-
-      // Init the default organization selection
-      if (!result?.organizations?.length) {
-        return;
-      }
-
-      setSelectedOrganization(result.organizations[0]);
-    };
-
-    void getConsentInfoHandler();
-  }, [asyncGetConsentInfo, handleConsentError]);
 
   if (isAccessDenied) {
     return (
@@ -149,17 +148,17 @@ const Consent = () => {
           ({ resource }) => resource.id !== ReservedResource.Organization
         )}
         appName={applicationName}
-        className={styles.scopesCard}
+        className="mt-6 mobile:mt-4 desktop:mt-6"
       />
       {consentData.organizations && (
         <OrganizationSelector
-          className={styles.organizationSelector}
+          className="mt-6"
           organizations={consentData.organizations}
           selectedOrganization={selectedOrganization}
           onSelect={setSelectedOrganization}
         />
       )}
-      <div className={styles.footerButton}>
+      <div className="mt-7 flex items-center gap-2">
         {redirectUri && (
           <Button
             title="action.cancel"
@@ -172,12 +171,12 @@ const Consent = () => {
         <Button title="action.authorize" isLoading={isConsentLoading} onClick={consentHandler} />
       </div>
       {!showTerms && redirectUriOrigin && (
-        <div className={styles.redirectUri}>
+        <div className="mt-5 text-center text-xs font-medium text-muted">
           {t('description.redirect_to', { name: redirectUriOrigin })}
         </div>
       )}
       {showTerms && redirectUriOrigin && (
-        <div className={styles.terms}>
+        <div className="mt-5 text-xs text-muted">
           <Trans
             components={{
               link: (
@@ -197,7 +196,7 @@ const Consent = () => {
         </div>
       )}
       {showTerms && !redirectUriOrigin && (
-        <div className={styles.terms}>
+        <div className="mt-5 text-xs text-muted">
           <Trans
             components={{
               link: (
@@ -215,7 +214,7 @@ const Consent = () => {
           </Trans>
         </div>
       )}
-      <div className={styles.footerLink}>
+      <div className="items-center mt-6 flex justify-center gap-1">
         {t('description.not_you')}{' '}
         <TextLink replace to="/sign-in" text="action.use_another_account" />
       </div>

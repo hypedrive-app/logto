@@ -35,7 +35,7 @@ describe('organization role APIs', () => {
 
       assert(response instanceof HTTPError);
 
-      const body: unknown = await response.response.json();
+      const body: unknown = response.data;
       expect(response.response.status).toBe(422);
       expect(isKeyInObject(body, 'code') && body.code).toBe('entity.unique_integrity_violation');
     });
@@ -161,7 +161,7 @@ describe('organization role APIs', () => {
 
       assert(response instanceof HTTPError);
       expect(response.response.status).toBe(422);
-      expect(await response.response.json()).toMatchObject(
+      expect(response.data).toMatchObject(
         expect.objectContaining({
           code: 'entity.unique_integrity_violation',
         })
@@ -247,7 +247,7 @@ describe('organization role APIs', () => {
 
       assert(response instanceof HTTPError);
       expect(response.response.status).toBe(422);
-      expect(await response.response.json()).toMatchObject(
+      expect(response.data).toMatchObject(
         expect.objectContaining({
           code: 'entity.relation_foreign_key_not_found',
         })
@@ -356,7 +356,7 @@ describe('organization role APIs', () => {
 
       assert(response instanceof HTTPError);
       expect(response.response.status).toBe(422);
-      expect(await response.response.json()).toMatchObject(
+      expect(response.data).toMatchObject(
         expect.objectContaining({
           code: 'entity.relation_foreign_key_not_found',
         })

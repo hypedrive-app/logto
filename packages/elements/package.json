@@ -38,7 +38,7 @@
     "test:ci": "pnpm run test --coverage"
   },
   "engines": {
-    "node": "^22.14.0"
+    "node": "^22.14.0 || ^24.0.0"
   },
   "bugs": {
     "url": "https://github.com/logto-io/logto/issues"
@@ -47,9 +47,9 @@
     "@lit/context": "^1.1.2",
     "@lit/localize": "^0.12.1",
     "@lit/react": "^1.0.5",
-    "@silverhand/essentials": "^2.9.1",
-    "ky": "^1.2.3",
-    "libphonenumber-js": "^1.11.12",
+    "@silverhand/essentials": "^2.9.3",
+    "ky": "catalog:",
+    "libphonenumber-js": "^1.13.7",
     "lit": "^3.1.4"
   },
   "devDependencies": {
@@ -60,14 +60,14 @@
     "@silverhand/eslint-config": "6.0.1",
     "@silverhand/ts-config": "6.0.0",
     "@types/mocha": "^10.0.9",
-    "@types/node": "^22.14.0",
+    "@types/node": "^24.0.0",
     "@web/dev-server": "^0.4.6",
     "@web/dev-server-esbuild": "^1.0.2",
     "@web/test-runner": "^0.20.0",
     "@web/test-runner-playwright": "^0.11.0",
-    "eslint": "^8.56.0",
-    "lint-staged": "^15.0.0",
-    "prettier": "^3.5.3",
+    "eslint": "catalog:",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
     "tsup": "^8.5.1"
   },
   "eslintConfig": {

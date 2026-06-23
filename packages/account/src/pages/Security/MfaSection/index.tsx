@@ -25,7 +25,6 @@ import SecuritySection from '../components/SecuritySection';
 import { SecuritySkeleton } from '../components/SecuritySkeleton';
 
 import MfaSkeleton from './MfaSkeleton';
-import styles from './index.module.scss';
 import useMfaRows from './use-mfa-rows';
 
 /** MFA policies where users cannot skip MFA verification */
@@ -63,12 +62,12 @@ const MfaContent = ({
   return (
     <>
       {hasToggle && (
-        <div className={styles.toggleRow}>
-          <div className={styles.toggleInfo}>
-            <div className={styles.toggleTitle}>
+        <div className="flex items-center gap-6 px-6 py-5 mobile:gap-3 mobile:p-4">
+          <div className="flex-1 flex flex-col gap-1 min-w-0 mobile:gap-1.5">
+            <div className="text-sm font-medium text-ink mobile:[overflow-wrap:anywhere] mobile:break-words">
               {t('account_center.security.two_step_verification')}
             </div>
-            <div className={styles.toggleDescription}>
+            <div className="text-sm text-muted mobile:[overflow-wrap:anywhere] mobile:break-words">
               {t('account_center.security.turn_on_2_step_verification_description')}
             </div>
           </div>
@@ -80,7 +79,7 @@ const MfaContent = ({
           />
         </div>
       )}
-      {hasToggle && rows.length > 0 && <div className={styles.divider} />}
+      {hasToggle && rows.length > 0 && <div className="h-px bg-line" />}
       {rows.map((row) => (
         <SecurityRow key={row.key} row={row} />
       ))}
@@ -230,7 +229,7 @@ const MfaSection = () => {
           !isMfaSectionLoading && showToggle && isTwoStepEnabled && !hasConfiguredMfa ? (
             <InlineNotification
               message="account_center.security.no_verification_method_warning"
-              className={styles.notification}
+              className="mt-1"
             />
           ) : undefined
         }

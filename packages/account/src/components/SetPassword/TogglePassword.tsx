@@ -2,8 +2,6 @@ import Checkbox from '@/components/Checkbox';
 import { onKeyDownHandler } from '@experience/shared/utils/a11y';
 import { useTranslation } from 'react-i18next';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly isChecked?: boolean;
   readonly onChange: (checked: boolean) => void;
@@ -21,7 +19,7 @@ const TogglePassword = ({ isChecked, onChange }: Props) => {
       role="radio"
       aria-checked={isChecked}
       tabIndex={0}
-      className={styles.passwordSwitch}
+      className="flex items-center w-full mb-4 select-none cursor-pointer"
       onClick={toggle}
       onKeyDown={onKeyDownHandler({
         Escape: () => {
@@ -31,7 +29,7 @@ const TogglePassword = ({ isChecked, onChange }: Props) => {
         ' ': toggle,
       })}
     >
-      <Checkbox name="toggle-password" checked={isChecked} className={styles.checkbox} />
+      <Checkbox name="toggle-password" checked={isChecked} className="me-2 cursor-pointer" />
       <div>{t('action.show_password')}</div>
     </div>
   );

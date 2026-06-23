@@ -6,8 +6,6 @@ import useMfaFlowState from '@/hooks/use-mfa-factors-state';
 import ErrorPage from '@/pages/ErrorPage';
 import { UserMfaFlow } from '@/types';
 
-import styles from './index.module.scss';
-
 const TotpVerification = () => {
   const flowState = useMfaFlowState();
 
@@ -26,7 +24,7 @@ const TotpVerification = () => {
       <SwitchMfaFactorsLink
         flow={UserMfaFlow.MfaVerification}
         flowState={flowState}
-        className={styles.switchFactorLink}
+        className="mt-6"
       />
     </SecondaryPageLayout>
   );

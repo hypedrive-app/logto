@@ -1,5 +1,5 @@
 import { type SchemaLike } from '@logto/shared/universal';
-import type { ZodObject, ZodType, ZodOptional, ZodTypeAny } from 'zod';
+import { z, type ZodObject, type ZodType, type ZodOptional } from 'zod';
 
 export type { SchemaLike, SchemaValue, SchemaValuePrimitive } from '@logto/shared/universal';
 
@@ -11,10 +11,7 @@ export type Guard<T extends SchemaLike<string>> = ZodObject<
   {
     [key in keyof T]-?: ParseOptional<T[key]>;
   },
-  'strip',
-  ZodTypeAny,
-  T,
-  T
+  z.core.$strip
 >;
 
 export type GeneratedSchema<

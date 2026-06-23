@@ -40,7 +40,7 @@ const usePasskeySignIn = () => {
       }
 
       const response = await trySafe(
-        async () => startRegistration(options),
+        async () => startRegistration({ optionsJSON: options }),
         () => {
           setToast(t('mfa.webauthn_failed_to_create'));
         }
@@ -74,7 +74,7 @@ const usePasskeySignIn = () => {
         return;
       }
       const response = await trySafe(
-        async () => startAuthentication(options),
+        async () => startAuthentication({ optionsJSON: options }),
         (error: unknown) => {
           // User cancelled the WebAuthn dialog, no need to show an error toast
           if (

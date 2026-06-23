@@ -1,3 +1,4 @@
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { AgreeToTermsPolicy, type SignIn } from '@logto/schemas';
 import classNames from 'classnames';
 import { useCallback, useContext, useEffect, useMemo } from 'react';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
 import WebAuthnContext from '@/Providers/WebAuthnContextProvider/WebAuthnContext';
-import LockIcon from '@/assets/icons/lock.svg?react';
 import { SmartInputField } from '@/components/InputFields';
 import CaptchaBox from '@/containers/CaptchaBox';
 import TermsAndPrivacyCheckbox from '@/containers/TermsAndPrivacyCheckbox';
@@ -18,7 +18,6 @@ import ErrorMessage from '@/shared/components/ErrorMessage';
 import type { IdentifierInputValue } from '@/shared/components/InputFields/SmartInputField';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
 
-import styles from './index.module.scss';
 import useOnSubmit from './use-on-submit';
 
 type Props = {
@@ -113,7 +112,13 @@ const IdentifierSignInForm = ({ className, autoFocus, signInMethods }: Props) =>
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -133,7 +138,7 @@ const IdentifierSignInForm = ({ className, autoFocus, signInMethods }: Props) =>
         render={({ field, formState: { defaultValues } }) => (
           <SmartInputField
             autoFocus={autoFocus}
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             isDanger={!!errors.identifier || !!errorMessage}
             errorMessage={errors.identifier?.message}
@@ -143,10 +148,12 @@ const IdentifierSignInForm = ({ className, autoFocus, signInMethods }: Props) =>
         )}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 mt-0">{errorMessage}</ErrorMessage>
+      )}
 
       {showSingleSignOnForm && (
-        <div className={styles.message}>{t('description.single_sign_on_enabled')}</div>
+        <div className="mb-4 text-sm text-muted">{t('description.single_sign_on_enabled')}</div>
       )}
 
       {/**
@@ -157,9 +164,9 @@ const IdentifierSignInForm = ({ className, autoFocus, signInMethods }: Props) =>
        */}
       <TermsAndPrivacyCheckbox
         className={classNames(
-          styles.terms,
+          'mb-4',
           // For sign in, only show the terms checkbox if the terms policy is manual
-          agreeToTermsPolicy !== AgreeToTermsPolicy.Manual && styles.hidden
+          agreeToTermsPolicy !== AgreeToTermsPolicy.Manual && 'hidden'
         )}
       />
 
@@ -167,7 +174,7 @@ const IdentifierSignInForm = ({ className, autoFocus, signInMethods }: Props) =>
       <Button
         name="submit"
         title={showSingleSignOnForm ? 'action.single_sign_on' : 'action.sign_in'}
-        icon={showSingleSignOnForm ? <LockIcon /> : undefined}
+        icon={showSingleSignOnForm ? <LockClosedIcon className="w-5 h-5" /> : undefined}
         htmlType="submit"
         isLoading={isSubmitting || isPasskeyFlowProcessing}
       />

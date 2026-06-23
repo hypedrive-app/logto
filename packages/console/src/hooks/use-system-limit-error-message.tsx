@@ -32,7 +32,7 @@ const systemLimitKeyGuard = z.enum([
   'organizationUserRolesLimit',
   'organizationMachineToMachineRolesLimit',
   'organizationScopesLimit',
-]) satisfies z.ZodEnum<[SystemLimitKey, ...SystemLimitKey[]]>;
+]) satisfies z.ZodEnum<z.core.util.ToEnum<SystemLimitKey>>;
 
 const errorBodyGuard = z.object({
   key: systemLimitKeyGuard,

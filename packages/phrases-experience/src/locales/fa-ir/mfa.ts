@@ -30,6 +30,16 @@ const mfa = {
   verify_mfa_factors: 'تأیید دو مرحله‌ای',
   verify_mfa_description:
     'تأیید دو مرحله‌ای برای این حساب فعال شده است. لطفاً روش دوم برای تأیید هویت خود را انتخاب کنید.',
+  step_up_mfa_title: 'Additional verification required',
+  step_up_mfa_description:
+    'This action requires an extra layer of security. Please verify your identity with a second factor.',
+  step_up_mfa_no_factors:
+    'This action requires multi-factor authentication, but no second factor is set up on your account. Please contact your administrator.',
+  step_up_phr_title: 'Security key required',
+  step_up_phr_description:
+    'This action requires phishing-resistant verification. Please confirm your identity with your passkey or security key.',
+  step_up_phr_no_factors:
+    'This action requires a phishing-resistant security key (passkey), but none is set up on your account. Please contact your administrator.',
   add_authenticator_app: 'اپلیکیشن احراز هویت را اضافه کنید',
   replace_authenticator_app: 'اپلیکیشن احراز هویت را جایگزین کنید',
   step: 'مرحله {{step, number}}: {{content}}',

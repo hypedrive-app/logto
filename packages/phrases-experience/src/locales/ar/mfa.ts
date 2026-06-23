@@ -29,6 +29,16 @@ const mfa = {
   verify_mfa_factors: 'التحقق من خطوتين',
   verify_mfa_description:
     'تم تمكين التحقق من خطوتين لهذا الحساب. يرجى تحديد الطريقة الثانية للتحقق من هويتك.',
+  step_up_mfa_title: 'Additional verification required',
+  step_up_mfa_description:
+    'This action requires an extra layer of security. Please verify your identity with a second factor.',
+  step_up_mfa_no_factors:
+    'This action requires multi-factor authentication, but no second factor is set up on your account. Please contact your administrator.',
+  step_up_phr_title: 'Security key required',
+  step_up_phr_description:
+    'This action requires phishing-resistant verification. Please confirm your identity with your passkey or security key.',
+  step_up_phr_no_factors:
+    'This action requires a phishing-resistant security key (passkey), but none is set up on your account. Please contact your administrator.',
   add_authenticator_app: 'إضافة تطبيق المصادقة',
   replace_authenticator_app: 'استبدال تطبيق المصادقة',
   step: 'الخطوة {{step, number}}: {{content}}',

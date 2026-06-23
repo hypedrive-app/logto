@@ -1,12 +1,9 @@
-import { Theme } from '@logto/schemas';
+import { experience } from '@logto/schemas';
 import type { TFuncKey } from 'i18next';
-import { useContext } from 'react';
 import { type To } from 'react-router-dom';
 
 import StaticPageLayout from '@/Layout/StaticPageLayout';
-import PageContext from '@/Providers/PageContextProvider/PageContext';
-import EmptyStateDark from '@/assets/icons/empty-state-dark.svg?react';
-import EmptyState from '@/assets/icons/empty-state.svg?react';
+import ErrorScene from '@/components/illustrations/ErrorScene';
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import Button from '@/shared/components/Button';
 import DynamicT from '@/shared/components/DynamicT';
@@ -14,19 +11,20 @@ import NavBar from '@/shared/components/NavBar';
 import PageMeta from '@/shared/components/PageMeta';
 
 import SupportInfo from './SupportInfo';
-import styles from './index.module.scss';
+
+type PrimaryAction = {
+  readonly title: TFuncKey;
+  readonly to?: To;
+  readonly replace?: boolean;
+  readonly onClick?: () => void;
+};
 
 type Props = {
   readonly title?: TFuncKey;
   readonly message?: TFuncKey;
   readonly rawMessage?: string;
   readonly isNavbarHidden?: boolean;
-  readonly primaryAction?: {
-    readonly title: TFuncKey;
-    readonly to?: To;
-    readonly replace?: boolean;
-    readonly onClick?: () => void;
-  };
+  readonly primaryAction?: PrimaryAction;
 };
 
 const ErrorPage = ({
@@ -36,14 +34,26 @@ const ErrorPage = ({
   isNavbarHidden,
   primaryAction,
 }: Props) => {
-  const { theme } = useContext(PageContext);
   const navigate = useNavigateWithPreservedSearchParams();
   const errorMessage = Boolean(rawMessage ?? message);
+  const canGoBack = history.length > 1;
+
+  // When the user cannot go back and no explicit action is provided, offer a safe default
+  // so they are not stranded on the error page.
+  const resolvedAction: PrimaryAction | undefined =
+    primaryAction ??
+    (canGoBack
+      ? undefined
+      : {
+          title: 'description.back_to_sign_in',
+          to: `/${experience.routes.signIn}`,
+          replace: true,
+        });
 
   return (
     <StaticPageLayout>
       <PageMeta titleKey={title} />
-      {history.length > 1 && (
+      {canGoBack && (
         <NavBar
           isHidden={isNavbarHidden}
           onBack={() => {
@@ -51,27 +61,29 @@ const ErrorPage = ({
           }}
         />
       )}
-      <div className={styles.container}>
-        {theme === Theme.Light ? <EmptyState /> : <EmptyStateDark />}
-        <div className={styles.title}>
+      <div className="flex flex-1 flex-col items-center justify-center w-full mx-auto max-w-[var(--max-w)]">
+        <ErrorScene />
+        <div className="mt-8 text-center text-ink mobile:text-[28px]/[36px] mobile:font-semibold mobile:mb-4 desktop:text-2xl desktop:font-semibold desktop:mb-2">
           <DynamicT forKey={title} />
         </div>
         {errorMessage && (
-          <div className={styles.message}>{rawMessage ?? <DynamicT forKey={message} />}</div>
+          <div className="text-sm text-muted text-center whitespace-pre-wrap">
+            {rawMessage ?? <DynamicT forKey={message} />}
+          </div>
         )}
         <SupportInfo />
-        {primaryAction && (
+        {resolvedAction && (
           <Button
-            className={styles.actionButton}
-            title={primaryAction.title}
+            className="w-full mx-auto max-w-[var(--max-w)] mt-4 mobile:mb-4 desktop:mb-6"
+            title={resolvedAction.title}
             onClick={() => {
-              if (primaryAction.onClick) {
-                primaryAction.onClick();
+              if (resolvedAction.onClick) {
+                resolvedAction.onClick();
                 return;
               }
 
-              if (primaryAction.to) {
-                navigate(primaryAction.to, { replace: primaryAction.replace });
+              if (resolvedAction.to) {
+                navigate(resolvedAction.to, { replace: resolvedAction.replace });
               }
             }}
           />

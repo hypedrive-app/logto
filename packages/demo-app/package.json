@@ -23,7 +23,7 @@
     "@logto/core-kit": "workspace:^",
     "@logto/language-kit": "workspace:^",
     "@logto/phrases": "workspace:^",
-    "@logto/react": "^4.0.6",
+    "@logto/react": "^4.0.14",
     "@logto/schemas": "workspace:^",
     "@silverhand/eslint-config": "6.0.1",
     "@silverhand/eslint-config-react": "6.0.2",
@@ -32,25 +32,25 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "@types/react-helmet": "^6.1.6",
-    "@vitejs/plugin-react": "^4.3.1",
-    "eslint": "^8.56.0",
+    "@vitejs/plugin-react": "catalog:",
+    "eslint": "catalog:",
     "i18next": "^22.4.15",
-    "i18next-browser-languagedetector": "^8.0.0",
-    "jose": "^5.6.3",
-    "lint-staged": "^15.0.0",
-    "prettier": "^3.5.3",
+    "i18next-browser-languagedetector": "^8.2.1",
+    "jose": "^6.2.3",
+    "lint-staged": "catalog:",
+    "prettier": "catalog:",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0",
     "react-i18next": "^12.3.1",
     "stylelint": "^15.0.0",
-    "typescript": "^5.5.3",
-    "vite": "^6.2.7",
+    "typescript": "catalog:",
+    "vite": "catalog:",
     "vite-plugin-compression": "^0.5.1",
-    "zod": "3.24.3"
+    "zod": "catalog:"
   },
   "engines": {
-    "node": "^22.14.0"
+    "node": "^22.14.0 || ^24.0.0"
   },
   "eslintConfig": {
     "extends": "@silverhand/react"

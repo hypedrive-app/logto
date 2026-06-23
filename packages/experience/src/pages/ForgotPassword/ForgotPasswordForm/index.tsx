@@ -13,8 +13,6 @@ import type { VerificationCodeIdentifier } from '@/types';
 import { UserFlow } from '@/types';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly className?: string;
   // eslint-disable-next-line react/boolean-prop-naming
@@ -76,7 +74,13 @@ const ForgotPasswordForm = ({ className, autoFocus, defaultValue = '', enabledTy
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -102,7 +106,7 @@ const ForgotPasswordForm = ({ className, autoFocus, defaultValue = '', enabledTy
         render={({ field, formState: { defaultValues } }) => (
           <SmartInputField
             autoFocus={autoFocus}
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             defaultValue={defaultValues?.identifier?.value}
             isDanger={!!errors.identifier}
@@ -112,7 +116,9 @@ const ForgotPasswordForm = ({ className, autoFocus, defaultValue = '', enabledTy
         )}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 -mt-3">{errorMessage}</ErrorMessage>
+      )}
 
       <CaptchaBox />
       <Button title="action.continue" htmlType="submit" isLoading={isSubmitting} />

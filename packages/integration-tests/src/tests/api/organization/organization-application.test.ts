@@ -130,7 +130,7 @@ describe('organization application APIs', () => {
         .catch((error: unknown) => error);
       assert(response instanceof HTTPError);
       expect(response.response.status).toBe(422);
-      expect(await response.response.json()).toMatchObject(
+      expect(response.data).toMatchObject(
         expect.objectContaining({ code: 'entity.relation_foreign_key_not_found' })
       );
     });
@@ -254,7 +254,7 @@ describe('organization application APIs', () => {
         .catch((error: unknown) => error);
       assert(response instanceof HTTPError);
       expect(response.response.status).toBe(422);
-      expect(await response.response.json()).toMatchObject(
+      expect(response.data).toMatchObject(
         expect.objectContaining({ code: 'entity.db_constraint_violated' })
       );
     });

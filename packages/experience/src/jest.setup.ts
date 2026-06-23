@@ -6,6 +6,9 @@ import { createElement, forwardRef, type ReactNode } from 'react';
 import { initReactI18next } from 'react-i18next';
 import ReactModal from 'react-modal';
 
+// Note: TextEncoder/TextDecoder are polyfilled earlier in `jest.polyfills.ts` (via `setupFiles`),
+// because ky v2 needs them at module-load time — before this file's imports run.
+
 // Ensure react-modal has an appElement in test env to prevent accessibility warning.
 if (typeof document !== 'undefined') {
   ReactModal.setAppElement(document.body);

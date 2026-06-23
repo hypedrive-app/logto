@@ -3,14 +3,20 @@ import { conditionalString } from '@silverhand/essentials';
 import classNames from 'classnames';
 import i18next from 'i18next';
 import { useContext } from 'react';
-import { Helmet } from 'react-helmet';
+import { Helmet } from 'react-helmet-async';
 
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 import defaultAppleTouchLogo from '@/shared/assets/apple-touch-icon.png';
 import defaultFavicon from '@/shared/assets/favicon.png';
 import { type SignInExperienceResponse } from '@/types';
 
-import styles from './index.module.scss';
+const previewClass =
+  'pointer-events-none select-none [&_.viewBox::-webkit-scrollbar]:hidden [&_main]:pointer-events-none [&_main]:select-none';
+
+const themeClass = Object.freeze({
+  [Theme.Light]: 'light',
+  [Theme.Dark]: 'dark',
+} as const satisfies Record<Theme, string>);
 
 const themeToFavicon = Object.freeze({
   [Theme.Light]: 'favicon',
@@ -44,9 +50,9 @@ const AppMeta = () => {
       {experienceSettings?.customCss && <style>{experienceSettings.customCss}</style>}
       <body
         className={classNames(
-          conditionalString(isPreview && styles.preview),
+          conditionalString(isPreview && previewClass),
           platform === 'mobile' ? 'mobile' : 'desktop',
-          conditionalString(styles[theme])
+          conditionalString(themeClass[theme])
         )}
       />
     </Helmet>

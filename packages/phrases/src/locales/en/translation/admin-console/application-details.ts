@@ -56,6 +56,9 @@ const application_details = {
   cors_allowed_origins_placeholder: 'https://your.website.com',
   cors_allowed_origins_tip:
     'By default, all the origins of Redirect URIs will be allowed. Usually no action is required for this field. See the <a>MDN doc</a> for detailed info.',
+  default_acr_values: 'Default ACR values',
+  default_acr_values_tip:
+    'Specify default Authentication Context Class Reference (ACR) values for this application. When set, users will be required to satisfy the specified authentication level by default. Supported values: “urn:logto:acr:pwd” (password), “urn:logto:acr:mfa” (any second factor) and “urn:logto:acr:phr” (phishing-resistant passkey / security key). Leave blank to use the standard sign-in flow.',
   token_endpoint: 'Token endpoint',
   user_info_endpoint: 'Userinfo endpoint',
   enable_admin_access: 'Enable admin access',

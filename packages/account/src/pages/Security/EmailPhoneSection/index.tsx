@@ -17,9 +17,23 @@ import useErrorHandler from '@ac/hooks/use-error-handler';
 import { getPendingReturn, setPendingReturn } from '@ac/utils/account-center-route';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from './index.module.scss';
-
 type RemoveType = 'email' | 'phone';
+
+const rowClass = classNames(
+  'items-center not-last:border-b not-last:border-line',
+  'desktop:grid desktop:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] desktop:[grid-auto-flow:dense] desktop:gap-x-6 desktop:px-6 desktop:py-5 desktop:min-h-[64px]',
+  'mobile:flex mobile:flex-col mobile:items-stretch mobile:gap-1 mobile:p-4'
+);
+const topLineClass =
+  'desktop:contents mobile:flex mobile:items-center mobile:justify-between mobile:gap-3 mobile:w-full';
+const actionsClass =
+  'flex items-center gap-6 shrink-0 desktop:col-start-3 mobile:flex-wrap mobile:justify-end mobile:gap-4';
+const changeButtonClass =
+  'text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start';
+const removeButtonClass =
+  'text-sm font-medium text-danger cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start';
+const titleClass =
+  'min-w-0 text-sm font-medium text-ink desktop:col-start-1 desktop:row-start-1 desktop:ps-[calc(20px+1rem)] mobile:ps-0 mobile:w-full mobile:[overflow-wrap:anywhere] mobile:break-words';
 
 const EmailPhoneSection = () => {
   const { t } = useTranslation();
@@ -136,22 +150,29 @@ const EmailPhoneSection = () => {
 
   return (
     <>
-      <div className={classNames(styles.section, layoutClassNames.section)}>
-        <div className={classNames(styles.sectionTitle, layoutClassNames.sectionTitle)}>
+      <div className={classNames('flex flex-col gap-1.5', layoutClassNames.section)}>
+        <div
+          className={classNames(
+            'ps-1 text-sm font-medium text-ink mobile:ps-0',
+            layoutClassNames.sectionTitle
+          )}
+        >
           {t('account_center.security.email_phone')}
         </div>
-        <div className={classNames(styles.card, layoutClassNames.card)}>
+        <div
+          className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+        >
           {showEmail && (
-            <div className={classNames(styles.row, layoutClassNames.row)}>
-              <div className={styles.topLine}>
-                <div className={styles.iconWrap}>
-                  <EmailIcon className={styles.icon} />
+            <div className={classNames(rowClass, layoutClassNames.row)}>
+              <div className={topLineClass}>
+                <div className="flex items-center justify-self-start shrink-0 desktop:col-start-1 desktop:row-start-1">
+                  <EmailIcon className="w-5 h-5 text-ink" />
                 </div>
                 {emailControl === AccountCenterControlValue.Edit && (
-                  <div className={styles.actions}>
+                  <div className={actionsClass}>
                     <button
                       type="button"
-                      className={styles.changeButton}
+                      className={changeButtonClass}
                       onClick={() => {
                         navigateTo(emailRoute);
                       }}
@@ -163,7 +184,7 @@ const EmailPhoneSection = () => {
                     {emailValue && (
                       <button
                         type="button"
-                        className={styles.removeButton}
+                        className={removeButtonClass}
                         onClick={() => {
                           setPendingRemoveType('email');
                         }}
@@ -174,23 +195,28 @@ const EmailPhoneSection = () => {
                   </div>
                 )}
               </div>
-              <div className={styles.title}>{t('account_center.security.email')}</div>
-              <div className={classNames(styles.value, !emailValue && styles.secondaryValue)}>
+              <div className={titleClass}>{t('account_center.security.email')}</div>
+              <div
+                className={classNames(
+                  'min-w-0 text-sm desktop:col-start-2 mobile:w-full mobile:[overflow-wrap:anywhere] mobile:break-words',
+                  emailValue ? 'text-ink' : 'text-muted'
+                )}
+              >
                 {emailValue ?? t('account_center.security.not_set')}
               </div>
             </div>
           )}
           {showPhone && (
-            <div className={classNames(styles.row, layoutClassNames.row)}>
-              <div className={styles.topLine}>
-                <div className={styles.iconWrap}>
-                  <PhoneIcon className={styles.icon} />
+            <div className={classNames(rowClass, layoutClassNames.row)}>
+              <div className={topLineClass}>
+                <div className="flex items-center justify-self-start shrink-0 desktop:col-start-1 desktop:row-start-1">
+                  <PhoneIcon className="w-5 h-5 text-ink" />
                 </div>
                 {phoneControl === AccountCenterControlValue.Edit && (
-                  <div className={styles.actions}>
+                  <div className={actionsClass}>
                     <button
                       type="button"
-                      className={styles.changeButton}
+                      className={changeButtonClass}
                       onClick={() => {
                         navigateTo(phoneRoute);
                       }}
@@ -202,7 +228,7 @@ const EmailPhoneSection = () => {
                     {phoneValue && (
                       <button
                         type="button"
-                        className={styles.removeButton}
+                        className={removeButtonClass}
                         onClick={() => {
                           setPendingRemoveType('phone');
                         }}
@@ -213,8 +239,13 @@ const EmailPhoneSection = () => {
                   </div>
                 )}
               </div>
-              <div className={styles.title}>{t('account_center.security.phone')}</div>
-              <div className={classNames(styles.value, !phoneValue && styles.secondaryValue)}>
+              <div className={titleClass}>{t('account_center.security.phone')}</div>
+              <div
+                className={classNames(
+                  'min-w-0 text-sm desktop:col-start-2 mobile:w-full mobile:[overflow-wrap:anywhere] mobile:break-words',
+                  phoneValue ? 'text-ink' : 'text-muted'
+                )}
+              >
                 {phoneValue ?? t('account_center.security.not_set')}
               </div>
             </div>

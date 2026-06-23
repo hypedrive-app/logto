@@ -1,13 +1,11 @@
 import { SignInIdentifier } from '@logto/schemas';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
-import { is } from 'superstruct';
+import { z } from 'zod';
 
 import type { VerificationCodeIdentifier } from '@/types';
 import { registeredSocialIdentityStateGuard } from '@/types/guard';
 import { maskEmail } from '@/utils/format';
-
-import styles from './index.module.scss';
 
 const SocialIdentityNotification = ({
   missingProfileTypes,
@@ -17,35 +15,31 @@ const SocialIdentityNotification = ({
   const { t } = useTranslation();
   const { state } = useLocation();
 
-  const hasSocialIdentity = is(state, registeredSocialIdentityStateGuard);
+  const stateResult = registeredSocialIdentityStateGuard.safeParse(state);
 
-  if (!hasSocialIdentity) {
+  if (!stateResult.success) {
     return null;
   }
 
-  if (
-    missingProfileTypes.includes(SignInIdentifier.Email) &&
-    state.registeredSocialIdentity?.email
-  ) {
+  const { registeredSocialIdentity } = stateResult.data;
+
+  if (missingProfileTypes.includes(SignInIdentifier.Email) && registeredSocialIdentity?.email) {
     return (
-      <div className={styles.description}>
+      <div className="mt-6 text-sm text-muted">
         {t('description.social_identity_exist', {
           type: t('description.email'),
-          value: maskEmail(state.registeredSocialIdentity.email),
+          value: maskEmail(registeredSocialIdentity.email),
         })}
       </div>
     );
   }
 
-  if (
-    missingProfileTypes.includes(SignInIdentifier.Phone) &&
-    state.registeredSocialIdentity?.phone
-  ) {
+  if (missingProfileTypes.includes(SignInIdentifier.Phone) && registeredSocialIdentity?.phone) {
     return (
-      <div className={styles.description}>
+      <div className="mt-6 text-sm text-muted">
         {t('description.social_identity_exist', {
           type: t('description.phone_number'),
-          value: state.registeredSocialIdentity.phone,
+          value: registeredSocialIdentity.phone,
         })}
       </div>
     );

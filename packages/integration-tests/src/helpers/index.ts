@@ -127,9 +127,13 @@ const expectRequestError = async <T = unknown>(error: unknown, expected: Expecte
     fail('Error should be an instance of RequestError');
   }
 
-  // JSON.parse returns `any`. Directly use `as` since we've already know the response body structure.
+  // `ky` pre-parses the error response body and exposes it on `error.data`; the underlying
+  // `error.response` stream is consumed in the process, so reading it again throws
+  // `Body is unusable: Body has already been read`. Prefer `error.data`, falling back to reading the
+  // response only when `data` is absent.
+  // We already know the response body structure for request errors.
   // eslint-disable-next-line no-restricted-syntax
-  const body = (await error.response.json()) as {
+  const body = (error.data ?? (await error.response.json())) as {
     code: string;
     message: string;
     data: T;

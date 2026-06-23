@@ -22,8 +22,6 @@ import {
 } from '@ac/utils/security-page';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from '../CodeFlow/index.module.scss';
-
 const Password = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -145,13 +143,15 @@ const Password = () => {
     ) : (
       <>
         <div>{t('account_center.password.description')}</div>
-        <div className={styles.message}>{requirementsDescription}</div>
+        <div className="flex items-center min-h-5 text-sm text-muted">
+          {requirementsDescription}
+        </div>
       </>
     );
 
   return (
     <SecondaryPageLayout title="account_center.password.title" description={description}>
-      <div className={styles.container}>
+      <div className="flex flex-col gap-4 w-full max-w-[400px]">
         <SetPassword
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus

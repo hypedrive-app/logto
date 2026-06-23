@@ -3,6 +3,8 @@ import type { Config } from '@jest/types';
 const config: Config.InitialOptions = {
   roots: ['<rootDir>/src'],
   testEnvironment: 'jsdom',
+  // Polyfills must load before module imports that need them (e.g. ky v2's TextEncoder use).
+  setupFiles: ['<rootDir>/src/jest.polyfills.ts'],
   setupFilesAfterEnv: ['<rootDir>/src/jest.setup.ts'],
   collectCoverageFrom: ['**/*.{js,jsx,ts,tsx}'],
   coveragePathIgnorePatterns: ['/node_modules/', '/src/__mocks__/', '/src/include.d/'],

@@ -24,8 +24,6 @@ import { getDateFnsLocale } from '@ac/utils/date';
 import { formatPasskeyName } from '@ac/utils/passkey';
 import { isWebAuthnConfigurable } from '@ac/utils/security-page';
 
-import styles from './index.module.scss';
-
 type PasskeyInfo = {
   id: string;
   name?: string;
@@ -189,23 +187,26 @@ const PasskeyView = () => {
   return (
     <>
       <SecondaryPageLayout title="account_center.passkey.title">
-        <div className={styles.container}>
-          <div className={styles.passkeyList}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-3">
             {passkeys.map((passkey) => {
               const displayName =
                 formatPasskeyName(passkey.name, passkey.agent) ??
                 t('account_center.passkey.unnamed');
               return (
-                <div key={passkey.id} className={styles.passkeyItem}>
-                  <div className={styles.passkeyInfo}>
-                    <div className={styles.passkeyName}>{displayName}</div>
-                    <div className={styles.passkeyMeta}>
+                <div
+                  key={passkey.id}
+                  className="flex justify-between items-center p-4 border border-line rounded-[13px]"
+                >
+                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                    <div className="text-sm font-medium text-ink break-words">{displayName}</div>
+                    <div className="text-xs text-muted">
                       <DynamicT
                         forKey="account_center.passkey.added"
                         interpolation={{ date: formatDate(passkey.createdAt, i18n.language) }}
                       />
                     </div>
-                    <div className={styles.passkeyMeta}>
+                    <div className="text-xs text-muted">
                       <DynamicT
                         forKey="account_center.passkey.last_used"
                         interpolation={{
@@ -216,10 +217,10 @@ const PasskeyView = () => {
                       />
                     </div>
                   </div>
-                  <div className={styles.passkeyActions}>
+                  <div className="flex gap-4 shrink-0 ml-4">
                     <button
                       type="button"
-                      className={styles.editButton}
+                      className="[all:unset] text-sm font-medium text-primary cursor-pointer whitespace-nowrap hover:text-ink"
                       onClick={() => {
                         setSelectedPasskey(passkey);
                         setEditName(formatPasskeyName(passkey.name, passkey.agent) ?? '');
@@ -230,7 +231,7 @@ const PasskeyView = () => {
                     </button>
                     <button
                       type="button"
-                      className={styles.removeButton}
+                      className="[all:unset] text-sm font-medium text-danger cursor-pointer whitespace-nowrap"
                       onClick={() => {
                         setSelectedPasskey(passkey);
                         setShowDeleteConfirm(true);
@@ -243,12 +244,12 @@ const PasskeyView = () => {
               );
             })}
           </div>
-          {passkeys.length > 0 && <div className={styles.divider} />}
-          <div className={styles.addSection}>
-            <div className={styles.addTitle}>
+          {passkeys.length > 0 && <div className="h-px bg-line my-2" />}
+          <div className="flex flex-col gap-3">
+            <div className="text-lg font-semibold text-ink">
               <DynamicT forKey="account_center.passkey.add_another_title" />
             </div>
-            <div className={styles.addDescription}>
+            <div className="text-sm text-muted">
               <DynamicT forKey="account_center.passkey.add_another_description" />
             </div>
             <Button
@@ -286,7 +287,7 @@ const PasskeyView = () => {
           setShowEditModal(false);
         }}
       >
-        <div className={styles.editModalContent}>
+        <div className="flex flex-col gap-3">
           <DynamicT forKey="account_center.passkey.rename_description" />
           <InputField
             // eslint-disable-next-line jsx-a11y/no-autofocus

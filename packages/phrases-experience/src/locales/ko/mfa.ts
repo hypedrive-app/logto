@@ -30,6 +30,16 @@ const mfa = {
   verify_mfa_factors: '2단계 인증 확인',
   verify_mfa_description:
     '이 계정에 대해 2단계 인증이 활성화되었습니다. 신원을 확인하는 두 번째 방법을 선택하세요.',
+  step_up_mfa_title: 'Additional verification required',
+  step_up_mfa_description:
+    'This action requires an extra layer of security. Please verify your identity with a second factor.',
+  step_up_mfa_no_factors:
+    'This action requires multi-factor authentication, but no second factor is set up on your account. Please contact your administrator.',
+  step_up_phr_title: 'Security key required',
+  step_up_phr_description:
+    'This action requires phishing-resistant verification. Please confirm your identity with your passkey or security key.',
+  step_up_phr_no_factors:
+    'This action requires a phishing-resistant security key (passkey), but none is set up on your account. Please contact your administrator.',
   add_authenticator_app: '인증 앱 추가',
   replace_authenticator_app: '인증 앱 교체',
   step: '단계 {{step, number}}: {{content}}',

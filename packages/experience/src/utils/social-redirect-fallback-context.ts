@@ -1,4 +1,4 @@
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 /**
  * Social / SSO Redirect Fallback Context
@@ -16,19 +16,19 @@ const fallbackKeyPrefix = 'logto:redirect-context:fallback:';
 /** Time-to-live for fallback bundles: 10 minutes. */
 const ttlMs = 10 * 60 * 1000;
 
-const redirectContextStruct = s.object({
-  state: s.string(),
-  flow: s.enums(['social', 'sso']),
-  connectorId: s.string(),
-  verificationId: s.string(),
-  createdAt: s.number(),
-  expiresAt: s.number(),
-  appId: s.optional(s.string()),
-  organizationId: s.optional(s.string()),
-  uiLocales: s.optional(s.string()),
+const redirectContextStruct = z.object({
+  state: z.string(),
+  flow: z.enum(['social', 'sso']),
+  connectorId: z.string(),
+  verificationId: z.string(),
+  createdAt: z.number(),
+  expiresAt: z.number(),
+  appId: (z.string()).optional(),
+  organizationId: (z.string()).optional(),
+  uiLocales: (z.string()).optional(),
 });
 
-export type RedirectContext = s.Infer<typeof redirectContextStruct>;
+export type RedirectContext = z.infer<typeof redirectContextStruct>;
 
 const safeParse = (raw: string): unknown => {
   try {
@@ -45,7 +45,7 @@ const parseAndValidate = (raw: string): RedirectContext | undefined => {
     return undefined;
   }
 
-  const [error, context] = s.validate(parsed, redirectContextStruct);
+  const { error: error, data: context } = redirectContextStruct.safeParse(parsed);
 
   if (error) {
     return undefined;
@@ -78,7 +78,7 @@ export const storeRedirectContext = (
       expiresAt: now + ttlMs,
     };
 
-    s.assert(context, redirectContextStruct);
+    redirectContextStruct.parse(context);
 
     // Sweep stale entries before writing — only scans our prefixed keys
     sweepExpiredRedirectContexts();

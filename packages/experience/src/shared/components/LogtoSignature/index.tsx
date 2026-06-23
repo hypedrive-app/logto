@@ -5,7 +5,12 @@ import LogtoLogtoDark from '@/shared/assets/icons/logto-logo-dark.svg?react';
 import LogtoLogoLight from '@/shared/assets/icons/logto-logo-light.svg?react';
 import LogtoLogoShadow from '@/shared/assets/icons/logto-logo-shadow.svg?react';
 
-import styles from './index.module.scss';
+// MUST stay a single space-separated class string — the effect below splits it on
+// spaces and re-applies each atomic class to guard against tampering. The static /
+// highlight icon swap on hover/active is driven via the `sig-static` / `sig-highlight`
+// marker classes carried by the two icons.
+const signatureClass =
+  'flex items-center text-sm font-normal text-[var(--color-neutral-variant-60)] py-1 px-2 no-underline opacity-75 [direction:ltr] hover:opacity-100 active:opacity-100 [&:is(:hover,:active)_.sig-static]:hidden [&:is(:hover,:active)_.sig-highlight]:block mobile:text-xs mobile:text-[var(--color-neutral-variant-80)]';
 
 const logtoUrl = `https://logto.io/?${new URLSearchParams({
   utm_source: 'sign_in',
@@ -124,8 +129,14 @@ const LogtoSignature = ({ className, theme }: Props) => {
 
       anchor.removeAttribute('hidden');
 
-      if (styles.signature && !anchor.classList.contains(styles.signature)) {
-        anchor.classList.add(styles.signature);
+      if (signatureClass) {
+        // Space-separated atomic classes — spread them individually
+        const classes = signatureClass.split(' ').filter(Boolean);
+        for (const cls of classes) {
+          if (!anchor.classList.contains(cls)) {
+            anchor.classList.add(cls);
+          }
+        }
       }
 
       anchor.style.removeProperty('display');
@@ -171,17 +182,17 @@ const LogtoSignature = ({ className, theme }: Props) => {
       <a
         ref={anchorRef}
         aria-label="Powered By Logto"
-        className={styles.signature}
+        className={signatureClass}
         data-logto-signature="secured"
         href={logtoUrl.toString()}
         rel="noopener"
         target="_blank"
       >
-        <span data-logto-signature-text className={styles.text}>
+        <span data-logto-signature-text className="me-1">
           Powered by
         </span>
-        <LogtoLogoShadow data-logto-signature-icon="static" className={styles.staticIcon} />
-        <LogtoLogo data-logto-signature-icon="highlight" className={styles.highlightIcon} />
+        <LogtoLogoShadow data-logto-signature-icon="static" className="sig-static block" />
+        <LogtoLogo data-logto-signature-icon="highlight" className="sig-highlight hidden" />
       </a>
     </div>
   );

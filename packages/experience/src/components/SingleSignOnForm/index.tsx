@@ -1,9 +1,9 @@
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { AgreeToTermsPolicy, SignInIdentifier } from '@logto/schemas';
 import { useCallback, useContext, useEffect } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
-import LockIcon from '@/assets/icons/lock.svg?react';
 import TermsAndPrivacyCheckbox from '@/containers/TermsAndPrivacyCheckbox';
 import useOnSubmit from '@/hooks/use-check-single-sign-on';
 import useTerms from '@/hooks/use-terms';
@@ -13,8 +13,6 @@ import SmartInputField, {
   type IdentifierInputValue,
 } from '@/shared/components/InputFields/SmartInputField';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
-
-import styles from './index.module.scss';
 
 type FormState = {
   identifier: IdentifierInputValue;
@@ -70,7 +68,10 @@ const SingleSignOnForm = ({ isTermsAndPrivacyCheckboxVisible }: Props) => {
   );
 
   return (
-    <form className={styles.form} onSubmit={onSubmitHandler}>
+    <form
+      className="flex flex-col items-center justify-center [&>*]:w-full"
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -90,7 +91,7 @@ const SingleSignOnForm = ({ isTermsAndPrivacyCheckboxVisible }: Props) => {
         render={({ field, formState: { defaultValues } }) => (
           <SmartInputField
             autoFocus
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             isDanger={!!errors.identifier}
             defaultValue={defaultValues?.identifier?.value}
@@ -100,16 +101,18 @@ const SingleSignOnForm = ({ isTermsAndPrivacyCheckboxVisible }: Props) => {
         )}
       />
 
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5">{errorMessage}</ErrorMessage>
+      )}
 
       {Boolean(isTermsAndPrivacyCheckboxVisible) && (
-        <TermsAndPrivacyCheckbox className={styles.terms} />
+        <TermsAndPrivacyCheckbox className="mb-4" />
       )}
 
       <Button
         title="action.single_sign_on"
         htmlType="submit"
-        icon={<LockIcon />}
+        icon={<LockClosedIcon className="w-5 h-5" />}
         isLoading={isSubmitting}
       />
 

@@ -1,5 +1,5 @@
 import type { LogtoErrorCode } from '@logto/phrases';
-import { InteractionEvent, eventGuard, identifierPayloadGuard, profileGuard } from '@logto/schemas';
+import { InteractionEvent, identifierPayloadGuard, profileGuard } from '@logto/schemas';
 import type Router from 'koa-router';
 import { z } from 'zod';
 
@@ -22,6 +22,7 @@ import mfaRoutes from './mfa.js';
 import koaInteractionHooks from './middleware/koa-interaction-hooks.js';
 import koaInteractionSie from './middleware/koa-interaction-sie.js';
 import singleSignOnRoutes from './single-sign-on.js';
+import { legacyEventGuard } from './types/guard.js';
 import {
   getInteractionStorage,
   isForgotPasswordInteractionResult,
@@ -65,7 +66,7 @@ export default function interactionRoutes<T extends AnonymousRouter>(
     interactionPrefix,
     koaGuard({
       body: z.object({
-        event: eventGuard,
+        event: legacyEventGuard,
         identifier: identifierPayloadGuard.optional(),
         profile: profileGuard.optional(),
       }),
@@ -133,7 +134,7 @@ export default function interactionRoutes<T extends AnonymousRouter>(
   // Update Interaction Event
   router.put(
     `${interactionPrefix}/event`,
-    koaGuard({ body: z.object({ event: eventGuard }), status: [204, 400, 403, 404] }),
+    koaGuard({ body: z.object({ event: legacyEventGuard }), status: [204, 400, 403, 404] }),
     koaInteractionSie(queries),
     async (ctx, next) => {
       const { event } = ctx.guard.body;

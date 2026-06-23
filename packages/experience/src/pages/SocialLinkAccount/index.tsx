@@ -2,7 +2,7 @@ import { SignInIdentifier, VerificationType } from '@logto/schemas';
 import type { TFuncKey } from 'i18next';
 import { useContext } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
-import { is } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
@@ -41,19 +41,21 @@ const SocialLinkAccount = () => {
   const { verificationIdsMap } = useContext(UserInteractionContext);
   const verificationId = verificationIdsMap[VerificationType.Social];
 
-  if (!is(state, socialAccountNotExistErrorDataGuard)) {
-    return <ErrorPage rawMessage="Missing relate account info" />;
+  const stateResult = socialAccountNotExistErrorDataGuard.safeParse(state);
+
+  if (!stateResult.success) {
+    return <ErrorPage title="error.invalid_session" />;
   }
 
   if (!connectorId) {
-    return <ErrorPage rawMessage="Connector not found" />;
+    return <ErrorPage title="error.invalid_connector_request" />;
   }
 
   if (!verificationId) {
-    return <ErrorPage title="error.invalid_session" rawMessage="Verification ID not found" />;
+    return <ErrorPage title="error.invalid_session" />;
   }
 
-  const { relatedUser } = state;
+  const { relatedUser } = stateResult.data;
 
   return (
     <SecondaryPageLayout title={getPageTitle(signUpMethods)}>

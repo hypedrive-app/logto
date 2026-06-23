@@ -75,26 +75,39 @@ describe('country-code', () => {
     expect(getDefaultCountryCallingCode()).toEqual('82');
   });
 
-  it('getCountryList should sort properly', async () => {
+  it('getCountryList pins the default country first and includes a localized name', async () => {
     await i18next.changeLanguage('zh');
     const countryList = getCountryList();
 
-    expect(countryList[0]).toEqual({
+    // The detected/default country is pinned to the top for quick access.
+    expect(countryList[0]).toMatchObject({
       countryCode: 'CN',
       countryCallingCode: '86',
     });
-
-    expect(countryList[1]?.countryCallingCode).toEqual('1');
+    // Each entry now carries a localized, human-readable name.
+    expect(countryList[0]?.countryName).toBeTruthy();
   });
 
-  it('getCountryList should remove duplicate', async () => {
-    await i18next.changeLanguage('zh');
+  it('getCountryList sorts the remaining countries alphabetically by localized name', async () => {
+    await i18next.changeLanguage('en');
+    const [, ...rest] = getCountryList();
+
+    const names = rest.map(({ countryName }) => countryName);
+    const sorted = [...names].sort((a, b) => a.localeCompare(b, 'en'));
+
+    expect(names).toEqual(sorted);
+  });
+
+  it('getCountryList keeps every country sharing a calling code (no dedupe)', async () => {
+    await i18next.changeLanguage('en');
     const countryList = getCountryList();
 
-    expect(countryList.filter(({ countryCallingCode }) => countryCallingCode === '1')).toHaveLength(
-      1
-    );
-    expect(countryList[0]?.countryCallingCode).toEqual('86');
+    // Many countries share +1 (US, Canada, Caribbean nations…). They must all remain
+    // selectable, distinguished by name and flag — unlike the old dedupe-by-code behavior.
+    const plusOne = countryList.filter(({ countryCallingCode }) => countryCallingCode === '1');
+    expect(plusOne.length).toBeGreaterThan(1);
+    // And they are distinct countries.
+    expect(new Set(plusOne.map(({ countryCode }) => countryCode)).size).toEqual(plusOne.length);
   });
 
   it('formatPhoneNumberWithCountryCallingCode', async () => {

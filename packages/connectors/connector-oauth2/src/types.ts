@@ -42,7 +42,7 @@ export const oauth2ConnectorConfigGuard = oauth2ConfigGuard.extend({
   userInfoEndpoint: z.string(),
   tokenEndpointResponseType: tokenEndpointResponseTypeGuard,
   profileMap: profileMapGuard,
-  customConfig: z.record(z.string()).optional(),
+  customConfig: z.record(z.string(), z.string()).optional(),
 });
 
 export type Oauth2ConnectorConfig = z.infer<typeof oauth2ConnectorConfigGuard>;

@@ -17,4 +17,5 @@ export const updateCaptchaProvider = async (
     .json<CaptchaProvider>();
 
 export const deleteCaptchaProvider = async (api: KyInstance = authedAdminApi) =>
-  api.delete('captcha-provider').json<CaptchaProvider>();
+  // `DELETE` returns `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+  api.delete('captcha-provider');

@@ -85,11 +85,15 @@ export const aliyunSmsMasConfigGuard = z.object({
       REQUIRED_TEMPLATE_USAGE_TYPES.every((requiredType) =>
         templates.map((template) => template.usageType).includes(requiredType)
       ),
-    (templates) => ({
-      message: `UsageType (${REQUIRED_TEMPLATE_USAGE_TYPES.filter(
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      error: (issue) => {
+        const templates = issue.input as Array<{ usageType: string }>;
+        return `UsageType (${REQUIRED_TEMPLATE_USAGE_TYPES.filter(
         (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
-      ).join(', ')}) should be provided in templates.`,
-    })
+      ).join(', ')}) should be provided in templates.`;
+      },
+    }
   ),
 });
 

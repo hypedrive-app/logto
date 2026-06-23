@@ -5,6 +5,7 @@ import {
   SignInIdentifier,
   updateProfileApiPayloadGuard,
   uploadFileGuard,
+  buildUploadFilesGuard,
   userAssetsGuard,
 } from '@logto/schemas';
 import { addDays, format } from 'date-fns';
@@ -158,7 +159,7 @@ export default function interactionProfileRoutes<T extends ExperienceInteraction
     `${experienceRoutes.prefix}/user-assets/avatar`,
     koaGuard({
       files: object({
-        file: uploadFileGuard.array().min(1),
+        file: buildUploadFilesGuard(uploadFileGuard.array().min(1)),
       }),
       response: userAssetsGuard,
       status: [200, 400, 403, 404, 500],

@@ -3,8 +3,6 @@ import { useContext } from 'react';
 
 import CaptchaContext from '@/Providers/CaptchaContextProvider/CaptchaContext';
 
-import styles from './index.module.scss';
-
 const CaptchaBox = () => {
   const { captchaConfig, widgetRef, isCaptchaRequired } = useContext(CaptchaContext);
 
@@ -20,7 +18,7 @@ const CaptchaBox = () => {
     return null;
   }
 
-  return <div ref={widgetRef} className={styles.captchaBox} />;
+  return <div ref={widgetRef} className="mb-2" />;
 };
 
 export default CaptchaBox;

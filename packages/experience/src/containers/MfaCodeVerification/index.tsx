@@ -6,7 +6,6 @@ import TextLink from '@/components/TextLink';
 import Button from '@/shared/components/Button';
 import VerificationCodeInput from '@/shared/components/VerificationCode';
 
-import styles from './index.module.scss';
 import useMfaCodeVerification from './use-mfa-code-verification';
 import useResendMfaVerificationCode from './use-resend-mfa-verification-code';
 
@@ -69,7 +68,7 @@ const MfaCodeVerification = ({ identifierType, verificationId }: Props) => {
       <VerificationCodeInput
         name="mfaCode"
         value={codeInput}
-        className={styles.codeInput}
+        className="mt-4"
         error={errorMessage}
         onChange={(code) => {
           setCodeInput(code);
@@ -78,7 +77,7 @@ const MfaCodeVerification = ({ identifierType, verificationId }: Props) => {
           }
         }}
       />
-      <div className={styles.message}>
+      <div className="mt-3 text-sm text-muted">
         {isRunning ? (
           <Trans components={{ span: <span key="counter" /> }}>
             {t('description.resend_after_seconds', { seconds })}
@@ -88,7 +87,7 @@ const MfaCodeVerification = ({ identifierType, verificationId }: Props) => {
             components={{
               a: (
                 <TextLink
-                  className={styles.link}
+                  className="cursor-pointer"
                   onClick={async () => {
                     setInputErrorMessage(undefined);
                     setCodeInput([]);
@@ -108,7 +107,7 @@ const MfaCodeVerification = ({ identifierType, verificationId }: Props) => {
       <Button
         title="action.continue"
         type="primary"
-        className={styles.continueButton}
+        className="mt-6"
         isLoading={isSubmitting}
         onClick={() => {
           if (!isCodeReady(codeInput)) {

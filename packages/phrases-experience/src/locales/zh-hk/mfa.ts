@@ -28,6 +28,16 @@ const mfa = {
   add_another_mfa_description: '選擇另一種方式來驗證您登入時的身份。',
   verify_mfa_factors: '兩步驗證',
   verify_mfa_description: '此帳戶已啟用兩步驗證。請選擇第二種驗證身份的方式。',
+  step_up_mfa_title: 'Additional verification required',
+  step_up_mfa_description:
+    'This action requires an extra layer of security. Please verify your identity with a second factor.',
+  step_up_mfa_no_factors:
+    'This action requires multi-factor authentication, but no second factor is set up on your account. Please contact your administrator.',
+  step_up_phr_title: 'Security key required',
+  step_up_phr_description:
+    'This action requires phishing-resistant verification. Please confirm your identity with your passkey or security key.',
+  step_up_phr_no_factors:
+    'This action requires a phishing-resistant security key (passkey), but none is set up on your account. Please contact your administrator.',
   add_authenticator_app: '添加身份驗證應用',
   replace_authenticator_app: '替換身份驗證應用',
   step: '步驟 {{step, number}}: {{content}}',

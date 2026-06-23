@@ -1,0 +1,31 @@
+name: Audit
+
+# Supply-chain gate: fail when production dependencies have known high/critical advisories.
+# Renovate keeps dependencies fresh; this catches advisories that land between bumps.
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+  workflow_dispatch:
+  schedule:
+    # Re-run weekly so newly-published advisories are caught even without code changes.
+    - cron: '0 6 * * 1'
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node and pnpm
+        uses: silverhand-io/actions-node-pnpm-run-steps@v5
+        with:
+          pnpm-version: 11
+          node-version: ^24.0.0
+
+      # Gate on production dependencies only at `high` severity and above, to avoid blocking on
+      # dev-only or low-severity noise. Tighten to `--audit-level moderate` once the tree is clean.
+      - name: pnpm audit (production, high+)
+        run: pnpm audit --prod --audit-level high

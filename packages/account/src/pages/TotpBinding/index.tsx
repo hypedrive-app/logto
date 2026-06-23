@@ -25,8 +25,6 @@ import useErrorHandler from '@ac/hooks/use-error-handler';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 import { sessionStorage } from '@ac/utils/session-storage';
 
-import styles from './index.module.scss';
-
 const isCodeReady = (code: string[]) => code.length === defaultLength && code.every(Boolean);
 const isTotpEnabled = (mfa?: Mfa) => mfa?.factors.includes(MfaFactor.TOTP) ?? false;
 const errorPage = (messageKey: TFuncKey) => (
@@ -39,8 +37,10 @@ const CopySecretButton = ({
   readonly secret: string;
   readonly onCopy: () => void;
 }) => (
-  <div className={styles.copySecret}>
-    <div className={styles.rawSecret}>{secret}</div>
+  <div className="w-full">
+    <div className="p-4 w-full text-center text-base font-medium rounded-[13px] bg-surface text-ink mb-4 break-all">
+      {secret}
+    </div>
     <Button
       title="action.copy"
       type="secondary"
@@ -221,10 +221,10 @@ const TotpBinding = ({ isReplace }: Props) => {
       title={isReplace ? 'mfa.replace_authenticator_app' : 'mfa.add_authenticator_app'}
       description=""
     >
-      <div className={styles.container}>
+      <div className="flex flex-col gap-4 w-full max-w-[400px]">
         {/* Step 1: QR Code or Secret Key */}
-        <div className={styles.step}>
-          <div className={styles.stepTitle}>
+        <div className="flex flex-col gap-2">
+          <div className="text-base font-medium text-ink">
             <DynamicT
               forKey="mfa.step"
               interpolation={{
@@ -233,7 +233,7 @@ const TotpBinding = ({ isReplace }: Props) => {
               }}
             />
           </div>
-          <div className={styles.stepDescription}>
+          <div className="text-sm text-muted">
             <DynamicT
               forKey={
                 isQrCodeFormat
@@ -242,21 +242,21 @@ const TotpBinding = ({ isReplace }: Props) => {
               }
             />
           </div>
-          <div className={styles.secretContent}>
+          <div className="flex flex-col items-center gap-4 mt-2">
             {isQrCodeFormat &&
               (secretQrCode ? (
-                <div className={styles.qrCode}>
-                  <img src={secretQrCode} alt="QR code" />
+                <div className="border border-line rounded-[13px] [overflow:hidden] h-[136px] w-[136px]">
+                  <img className="w-full h-full block object-center" src={secretQrCode} alt="QR code" />
                 </div>
               ) : secret ? (
                 <CopySecretButton secret={secret} onCopy={copySecret} />
               ) : (
-                <div className={styles.qrCodePlaceholder} />
+                <div className="border border-line rounded-[13px] [overflow:hidden] h-[136px] w-[136px] bg-surface" />
               ))}
             {!isQrCodeFormat && secret && <CopySecretButton secret={secret} onCopy={copySecret} />}
             <button
               type="button"
-              className={styles.switchLink}
+              className="bg-transparent border-none p-0 text-sm font-medium text-primary cursor-pointer active:text-ink desktop:hover:text-ink"
               onClick={() => {
                 setIsQrCodeFormat(!isQrCodeFormat);
               }}
@@ -269,20 +269,20 @@ const TotpBinding = ({ isReplace }: Props) => {
         </div>
 
         {/* Step 2: Verification Code */}
-        <div className={styles.divider} />
-        <form className={styles.step} onSubmit={handleSubmit}>
-          <div className={styles.stepTitle}>
+        <div className="h-px bg-line my-2" />
+        <form className="flex flex-col gap-2" onSubmit={handleSubmit}>
+          <div className="text-base font-medium text-ink">
             <DynamicT
               forKey="mfa.step"
               interpolation={{ step: 2, content: t('mfa.enter_one_time_code') }}
             />
           </div>
-          <div className={styles.stepDescription}>
+          <div className="text-sm text-muted">
             <DynamicT forKey="mfa.enter_one_time_code_link_description" />
           </div>
           <VerificationCodeInput
             name="totpCode"
-            className={styles.codeInput}
+            className="w-full mt-2"
             value={codeInput}
             error={errorMessage}
             onChange={setCodeInput}
@@ -291,7 +291,7 @@ const TotpBinding = ({ isReplace }: Props) => {
             title="action.continue"
             type="primary"
             htmlType="submit"
-            className={styles.submitButton}
+            className="mt-2 self-start"
             isLoading={loading}
           />
         </form>

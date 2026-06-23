@@ -8,6 +8,14 @@ const input = {
   backup_code: 'バックアップコード',
   code: 'コード',
   label_with_optional: '{{label}}（任意）',
+  caps_lock_on: 'Caps Lock is on',
+  password_strength: {
+    label: 'Password strength: {{strength}}',
+    weak: 'Weak',
+    fair: 'Fair',
+    good: 'Good',
+    strong: 'Strong',
+  },
 };
 
 export default Object.freeze(input);

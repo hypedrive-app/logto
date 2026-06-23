@@ -13,8 +13,7 @@ import {
   defaultTenantId,
 } from '@logto/schemas';
 import { appendPath, conditionalArray } from '@silverhand/essentials';
-import ky from 'ky';
-import { type KyInstance } from 'node_modules/ky/distribution/types/ky';
+import ky, { HTTPError, type KyInstance } from 'ky';
 import { useCallback, useContext, useMemo } from 'react';
 import { toast } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
@@ -152,19 +151,25 @@ export const useStaticApi = ({
   const api = useMemo(
     () =>
       ky.create({
-        prefixUrl,
+        // ky v2 renamed `prefixUrl` to `prefix`.
+        prefix: prefixUrl,
         timeout,
         signal,
         hooks: {
+          // ky v2: beforeError receives a state object `{ error, request, options }` and
+          // fires for all error types, so narrow to HTTPError before reading `.response`.
           beforeError: conditionalArray(
             !disableGlobalErrorHandling &&
-              (async (error) => {
-                await handleError(error.response);
+              (async ({ error }) => {
+                if (error instanceof HTTPError) {
+                  await handleError(error.response);
+                }
                 return error;
               })
           ),
+          // ky v2: hooks receive a single state object instead of positional args.
           beforeRequest: [
-            async (request) => {
+            async ({ request }) => {
               if (isAuthenticated) {
                 const accessToken = await (resourceIndicator.startsWith(organizationUrnPrefix)
                   ? getOrganizationToken(getOrganizationIdFromUrn(resourceIndicator))
@@ -175,7 +180,7 @@ export const useStaticApi = ({
             },
           ],
           afterResponse: [
-            async (request, _options, response) => {
+            async ({ request, response }) => {
               if (
                 isCloud &&
                 isAuthenticated &&

@@ -1,3 +1,4 @@
+import { LockClosedIcon } from '@heroicons/react/24/outline';
 import { AgreeToTermsPolicy, type SignInIdentifier } from '@logto/schemas';
 import classNames from 'classnames';
 import { useCallback, useContext, useEffect } from 'react';
@@ -6,7 +7,6 @@ import { useTranslation } from 'react-i18next';
 
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 import UserInteractionContext from '@/Providers/UserInteractionContextProvider/UserInteractionContext';
-import LockIcon from '@/assets/icons/lock.svg?react';
 import { SmartInputField } from '@/components/InputFields';
 import CaptchaBox from '@/containers/CaptchaBox';
 import TermsAndPrivacyCheckbox from '@/containers/TermsAndPrivacyCheckbox';
@@ -20,7 +20,6 @@ import type { IdentifierInputValue } from '@/shared/components/InputFields/Smart
 import { isUsernamePolicyViolation } from '@/shared/utils/validate-username';
 import { getGeneralIdentifierErrorMessage, validateIdentifierField } from '@/utils/form';
 
-import styles from './index.module.scss';
 import useOnSubmit from './use-on-submit';
 
 type Props = {
@@ -106,7 +105,13 @@ const IdentifierRegisterForm = ({ className, autoFocus, signUpMethods }: Props) 
   );
 
   return (
-    <form className={classNames(styles.form, className)} onSubmit={onSubmitHandler}>
+    <form
+      className={classNames(
+        'flex flex-col items-center justify-center [&>*]:w-full',
+        className
+      )}
+      onSubmit={onSubmitHandler}
+    >
       <Controller
         control={control}
         name="identifier"
@@ -143,9 +148,8 @@ const IdentifierRegisterForm = ({ className, autoFocus, signUpMethods }: Props) 
         }}
         render={({ field, formState: { defaultValues } }) => (
           <SmartInputField
-            autoComplete="off"
             autoFocus={autoFocus}
-            className={styles.inputField}
+            className="mb-4"
             {...field}
             defaultValue={defaultValues?.identifier?.value}
             isDanger={!!errors.identifier || !!errorMessage}
@@ -154,9 +158,11 @@ const IdentifierRegisterForm = ({ className, autoFocus, signUpMethods }: Props) 
           />
         )}
       />
-      {errorMessage && <ErrorMessage className={styles.formErrors}>{errorMessage}</ErrorMessage>}
+      {errorMessage && (
+        <ErrorMessage className="mb-4 ms-0.5 mt-0">{errorMessage}</ErrorMessage>
+      )}
       {showSingleSignOnForm && (
-        <div className={styles.message}>{t('description.single_sign_on_enabled')}</div>
+        <div className="mb-4 text-sm text-muted">{t('description.single_sign_on_enabled')}</div>
       )}
       {/**
        * Have to use css to hide the terms element.
@@ -166,19 +172,19 @@ const IdentifierRegisterForm = ({ className, autoFocus, signUpMethods }: Props) 
        */}
       <TermsAndPrivacyCheckbox
         className={classNames(
-          styles.terms,
+          'mb-4',
           /**
            * Hide the terms checkbox when the policy is set to `Automatic`.
            * In registration, the terms checkbox is always shown for `Manual` and `ManualRegistrationOnly` policies.
            */
-          agreeToTermsPolicy === AgreeToTermsPolicy.Automatic && styles.hidden
+          agreeToTermsPolicy === AgreeToTermsPolicy.Automatic && 'hidden'
         )}
       />
       <CaptchaBox />
       <Button
         name="submit"
         title={showSingleSignOnForm ? 'action.single_sign_on' : 'action.create_account'}
-        icon={showSingleSignOnForm ? <LockIcon /> : undefined}
+        icon={showSingleSignOnForm ? <LockClosedIcon className="w-5 h-5" /> : undefined}
         htmlType="submit"
         isLoading={isSubmitting}
       />

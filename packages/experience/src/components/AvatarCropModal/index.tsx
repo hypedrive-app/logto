@@ -5,12 +5,9 @@ import 'react-easy-crop/react-easy-crop.css';
 import { useTranslation } from 'react-i18next';
 import ReactModal from 'react-modal';
 
-import modalStyles from '../../scss/modal.module.scss';
 import Button from '../../shared/components/Button';
 import IconButton from '../../shared/components/IconButton';
 import { getCroppedImageBlob, type CropAreaPixels } from '../../utils/image-crop';
-
-import styles from './index.module.scss';
 
 // Inlined to keep this shared modal resolvable from both the experience and account jest/build
 // pipelines, which use different module aliases and svg-import handling.
@@ -108,13 +105,16 @@ const AvatarCropModal = ({
       shouldCloseOnOverlayClick={!isBusy}
       role="dialog"
       isOpen={Boolean(imageSource)}
-      className={styles.modal}
-      overlayClassName={classNames(modalStyles.overlay, styles.overlay)}
+      className="absolute w-[480px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none max-[640px]:w-[calc(100%-40px)]"
+      overlayClassName={classNames(
+        'fixed inset-0 bg-[var(--color-bg-mask)]',
+        'z-[var(--z-modal)]'
+      )}
       onAfterClose={resetState}
       onRequestClose={handleCancel}
     >
-      <div className={styles.container}>
-        <div className={styles.header}>
+      <div className="bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none">
+        <div className="flex items-center justify-between text-base font-semibold text-ink mb-4 [&_svg]:w-6 [&_svg]:h-6">
           {tAvatar('crop_title')}
           <IconButton
             disabled={isBusy}
@@ -125,7 +125,7 @@ const AvatarCropModal = ({
             <CloseIcon />
           </IconButton>
         </div>
-        <div className={styles.cropArea}>
+        <div className="relative w-full h-80 rounded-[13px] overflow-hidden bg-surface-2">
           {imageSource && (
             <Cropper
               image={imageSource}
@@ -142,10 +142,10 @@ const AvatarCropModal = ({
             />
           )}
         </div>
-        <div className={styles.zoomRow}>
-          <span className={styles.zoomLabel}>{tAvatar('zoom')}</span>
+        <div className="flex items-center gap-3 mt-4">
+          <span className="text-sm text-muted">{tAvatar('zoom')}</span>
           <input
-            className={styles.zoomSlider}
+            className="flex-1 cursor-pointer [accent-color:var(--color-brand-default)] disabled:cursor-not-allowed disabled:opacity-50"
             type="range"
             min={minZoom}
             max={maxZoom}
@@ -159,11 +159,11 @@ const AvatarCropModal = ({
           />
         </div>
         {(cropError ?? uploadError) && (
-          <div className={styles.errorText} role="alert">
+          <div className="text-xs text-danger mt-3" role="alert">
             {cropError ?? uploadError}
           </div>
         )}
-        <div className={styles.footer}>
+        <div className="flex items-center justify-end mt-6 [&>button:first-child]:me-3">
           <Button
             title="action.cancel"
             type="secondary"

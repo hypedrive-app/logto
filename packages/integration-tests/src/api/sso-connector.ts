@@ -35,7 +35,8 @@ export const getSsoConnectorById = async (id: string) =>
   authedAdminApi.get(`sso-connectors/${id}`).json<SsoConnectorWithProviderConfig>();
 
 export const deleteSsoConnectorById = async (id: string) =>
-  authedAdminApi.delete(`sso-connectors/${id}`).json<void>();
+  // `DELETE` returns `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+  authedAdminApi.delete(`sso-connectors/${id}`);
 
 export const patchSsoConnectorById = async (id: string, data: Partial<SsoConnector>) =>
   authedAdminApi
@@ -131,9 +132,8 @@ export class SsoConnectorApi {
   }
 
   async deleteSsoConnectorIdpInitiatedAuthConfig(connectorId: string) {
-    return authedAdminApi
-      .delete(`sso-connectors/${connectorId}/idp-initiated-auth-config`)
-      .json<void>();
+    // `DELETE` returns `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+    return authedAdminApi.delete(`sso-connectors/${connectorId}/idp-initiated-auth-config`);
   }
 
   get firstConnectorId() {

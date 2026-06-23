@@ -1,6 +1,6 @@
 // MARK: Social connector
 import { type Optional } from '@silverhand/essentials';
-import { type Json } from '@withtyped/server';
+import { type Json, type JsonObject } from '@withtyped/server';
 import { z } from 'zod';
 
 import { type ToZodObject, type BaseConnector, type ConnectorType } from './foundation.js';
@@ -44,10 +44,10 @@ export type GetAuthorizationUri = (
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 
 export const jsonGuard: z.ZodType<Json> = z.lazy(() =>
-  z.union([literalSchema, z.array(jsonGuard), z.record(jsonGuard)])
+  z.union([literalSchema, z.array(jsonGuard), z.record(z.string(), jsonGuard)])
 );
 
-export const jsonObjectGuard = z.record(jsonGuard);
+export const jsonObjectGuard: z.ZodType<JsonObject> = z.record(z.string(), jsonGuard);
 
 /**
  * Normalized social user info that can be used in the system. The raw data returned from the

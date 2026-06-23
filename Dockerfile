@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1.7
 
 ###### [STAGE] Build ######
-FROM node:22-alpine AS builder
+FROM node:24-alpine AS builder
 WORKDIR /etc/logto
 ENV CI=true
 
@@ -9,7 +9,7 @@ ENV CI=true
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 
 ### Install toolchain ###
-RUN npm add --location=global pnpm@^10.0.0
+RUN npm add --location=global pnpm@^11.0.0
 # https://github.com/nodejs/docker-node/blob/main/docs/BestPractices.md#node-gyp-alpine
 RUN apk add --no-cache python3 make g++ rsync
 
@@ -45,7 +45,7 @@ RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
 RUN rm -rf .scripts pnpm-*.yaml packages/cloud
 
 ###### [STAGE] Seal ######
-FROM node:22-alpine AS app
+FROM node:24-alpine AS app
 WORKDIR /etc/logto
 ARG logto_oss_survey_endpoint=
 ARG private_key_rotation_grace_period=0

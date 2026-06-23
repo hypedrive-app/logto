@@ -1,6 +1,6 @@
 import { type Json, type JsonObject } from '@withtyped/server';
 import ky, { HTTPError } from 'ky';
-import { type ZodType, type ZodTypeDef } from 'zod';
+import { z, type ZodType } from 'zod';
 
 import {
   ConnectorError,
@@ -16,10 +16,14 @@ import {
 export * from './types/index.js';
 export * from './smtp-mailbox.js';
 
-export function validateConfig<Output, Input = Output>(
+// Constrain the generic to the guard itself and derive the asserted type via `z.output`. In Zod 4 a
+// `ZodObject` no longer cleanly assigns to `ZodType<Output>` for `Output` inference, so parameterising
+// on `ZodType<Output, Input>` would leave `config` as `unknown` at call sites. See
+// https://zod.dev/library-authors.
+export function validateConfig<Guard extends ZodType>(
   config: unknown,
-  guard: ZodType<Output, ZodTypeDef, Input>
-): asserts config is Output {
+  guard: Guard
+): asserts config is z.output<Guard> {
   const result = guard.safeParse(config);
 
   if (!result.success) {

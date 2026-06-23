@@ -1,0 +1,425 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+@custom-variant desktop (body.desktop &);
+@custom-variant mobile (body.mobile &);
+
+@font-face {
+  font-family: "Geist Variable";
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url("https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2")
+    format("woff2-variations");
+}
+
+/* ── Design tokens (mirrored from hypedrive-site-svelte/src/app.css) ── */
+:root {
+  color-scheme: light;
+  --bg:            #fafbfc;
+  --bg-elevated:   #ffffff;
+  --surface:       #f1f3f6;
+  --surface-2:     #e7eaf0;
+  --text:          #0e1116;
+  --text-2:        #353b45;
+  --text-muted:    #5a626e;
+  --text-faint:    #767e8b;
+  --border:        #e2e6ec;
+  --border-strong: #ccd2dc;
+  --primary:          #0e1116;
+  --primary-hover:    #000000;
+  --primary-contrast: #ffffff;
+  --primary-soft:     #f1f3f6;
+  --primary-soft-text: #0e1116;
+  --primary-wash:     rgba(14,17,22,0.04);
+  --primary-tint:     rgba(14,17,22,0.07);
+  --danger:           #e11d48;
+  --danger-soft:      #ffeef0;
+  --success:          #059669;
+  --amber:            #b45309;
+  --sh-xs:    0 1px 2px rgba(15,23,42,0.05);
+  --sh-soft:  0 1px 1px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06);
+  --sh-float: 0 1px 1px rgba(15,23,42,0.04), 0 8px 24px rgba(15,23,42,0.06), 0 0 0 1px rgba(15,23,42,0.04);
+  --sh-input: inset 0 1px 2px rgba(15,23,42,0.04);
+  --edge:     inset 0 1px 0 rgba(255,255,255,0.9);
+  --btn-edge: rgba(255,255,255,0.85);
+  --card-top: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(255,255,255,0) 42%);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  /* Spring curve for tactile button press (subtle overshoot) */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --control-h: 48px;
+  --max-w: 400px;
+}
+
+/* ── Tailwind theme ── */
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --color-bg:            var(--bg);
+  --color-elevated:      var(--bg-elevated);
+  --color-surface:       var(--surface);
+  --color-surface-2:     var(--surface-2);
+  --color-ink:           var(--text);
+  --color-ink-2:         var(--text-2);
+  --color-muted:         var(--text-muted);
+  --color-faint:         var(--text-faint);
+  --color-line:          var(--border);
+  --color-line-strong:   var(--border-strong);
+  --color-primary:       var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-contrast: var(--primary-contrast);
+  --color-primary-soft:  var(--primary-soft);
+  --color-primary-wash:  var(--primary-wash);
+  --color-danger:        var(--danger);
+  --color-danger-soft:   var(--danger-soft);
+  --color-success:       var(--success);
+  --color-amber:         var(--amber);
+}
+
+/* ── Base ── */
+@layer base {
+  html {
+    background: var(--bg);
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    font-feature-settings: "cv11";
+    letter-spacing: -0.005em;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100dvh;
+    overflow-x: clip;
+  }
+  *, *::before, *::after { box-sizing: border-box; }
+  h1,h2,h3,h4,h5,h6 { margin: 0; font-weight: inherit; font-size: inherit; }
+  p, ul, ol { margin: 0; padding: 0; }
+  ul, ol { list-style: none; }
+  img, svg, video { display: block; max-width: 100%; }
+  button { cursor: pointer; background: none; border: none; padding: 0; font: inherit; }
+  a { color: inherit; text-decoration: none; }
+  :focus { outline: none; }
+  :focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  ::selection { background: color-mix(in oklab, var(--primary) 20%, transparent); }
+  * { scrollbar-width: thin; }
+
+  /* Legacy CSS vars consumed by existing Logto components */
+  :root {
+    --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+    /* Refined scale: heavier title weight (650) + tighter tracking for a sharper,
+       more designed feel (ported from the tuned hypedrive-custom.css). */
+    --font-headline-1: 650 28px/34px var(--font-sans);
+    --font-headline-2: 650 24px/30px var(--font-sans);
+    --font-title-1:    650 22px/28px var(--font-sans);
+    --font-title-2:    650 20px/26px var(--font-sans);
+    --font-title-3:    600 16px/24px var(--font-sans);
+    --font-label-1:    600 16px/24px var(--font-sans);
+    --font-label-2:    500 14px/20px var(--font-sans);
+    --font-label-3:    400 13px/18px var(--font-sans);
+    --font-body-1:     400 15px/22px var(--font-sans);
+    --font-body-2:     400 14px/20px var(--font-sans);
+    --font-body-3:     400 12px/16px var(--font-sans);
+    --color-brand-default:          var(--primary);
+    --color-brand-hover:            var(--primary-hover);
+    --color-brand-pressed:          #000;
+    --color-brand-loading:          #2a2a2a;
+    --color-danger-default:         var(--danger);
+    --color-danger-hover:           #c8103a;
+    --color-danger-pressed:         #a50d2f;
+    --color-success-default:        var(--success);
+    --color-type-primary:           var(--text);
+    --color-type-secondary:         var(--text-muted);
+    --color-type-disable:           var(--text-faint);
+    --color-type-link:              var(--primary);
+    --color-bg-body:                var(--bg-elevated);
+    --color-bg-body-base:           var(--bg);
+    --color-bg-float:               var(--bg-elevated);
+    --color-bg-float-base:          var(--bg);
+    --color-bg-float-overlay:       var(--bg-elevated);
+    --color-bg-layer-1:             var(--bg-elevated);
+    --color-bg-layer-2:             var(--surface);
+    --color-bg-toast:               var(--text);
+    --color-bg-light:               var(--surface);
+    --color-bg-state-disabled:      var(--surface-2);
+    --color-bg-state-unselected:    var(--surface-2);
+    --color-bg-mask:                rgba(0,0,0,0.45);
+    --color-line-divider:           rgba(14,17,22,0.08);
+    --color-line-border:            var(--border);
+    --color-line-border-transparent: rgba(14,17,22,0.12);
+    --color-overlay-neutral-hover:   rgba(14,17,22,0.04);
+    --color-overlay-neutral-pressed: rgba(14,17,22,0.08);
+    --color-overlay-neutral-focused: rgba(14,17,22,0.12);
+    --color-overlay-brand-hover:     rgba(14,17,22,0.06);
+    --color-overlay-brand-pressed:   rgba(14,17,22,0.10);
+    --color-overlay-brand-focused:   rgba(14,17,22,0.14);
+    --color-overlay-danger-focused:  rgba(225,29,72,0.14);
+    --color-hover-variant:           var(--primary-wash);
+    --color-focused-variant:         var(--primary-tint);
+    --color-shadow-1:                var(--sh-soft);
+    --color-shadow-2:                var(--sh-xs);
+    --color-shadow-2-reversed:       0 -2px 8px rgba(16,24,40,0.05);
+    --color-shadow-float:            var(--sh-float);
+    --color-shadow-button:           var(--sh-xs);
+    --color-static-white:            #ffffff;
+    --color-static-black:            #000000;
+    --color-static-dark-type-primary: #f3f5f8;
+    --color-alert-60:                #d97706;
+    --color-alert-70:                #b45309;
+    --color-alert-90:                #fef3c7;
+    --color-neutral-variant-60:      var(--text-muted);
+    --color-neutral-variant-70:      var(--border-strong);
+    --color-neutral-variant-80:      var(--border);
+    --color-neutral-variant-90:      var(--surface-2);
+    --color-neutral-10:              var(--text);
+    --color-neutral-20:              var(--text-2);
+    --color-neutral-50:              var(--text-muted);
+    --color-neutral-80:              var(--border-strong);
+    --color-neutral-90:              var(--surface-2);
+    --color-neutral-95:              var(--surface);
+    --color-neutral-100:             var(--bg-elevated);
+    --radius:    11px;
+    --radius-sm: 7px;
+    --radius-md: 13px;
+    --radius-lg: 18px;
+    --z-dropdown: 100;
+    --z-modal:    200;
+    --z-loading:  300;
+    --z-toast:    400;
+    --max-width:  var(--max-w);
+    --motion-duration-fast: 0.12s;
+    --motion-duration-base: 0.2s;
+    --motion-duration-slow: 0.35s;
+    --motion-ease-out: var(--ease-out);
+    --motion-ease-standard: ease-in-out;
+  }
+
+  /* Overlayscrollbars */
+  .os-scrollbar.os-theme-dark,
+  .os-scrollbar.os-theme-light {
+    &.os-scrollbar-vertical  { width: 12px; padding: 8px 2px; }
+    &.os-scrollbar-horizontal { height: 12px; padding: 2px 8px; }
+    .os-scrollbar-handle { min-height: 40px; min-width: 40px; }
+  }
+}
+
+/* ── Component utilities ── */
+@layer components {
+  /* Auth card — centred desktop login surface */
+  .auth-card {
+    background: var(--card-top), var(--bg-elevated);
+    border: 1px solid var(--border);
+    box-shadow: var(--edge), var(--sh-float);
+    animation: card-enter 0.4s var(--ease-out) both;
+  }
+
+  /* Shared button transition: snappy bg/shadow + springy press */
+  .btn-primary, .btn-ghost, .btn-danger {
+    transition:
+      background 180ms cubic-bezier(0.4, 0, 0.2, 1),
+      border-color 180ms cubic-bezier(0.4, 0, 0.2, 1),
+      transform 100ms var(--ease-spring),
+      box-shadow 200ms ease,
+      opacity 150ms ease;
+  }
+  .btn-primary:active:not(:disabled),
+  .btn-ghost:active:not(:disabled),
+  .btn-danger:active:not(:disabled) {
+    transform: scale(0.985);
+    transition-duration: 80ms;
+  }
+  .btn-primary:disabled, .btn-ghost:disabled, .btn-danger:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Primary button — near-black, top-edge highlight, brand-glow lift on hover */
+  .btn-primary {
+    position: relative;
+    color: var(--primary-contrast);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 50%),
+      var(--primary);
+    box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-xs);
+  }
+  .btn-primary:hover:not(:disabled) {
+    box-shadow:
+      0 1px 2px rgba(15,23,42,0.05),
+      0 4px 14px var(--color-overlay-brand-focused),
+      inset 0 1px 0 var(--btn-edge);
+  }
+
+  /* Ghost / secondary button */
+  .btn-ghost {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    color: var(--text);
+    box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-xs);
+  }
+  .btn-ghost:hover:not(:disabled) {
+    border-color: rgba(14,17,22,0.2);
+    box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-soft);
+  }
+
+  /* Danger button */
+  .btn-danger {
+    background: var(--danger);
+    color: #fff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.15), var(--sh-xs);
+  }
+  .btn-danger:hover:not(:disabled) { background: #c8103a; }
+
+  /* Text input */
+  .input-base {
+    width: 100%;
+    height: var(--control-h);
+    padding: 0 14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius);
+    font: var(--font-body-1);
+    color: var(--text);
+    outline: none;
+    box-shadow: var(--sh-input);
+    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    caret-color: var(--primary);
+  }
+  .input-base::placeholder { color: var(--text-faint); }
+  .input-base:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-tint); }
+  .input-base.is-danger { border-color: var(--danger); caret-color: var(--danger); }
+  .input-base.is-danger:focus { box-shadow: 0 0 0 3px var(--danger-soft); }
+
+  /* ── Canonical surfaces ──
+     Use these instead of ad-hoc bg/border/radius combos so every card, row,
+     and chip shares one visual language. */
+
+  /* Elevated card / modal surface — 16px radius, hairline border, float shadow */
+  .surface-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--edge), var(--sh-float);
+  }
+  /* Quiet panel — recessed list/section container, no shadow */
+  .surface-panel {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+  }
+  /* Interactive row inside a panel/list */
+  .row-interactive {
+    border-radius: var(--radius);
+    transition: background-color 0.15s ease;
+  }
+  .row-interactive:hover { background: var(--color-overlay-neutral-hover); }
+  .row-interactive:active { background: var(--color-overlay-neutral-pressed); }
+
+  /* Neutral hover/press overlay (replaces inline rgba(14,17,22,0.04)) */
+  .overlay-hover:hover { background: var(--color-overlay-neutral-hover); }
+  .overlay-press:active { background: var(--color-overlay-neutral-pressed); }
+
+  /* Status chips — small, pill, tinted */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.375rem;
+    border-radius: 9999px;
+    padding: 0.25rem 0.625rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .chip-success { background: color-mix(in oklab, var(--success) 12%, transparent); color: var(--success); }
+  .chip-neutral { background: var(--surface-2); color: var(--text-2); }
+  .chip-danger  { background: var(--danger-soft); color: var(--danger); }
+
+  /* Warning/alert notification surface (replaces inline amber rgba) */
+  .surface-warning {
+    background: color-mix(in oklab, var(--amber) 8%, var(--bg-elevated));
+    border: 1px solid color-mix(in oklab, var(--amber) 32%, transparent);
+    color: var(--text-2);
+    border-radius: var(--radius);
+  }
+}
+
+/* ── Keyframes ── */
+@keyframes card-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes content-enter {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes rotating {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+@keyframes loading-mask-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes social-fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes onAutoFillStart { from {} to {} }
+@keyframes onAutoFillCancel { from {} to {} }
+
+/* ── Illustration scene animations (Hypedrive design language) ── */
+@keyframes scene-float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+@keyframes scene-breathe {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-2px) scale(1.006); }
+}
+@keyframes scene-pop {
+  0% { opacity: 0; transform: scale(0.4); }
+  60% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes scene-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 1; }
+}
+@keyframes scene-glow {
+  0%, 100% { opacity: 0.45; transform: scale(0.92); }
+  50% { opacity: 0.8; transform: scale(1); }
+}
+@keyframes scene-ring {
+  0%, 8% { stroke-dashoffset: 100; }
+  70%, 100% { stroke-dashoffset: 0; }
+}
+@keyframes scene-stage {
+  0%, 12% { opacity: 0; transform: translateY(6px) scale(0.92); }
+  24%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .scene-float   { animation: scene-float 5.5s ease-in-out infinite; will-change: transform; }
+  .scene-breathe { animation: scene-breathe 6s ease-in-out infinite; will-change: transform; }
+  .scene-pop     { animation: scene-pop 0.5s cubic-bezier(0.22,1,0.36,1) both; }
+  .scene-pulse   { animation: scene-pulse 2.2s ease-in-out infinite; }
+  .scene-glow    { animation: scene-glow 4.2s ease-in-out infinite; }
+  .scene-ring    { animation: scene-ring 3s cubic-bezier(0.22,1,0.36,1) infinite; }
+  .scene-stage   { animation: scene-stage 3s ease-in-out infinite; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .scene-ring { stroke-dashoffset: 0; }
+}
+
+/* ReactModal */
+.ReactModal__Content[role='toast'] { opacity: 0; transition: opacity 0.25s ease; }
+.ReactModal__Content--after-open[role='toast'] { opacity: 1; }
+.ReactModal__Content--before-close[role='toast'] { opacity: 0; }

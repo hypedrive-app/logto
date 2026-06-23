@@ -5,8 +5,6 @@ import { useTranslation } from 'react-i18next';
 
 import ScopeGroup from '../ScopeGroup';
 
-import styles from './index.module.scss';
-
 const isUserScope = (scope: string): scope is UserScope =>
   Object.values<string>(UserScope).includes(scope);
 
@@ -40,10 +38,10 @@ const ScopesListCard = ({ userScopes, resourceScopes, appName, className }: Prop
 
   return (
     <div className={className}>
-      <div className={styles.title}>
+      <div className="text-sm font-medium mb-2">
         {t(`description.authorize_personal_data_usage`, { name: appName })}
       </div>
-      <div className={styles.cardWrapper}>
+      <div className="border border-line-strong rounded-[13px] py-2">
         {userScopesData && userScopesData.length > 0 && (
           <ScopeGroup
             groupName="User Scopes"

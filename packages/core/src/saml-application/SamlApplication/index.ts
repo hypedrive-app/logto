@@ -200,8 +200,7 @@ export class SamlApplication {
   }> => {
     const optionalRelayState = conditional(relayState);
     // TODO: fix binding method
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-    const { context, entityEndpoint } = await this.idp.createLoginResponse(
+    const loginResponse = await this.idp.createLoginResponse(
       this.sp,
       // @ts-expect-error --fix request object later
       null,
@@ -211,6 +210,14 @@ export class SamlApplication {
       this.config.encryption?.encryptThenSign,
       optionalRelayState
     );
+
+    // samlify 2.13 types `createLoginResponse` as a union of binding contexts; `entityEndpoint`
+    // is present on the post-binding result at runtime but not on every union member.
+    // eslint-disable-next-line no-restricted-syntax
+    const { context, entityEndpoint } = loginResponse as {
+      context: string;
+      entityEndpoint: string;
+    };
 
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { context, entityEndpoint, relayState: optionalRelayState };
@@ -425,9 +432,14 @@ export class SamlApplication {
       sessionExpiresAt: Optional<string>;
     }) =>
     (template: string) => {
-      const assertionConsumerServiceUrl = this.sp.entityMeta.getAssertionConsumerService(
+      // samlify 2.13 widened `getAssertionConsumerService` to `string | string[]`; for a single
+      // POST-binding ACS we take the first URL so it fits the scalar `TagReplacementMap` values.
+      const assertionConsumerServiceValue = this.sp.entityMeta.getAssertionConsumerService(
         saml.Constants.wording.binding.post
       );
+      const assertionConsumerServiceUrl = Array.isArray(assertionConsumerServiceValue)
+        ? (assertionConsumerServiceValue[0] ?? '')
+        : assertionConsumerServiceValue;
 
       const { nameIDFormat } = this.idp.entitySetting;
       assertThat(nameIDFormat, 'application.saml.name_id_format_required');

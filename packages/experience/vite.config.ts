@@ -3,60 +3,42 @@ import browserslistToEsbuild from 'browserslist-to-esbuild';
 import { defineConfig, mergeConfig, type UserConfig } from 'vite';
 import viteCompression from 'vite-plugin-compression';
 import svgr from 'vite-plugin-svgr';
+import tailwindcss from '@tailwindcss/vite';
 
 import { defaultConfig, manualChunks } from '../../vite.shared.config';
 
 const buildConfig = (mode: string): UserConfig => ({
   server: {
     port: 5001,
-    hmr: {
-      port: 6001,
-    },
-  },
-  css: {
-    modules: {
-      generateScopedName:
-        // Keep backward compatibility with the old CSS modules naming in production
-        mode === 'development' ? '__[hash:base64:5]__[local]' : '[hash:base64:5]_[local]',
+    hmr: { port: 6001 },
+    proxy: {
+      '/api': { target: 'http://localhost:3001', changeOrigin: true },
+      '/oidc': { target: 'http://localhost:3001', changeOrigin: true },
     },
   },
   plugins: [
+    tailwindcss(),
     react(),
     svgr(),
     viteCompression({ disable: mode === 'development' }),
     viteCompression({ disable: mode === 'development', algorithm: 'brotliCompress' }),
   ],
   define: {
-    // TODO: Remove this line after the experience package supports ESM unit test.
-    // Replace all the process.env references with import.meta.env in the experience package then.
-    // 'import.meta.env.DEV_FEATURES_ENABLED': JSON.stringify(process.env.DEV_FEATURES_ENABLED),
-
-    // Experience package does not support ESM unit test yet, can not use import.meta.env
-    // so we need to define the environment variables here.
     'process.env': {
       NODE_ENV: process.env.NODE_ENV,
       DEV_FEATURES_ENABLED: process.env.DEV_FEATURES_ENABLED,
     },
   },
   build: {
-    // Use the same browserslist configuration as in README.md.
-    // Consider using the esbuild target directly in the future.
     target: browserslistToEsbuild('> 0.5%, last 2 versions, Firefox ESR, not dead'),
     rollupOptions: {
       output: {
-        // Tip: You can use `pnpx vite-bundle-visualizer` to analyze the bundle size
         manualChunks: (id, meta) => {
-          if (/\/node_modules\/i18next[^/]*\//.test(id)) {
-            return 'i18next';
-          }
-
+          if (/\/node_modules\/i18next[^/]*\//.test(id)) return 'i18next';
           for (const largePackage of ['libphonenumber-js', 'core-js']) {
-            if (id.includes(`/node_modules/${largePackage}/`)) {
-              return largePackage;
-            }
+            if (id.includes(`/node_modules/${largePackage}/`)) return largePackage;
           }
-
-          return manualChunks(id, meta);
+          return manualChunks(id, { getModuleInfo: meta.getModuleInfo });
         },
       },
     },

@@ -13,6 +13,22 @@ import { OrganizationApiTest } from '#src/helpers/organization.js';
 import { enableAllPasswordSignInMethods } from '#src/helpers/sign-in-experience.js';
 import { generatePassword, generateUsername, randomString } from '#src/utils.js';
 
+/**
+ * Assert that an error is a `LogtoRequestError` by its structural contract rather than `instanceof`.
+ * The `@logto/node` client throws an error from its own (v6) copy of `@logto/js`, while this test
+ * imports `LogtoRequestError` from a different (v5) copy; the two class identities differ, so a plain
+ * `instanceof` check fails even though the error is genuinely a `LogtoRequestError`.
+ */
+function assertIsLogtoRequestError(
+  error: unknown
+): asserts error is LogtoRequestError & { code: string } {
+  assert(
+    error instanceof LogtoRequestError ||
+      (error instanceof Error && error.constructor.name === 'LogtoRequestError' && 'code' in error),
+    new Error(`Expected a LogtoRequestError, got ${String(error)}`)
+  );
+}
+
 describe('get access token for organization', () => {
   const username = generateUsername();
   const password = generatePassword();
@@ -89,6 +105,9 @@ describe('get access token for organization', () => {
     const newOrganization = await organizationApi.create({ name: 'foo' });
 
     await organizationApi.addUsers(newOrganization.id, [testUserId]);
+    // Force a fresh token issuance so the newly-added organization membership is reflected; the SDK
+    // otherwise serves a cached access token grant that predates this membership change.
+    await client.clearAccessToken();
     await expect(client.getOrganizationTokenClaims(newOrganization.id)).resolves.toMatchObject({
       aud: buildOrganizationUrn(newOrganization.id),
     });
@@ -100,7 +119,7 @@ describe('get access token for organization', () => {
       .getOrganizationTokenClaims(newOrganization.id)
       .catch((error: unknown) => error);
 
-    assert(error instanceof LogtoRequestError);
+    assertIsLogtoRequestError(error);
     expect(error.code).toBe('oidc.access_denied');
   });
 
@@ -112,7 +131,7 @@ describe('get access token for organization', () => {
       .getOrganizationTokenClaims(testOrganizationId)
       .catch((error: unknown) => error);
 
-    assert(error instanceof LogtoRequestError);
+    assertIsLogtoRequestError(error);
     expect(error.code).toBe('oidc.access_denied');
   });
 

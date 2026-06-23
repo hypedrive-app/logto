@@ -12,12 +12,12 @@ import { layoutClassNames } from '@ac/constants/layout';
 import useApi from '@ac/hooks/use-api';
 import { getProfileFieldControlKey } from '@ac/utils/profile-field-control';
 
-import homeStyles from '../Home/index.module.scss';
-
 import EditProfileFieldModal from './EditProfileFieldModal';
-import styles from './index.module.scss';
 import { getAccountCenterProfileFields, getProfileFieldValue } from './profile-field-values';
 import type { ProfileFieldRow } from './types';
+
+/** Class applied to inline avatar thumbnails rendered inside profile field values. */
+const avatarClass = 'w-8 h-8 rounded-[8px] object-cover block';
 
 const profileLabelKeys: Record<string, string> = {
   name: 'profile.name',
@@ -63,7 +63,7 @@ const Profile = () => {
         {
           name,
           label,
-          value: getProfileFieldValue(userInfo, { name, label }, t, field, styles.avatar),
+          value: getProfileFieldValue(userInfo, { name, label }, t, field, avatarClass),
           controlKey,
           controlValue,
           field,
@@ -102,15 +102,25 @@ const Profile = () => {
 
   return (
     <>
-      <div className={homeStyles.container}>
+      <div className="flex-1 flex flex-col">
         <AccountPageHeader
           titleKey="account_center.page.profile_title"
           descriptionKey="account_center.page.profile_description"
         />
-        <div className={classNames(homeStyles.content, layoutClassNames.pageContent)}>
+        <div
+          className={classNames(
+            'flex-1 flex flex-col gap-5 mobile:gap-4',
+            layoutClassNames.pageContent
+          )}
+        >
           {fieldRows.length > 0 ? (
-            <div className={classNames(styles.section, layoutClassNames.section)}>
-              <div className={classNames(styles.card, layoutClassNames.card)}>
+            <div className={classNames('flex flex-col gap-1.5', layoutClassNames.section)}>
+              <div
+                className={classNames(
+                  'bg-elevated rounded-[16px] [overflow:clip]',
+                  layoutClassNames.card
+                )}
+              >
                 {fieldRows.map((fieldRow) => {
                   const { name, label, value, controlValue } = fieldRow;
 
@@ -126,14 +136,24 @@ const Profile = () => {
                   }
 
                   return (
-                    <div key={name} className={classNames(styles.row, layoutClassNames.row)}>
-                      <div className={styles.topLine}>
-                        <div className={styles.name}>{label}</div>
+                    <div
+                      key={name}
+                      className={classNames(
+                        'items-center not-last:border-b not-last:border-line',
+                        'desktop:grid desktop:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] desktop:[grid-auto-flow:dense] desktop:gap-x-6 desktop:px-6 desktop:py-5 desktop:min-h-16',
+                        'mobile:flex mobile:flex-col mobile:items-stretch mobile:gap-1 mobile:p-4',
+                        layoutClassNames.row
+                      )}
+                    >
+                      <div className="desktop:contents mobile:flex mobile:items-center mobile:justify-between mobile:gap-3 mobile:w-full">
+                        <div className="min-w-0 text-sm font-medium text-ink desktop:col-start-1 mobile:w-full mobile:[overflow-wrap:anywhere] mobile:break-words">
+                          {label}
+                        </div>
                         {name !== 'avatar' && controlValue === AccountCenterControlValue.Edit && (
-                          <div className={styles.actions}>
+                          <div className="flex items-center gap-6 shrink-0 desktop:col-start-3 mobile:flex-wrap mobile:justify-end mobile:gap-4">
                             <button
                               type="button"
-                              className={styles.changeButton}
+                              className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                               onClick={() => {
                                 setEditingField(fieldRow);
                               }}
@@ -143,7 +163,12 @@ const Profile = () => {
                           </div>
                         )}
                       </div>
-                      <div className={classNames(styles.value, !value && styles.secondaryValue)}>
+                      <div
+                        className={classNames(
+                          'min-w-0 text-sm [overflow-wrap:anywhere] break-words desktop:col-start-2 mobile:w-full',
+                          value ? 'text-ink' : 'text-muted'
+                        )}
+                      >
                         {value ?? t('account_center.security.not_set')}
                       </div>
                     </div>
@@ -152,7 +177,7 @@ const Profile = () => {
               </div>
             </div>
           ) : (
-            <div className={styles.empty} />
+            <div className="flex-1 min-h-[200px]" />
           )}
         </div>
         <PageFooter />

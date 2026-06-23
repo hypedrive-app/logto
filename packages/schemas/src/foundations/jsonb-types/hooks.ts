@@ -104,7 +104,7 @@ export const hookConfigGuard = z.object({
   /** Method fixed to `POST` */
   url: z.string(),
   /** Additional headers that attach to the request */
-  headers: z.record(z.string()).optional(),
+  headers: z.record(z.string(), z.string()).optional(),
   /**
    * @deprecated
    * Retry times when hook response status >= 500.

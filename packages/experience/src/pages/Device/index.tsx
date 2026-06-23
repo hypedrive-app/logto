@@ -5,13 +5,13 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 import LandingPageLayout from '@/Layout/LandingPageLayout';
+import DeviceScene from '@/components/illustrations/DeviceScene';
 import { InputField } from '@/components/InputFields';
 import useToast from '@/hooks/use-toast';
 import Button from '@/shared/components/Button';
 
 import ErrorPage from '../ErrorPage';
 
-import styles from './index.module.scss';
 import {
   hasDeviceCodeValue,
   createDeviceFlowRequestBody,
@@ -160,8 +160,9 @@ const Device = () => {
 
   return (
     <LandingPageLayout title="description.device_activation">
-      <div className={styles.content}>
-        <div className={styles.description}>
+      <div className="w-[min(100%,400px)]">
+        <DeviceScene />
+        <div className="mb-4 text-muted text-sm">
           {t(
             errorMessage
               ? 'description.device_activation_error_description'
@@ -171,7 +172,7 @@ const Device = () => {
         <form onSubmit={handleContinue}>
           <InputField
             autoFocus
-            className={styles.inputField}
+            className="mb-4"
             errorMessage={errorMessage}
             isDanger={Boolean(errorMessage)}
             label={t('input.code')}

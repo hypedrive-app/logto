@@ -32,7 +32,8 @@ export const updateOneTimeTokenStatus = async (id: string, status: OneTimeTokenS
     .json<OneTimeToken>();
 
 export const deleteOneTimeTokenById = async (id: string) =>
-  authedAdminApi.delete(`one-time-tokens/${id}`).json<OneTimeToken>();
+  // `DELETE` returns `204 No Content`; `.json()` on the empty body throws on newer runtimes.
+  authedAdminApi.delete(`one-time-tokens/${id}`);
 
 export const getOneTimeTokens = async (searchParams?: Record<string, string>) =>
   authedAdminApi.get('one-time-tokens', { searchParams }).json<OneTimeToken[]>();

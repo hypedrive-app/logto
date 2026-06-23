@@ -61,6 +61,4 @@ export enum SentinelActivityAction {
 export const sentinelActivityActionGuard = z.nativeEnum(SentinelActivityAction);
 
 export type SentinelActivityPayload = Record<string, unknown>;
-export const sentinelActivityPayloadGuard = z.record(
-  z.unknown()
-) satisfies z.ZodType<SentinelActivityPayload>;
+export const sentinelActivityPayloadGuard = z.record(z.string(), z.unknown()) satisfies z.ZodType<SentinelActivityPayload>;

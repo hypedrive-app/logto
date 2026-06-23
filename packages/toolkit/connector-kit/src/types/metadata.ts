@@ -15,7 +15,7 @@ export enum ConnectorPlatform {
 
 export const i18nPhrasesGuard: ZodType<I18nPhrases> = z
   .object({ en: z.string() })
-  .and(z.record(z.string()))
+  .and(z.record(z.string(), z.string()))
   .refine((i18nObject) => {
     const keys = Object.keys(i18nObject);
 
@@ -89,7 +89,7 @@ export const connectorMetadataGuard = z
     readme: z.string(),
     configTemplate: z.string().optional(), // Connector config template
     formItems: connectorConfigFormItemGuard.array().optional(),
-    customData: z.record(z.unknown()).optional(),
+    customData: z.record(z.string(), z.unknown()).optional(),
     fromEmail: z.string().optional(),
   })
   .merge(socialConnectorMetadataGuard) satisfies ToZodObject<ConnectorMetadata>;

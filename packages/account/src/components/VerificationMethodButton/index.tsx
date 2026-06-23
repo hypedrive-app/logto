@@ -1,5 +1,4 @@
 import ArrowNext from '@experience/shared/assets/icons/arrow-next.svg?react';
-import styles from '@experience/shared/components/Button/index.module.scss';
 import DynamicT from '@experience/shared/components/DynamicT';
 import FlipOnRtl from '@experience/shared/components/FlipOnRtl';
 import classNames from 'classnames';
@@ -10,8 +9,6 @@ import EmailIcon from '@ac/assets/icons/email.svg?react';
 import PasswordIcon from '@ac/assets/icons/password.svg?react';
 import PhoneIcon from '@ac/assets/icons/phone.svg?react';
 import { VerificationMethod } from '@ac/types';
-
-import verificationMethodStyles from './index.module.scss';
 
 export type Props = {
   readonly method: VerificationMethod;
@@ -54,25 +51,25 @@ const VerificationMethodButton = ({ method, onClick }: Props) => {
   return (
     <button
       className={classNames(
-        styles.button,
-        styles.secondary,
-        styles.large,
-        verificationMethodStyles.button
+        // Base ghost/secondary button surface, full width.
+        'btn-ghost relative flex flex-row items-center w-full overflow-hidden select-none outline-none appearance-none',
+        // VerificationMethodButton overrides on the base button.
+        'h-auto py-3 ps-3 pe-4 gap-4 rounded-[11px] border border-[var(--color-line-divider)]'
       )}
       type="button"
       onClick={onClick}
     >
-      <Icon className={verificationMethodStyles.icon} />
-      <div className={verificationMethodStyles.title}>
-        <div className={verificationMethodStyles.name}>
+      <Icon className="w-5 h-5 text-muted" />
+      <div className="flex-1 flex flex-col items-start text-start">
+        <div className="text-base font-medium text-ink desktop:text-sm desktop:font-medium">
           <DynamicT forKey={nameKey} />
         </div>
-        <div className={verificationMethodStyles.description}>
+        <div className="text-sm text-muted">
           <DynamicT forKey={descriptionKey} />
         </div>
       </div>
       <FlipOnRtl>
-        <ArrowNext className={verificationMethodStyles.icon} />
+        <ArrowNext className="w-5 h-5 text-muted" />
       </FlipOnRtl>
     </button>
   );

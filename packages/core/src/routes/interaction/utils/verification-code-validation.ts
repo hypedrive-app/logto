@@ -17,6 +17,8 @@ const eventToTemplateTypeMap: Record<InteractionEvent, TemplateType> = {
   SignIn: TemplateType.SignIn,
   Register: TemplateType.Register,
   ForgotPassword: TemplateType.ForgotPassword,
+  // Step-up authentication verifies an already-identified user for a sensitive operation.
+  StepUp: TemplateType.UserPermissionValidation,
 };
 
 const getTemplateTypeByEvent = (event: InteractionEvent): TemplateType =>

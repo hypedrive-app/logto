@@ -1,4 +1,4 @@
-import { MfaFactor, SignInIdentifier } from '@logto/schemas';
+import { LogtoAcrValues, MfaFactor, SignInIdentifier } from '@logto/schemas';
 import { useCallback } from 'react';
 
 import MfaFactorButton from '@/components/Button/MfaFactorButton';
@@ -6,10 +6,9 @@ import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-pres
 import useSendMfaVerificationCode from '@/hooks/use-send-mfa-verification-code';
 import useStartTotpBinding from '@/hooks/use-start-totp-binding';
 import useStartWebAuthnProcessing from '@/hooks/use-start-webauthn-processing';
+import useStepUpAcr from '@/hooks/use-step-up-acr';
 import { UserMfaFlow } from '@/types';
 import { type MfaFlowState } from '@/types/guard';
-
-import styles from './index.module.scss';
 
 type Props = {
   readonly flow: UserMfaFlow;
@@ -20,8 +19,20 @@ const MfaFactorList = ({ flow, flowState }: Props) => {
   const startTotpBinding = useStartTotpBinding();
   const startWebAuthnProcessing = useStartWebAuthnProcessing();
   const navigate = useNavigateWithPreservedSearchParams();
-  const { availableFactors, isWebAuthnUsedAsSignInPasskey } = flowState;
+  const stepUpAcr = useStepUpAcr();
+  const { isWebAuthnUsedAsSignInPasskey } = flowState;
   const { onSubmit: sendMfaVerificationCode } = useSendMfaVerificationCode();
+
+  /**
+   * For a phishing-resistant (`phr`) step-up, only WebAuthn satisfies the requested ACR, so the
+   * selector must hide phishable factors even if the user has them enrolled. The backend already
+   * scopes the 403 `availableFactors` to WebAuthn for `phr`, so this list is normally bypassed by a
+   * direct redirect; the filter is a defensive guard against ever offering a non-satisfying factor.
+   */
+  const availableFactors =
+    stepUpAcr === LogtoAcrValues.PhishingResistant
+      ? flowState.availableFactors.filter((factor) => factor === MfaFactor.WebAuthn)
+      : flowState.availableFactors;
 
   const handleSelectFactor = useCallback(
     async (factor: MfaFactor) => {
@@ -49,7 +60,7 @@ const MfaFactorList = ({ flow, flowState }: Props) => {
   );
 
   return (
-    <div className={styles.factorList}>
+    <div className="flex flex-col items-center justify-center gap-3">
       {availableFactors.map((factor) => {
         const isEmailOrPhone =
           factor === MfaFactor.EmailVerificationCode || factor === MfaFactor.PhoneVerificationCode;

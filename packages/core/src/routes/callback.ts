@@ -13,7 +13,7 @@ import assertThat from '#src/utils/assert-that.js';
 
 function callbackRoutes<T extends Router>(router: T) {
   router.post('/callback/:connectorId', koaBody(), async (ctx) => {
-    const parsed = z.record(z.string()).safeParse(ctx.request.body);
+    const parsed = z.record(z.string(), z.string()).safeParse(ctx.request.body);
 
     assertThat(parsed.success, new RequestError('oidc.invalid_request'));
 
@@ -21,7 +21,7 @@ function callbackRoutes<T extends Router>(router: T) {
     ctx.set('Location', ctx.request.path + '?' + new URLSearchParams(parsed.data).toString());
   });
   router.post('/account/callback/social/:connectorId', koaBody(), async (ctx) => {
-    const parsed = z.record(z.string()).safeParse(ctx.request.body);
+    const parsed = z.record(z.string(), z.string()).safeParse(ctx.request.body);
 
     assertThat(parsed.success, new RequestError('oidc.invalid_request'));
 

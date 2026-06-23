@@ -1,18 +1,18 @@
 import { MfaFactor, VerificationType } from '@logto/schemas';
-import * as s from 'superstruct';
+import { z } from 'zod';
 
 import { mfaErrorDataGuard, verificationIdsMapGuard } from './guard';
 
 describe('guard', () => {
   it.each(Object.values(VerificationType))('verificationIdsMapGuard: %s', (type) => {
     expect(() => {
-      s.assert({ [type]: 'verificationId' }, verificationIdsMapGuard);
+      verificationIdsMapGuard.parse({ [type]: 'verificationId' });
     }).not.toThrow();
   });
 
   it('should throw with invalid key', () => {
     expect(() => {
-      s.assert({ invalidKey: 'verificationId' }, verificationIdsMapGuard);
+      verificationIdsMapGuard.parse({ invalidKey: 'verificationId' });
     }).toThrow();
   });
 
@@ -23,7 +23,7 @@ describe('guard', () => {
       [VerificationType.Social]: 'verificationId',
     };
 
-    const [error, value] = verificationIdsMapGuard.validate(record);
+    const { error, data: value } = verificationIdsMapGuard.safeParse(record);
 
     expect(error).toBeUndefined();
     expect(value).toEqual(record);
@@ -31,15 +31,12 @@ describe('guard', () => {
 
   it('mfaErrorDataGuard should accept passkey suggestion metadata', () => {
     expect(() => {
-      s.assert(
-        {
-          availableFactors: [MfaFactor.TOTP, MfaFactor.EmailVerificationCode],
-          skippable: true,
-          suggestion: true,
-          isWebAuthnUsedAsSignInPasskey: true,
-        },
-        mfaErrorDataGuard
-      );
+      mfaErrorDataGuard.parse({
+        availableFactors: [MfaFactor.TOTP, MfaFactor.EmailVerificationCode],
+        skippable: true,
+        suggestion: true,
+        isWebAuthnUsedAsSignInPasskey: true,
+      });
     }).not.toThrow();
   });
 });

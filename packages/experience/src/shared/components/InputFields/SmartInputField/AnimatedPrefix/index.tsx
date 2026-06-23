@@ -3,8 +3,6 @@ import { useSpring, animated, config } from '@react-spring/web';
 import type { Nullable } from '@silverhand/essentials';
 import { cloneElement, useCallback, useRef, useState } from 'react';
 
-import styles from './index.module.scss';
-
 type Props = {
   readonly children: JSX.Element; // Limit to one element
   readonly isVisible: boolean;
@@ -47,7 +45,11 @@ const AnimatedPrefix = ({ children, isVisible }: Props) => {
   }, [api, getTargetWidth]);
 
   return (
-    <animated.div className={styles.prefix} style={animation} data-testid="prefix">
+    <animated.div
+      className="overflow-hidden [&>div]:absolute"
+      style={animation}
+      data-testid="prefix"
+    >
       {cloneElement(children, { ref: elementRef, isVisible })}
     </animated.div>
   );

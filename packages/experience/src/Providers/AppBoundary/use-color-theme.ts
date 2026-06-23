@@ -5,58 +5,58 @@ import { useEffect, useContext } from 'react';
 
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 
-const generateLightColorLibrary = (primaryColor: color) => ({
-  [`--color-brand-default`]: primaryColor.hex(),
-  [`--color-brand-hover`]: absoluteLighten(primaryColor, 10).string(),
-  [`--color-brand-pressed`]: absoluteDarken(primaryColor, 10).string(),
-  [`--color-brand-loading`]: absoluteLighten(primaryColor, 15).string(),
-  [`--color-overlay-brand-focused`]: primaryColor.alpha(0.16).string(),
-  [`--color-overlay-brand-hover`]: primaryColor.alpha(0.08).string(),
-  [`--color-overlay-brand-pressed`]: primaryColor.alpha(0.12).string(),
-});
+/**
+ * Hypedrive brand is a neutral near-black — we intentionally IGNORE the tenant's
+ * configured `primaryColor` (historically a purple) so the experience always
+ * renders in the Hypedrive design language. The brand colour drives buttons,
+ * input carets, focus rings and links; pinning it keeps the whole UI consistent
+ * and purple-free regardless of tenant config.
+ */
+const BRAND_LIGHT = '#0e1116';
+const BRAND_DARK = '#fafafa';
 
-const generateDarkColorLibrary = (primaryColor: color) => ({
+const generateColorLibrary = (primaryColor: color, isDark: boolean) => ({
   [`--color-brand-default`]: primaryColor.hex(),
-  [`--color-brand-hover`]: absoluteLighten(primaryColor, 10).string(),
-  [`--color-brand-pressed`]: absoluteDarken(primaryColor, 10).string(),
-  [`--color-brand-loading`]: absoluteDarken(primaryColor, 10).string(),
-  [`--color-overlay-brand-focused`]: absoluteLighten(primaryColor, 30).rgb().alpha(0.16).string(),
-  [`--color-overlay-brand-hover`]: absoluteLighten(primaryColor, 30).rgb().alpha(0.08).string(),
-  [`--color-overlay-brand-pressed`]: absoluteLighten(primaryColor, 30).rgb().alpha(0.12).string(),
+  // Keep the static design-token primary (used by .btn-primary / focus rings /
+  // carets in index.css) in lockstep with the runtime brand so the primary
+  // button inverts to near-white on dark backgrounds instead of staying
+  // near-black (which read as a low-contrast dark-on-dark block).
+  [`--primary`]: primaryColor.hex(),
+  [`--primary-hover`]: isDark ? absoluteLighten(primaryColor, 8).string() : '#000000',
+  [`--primary-contrast`]: isDark ? '#0e1116' : '#ffffff',
+  [`--primary-tint`]: primaryColor.alpha(0.16).string(),
+  [`--primary-wash`]: primaryColor.alpha(0.06).string(),
+  // The glossy top-edge highlight reads on a dark button but must disappear on a
+  // light (dark-mode) button, where a white edge would be invisible / muddy.
+  [`--btn-edge`]: isDark ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.85)',
+  [`--color-brand-hover`]: isDark
+    ? absoluteLighten(primaryColor, 8).string()
+    : '#000000',
+  [`--color-brand-pressed`]: isDark
+    ? absoluteDarken(primaryColor, 8).string()
+    : '#000000',
+  [`--color-brand-loading`]: isDark
+    ? absoluteDarken(primaryColor, 12).string()
+    : '#2a2a2a',
+  // Neutral focus/hover overlays — derived from the near-black brand so they
+  // read as soft grey washes, never a coloured tint.
+  [`--color-overlay-brand-focused`]: primaryColor.alpha(0.16).string(),
+  [`--color-overlay-brand-hover`]: primaryColor.alpha(0.06).string(),
+  [`--color-overlay-brand-pressed`]: primaryColor.alpha(0.1).string(),
 });
 
 const useColorTheme = () => {
-  const { theme, experienceSettings } = useContext(PageContext);
-  const primaryColor = experienceSettings?.color.primaryColor;
-  const darkPrimaryColor = experienceSettings?.color.darkPrimaryColor;
+  const { theme } = useContext(PageContext);
 
   useEffect(() => {
-    if (!primaryColor) {
-      return;
-    }
+    const isDark = theme === Theme.Dark;
+    const brand = color(isDark ? BRAND_DARK : BRAND_LIGHT);
+    const library = generateColorLibrary(brand, isDark);
 
-    const lightPrimary = color(primaryColor);
-
-    if (theme === Theme.Light) {
-      const lightColorLibrary = generateLightColorLibrary(lightPrimary);
-
-      for (const [key, value] of Object.entries(lightColorLibrary)) {
-        document.body.style.setProperty(key, value);
-      }
-
-      return;
-    }
-
-    const darkPrimary = darkPrimaryColor
-      ? color(darkPrimaryColor)
-      : absoluteLighten(lightPrimary, 10);
-
-    const darkColorLibrary = generateDarkColorLibrary(darkPrimary);
-
-    for (const [key, value] of Object.entries(darkColorLibrary)) {
+    for (const [key, value] of Object.entries(library)) {
       document.body.style.setProperty(key, value);
     }
-  }, [darkPrimaryColor, primaryColor, theme]);
+  }, [theme]);
 };
 
 export default useColorTheme;

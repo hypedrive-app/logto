@@ -34,16 +34,15 @@
           && window.matchMedia('(prefers-color-scheme: dark)').matches;
         theme = (darkOk && prefersDark) ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', theme);
-        if (typeof ssr === 'object' && ssr !== null && ssr.signInExperience
-          && ssr.signInExperience.data && ssr.signInExperience.data.color) {
-          var color = ssr.signInExperience.data.color;
-          var primaryColor = theme === 'dark' && color.darkPrimaryColor
-            ? color.darkPrimaryColor
-            : color.primaryColor;
-          if (primaryColor) {
-            document.body.style.setProperty('--color-brand-default', primaryColor);
-          }
-        }
+        // Hypedrive brand is a fixed neutral near-black — pin it before paint so
+        // the tenant's configured (purple) primary colour never flashes in.
+        // Also pin the static design-token primary + its contrast so the primary
+        // button has correct (inverted) colours on the first frame in dark mode.
+        var brand = theme === 'dark' ? '#fafafa' : '#0e1116';
+        document.body.style.setProperty('--color-brand-default', brand);
+        document.body.style.setProperty('--primary', brand);
+        document.body.style.setProperty('--primary-contrast', theme === 'dark' ? '#0e1116' : '#ffffff');
+        document.body.style.setProperty('--btn-edge', theme === 'dark' ? 'rgba(255,255,255,0)' : 'rgba(255,255,255,0.85)');
       } catch (e) { /* noop */ }
     })();
   </script>

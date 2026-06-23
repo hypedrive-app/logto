@@ -4,8 +4,6 @@ import { Trans, useTranslation } from 'react-i18next';
 import PageContext from '@/Providers/PageContextProvider/PageContext';
 import TextLink from '@/components/TextLink';
 
-import styles from './index.module.scss';
-
 const TextLinkComponent = ({ href, text }: { readonly href: string; readonly text: string }) => (
   <TextLink href={href}>{text}</TextLink>
 );
@@ -21,9 +19,9 @@ const SupportInfo = () => {
   const { supportEmail, supportWebsiteUrl } = experienceSettings;
 
   return (
-    <div className={styles.support}>
+    <div className="mt-4">
       {supportEmail && (
-        <div className={styles.message}>
+        <div className="text-sm text-muted text-center whitespace-pre-wrap">
           <Trans
             components={{
               link: <TextLinkComponent href={`mailto:${supportEmail}`} text={supportEmail} />,
@@ -34,7 +32,7 @@ const SupportInfo = () => {
         </div>
       )}
       {supportWebsiteUrl && (
-        <div className={styles.message}>
+        <div className="text-sm text-muted text-center whitespace-pre-wrap">
           <Trans
             components={{
               link: <TextLinkComponent href={supportWebsiteUrl} text={supportWebsiteUrl} />,

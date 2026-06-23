@@ -1,7 +1,8 @@
 import { VerificationType } from '@logto/schemas';
+import { browserSupportsWebAuthn } from '@simplewebauthn/browser';
 import { useContext, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import SecondaryPageLayout from '@/Layout/SecondaryPageLayout';
 import SectionLayout from '@/Layout/SectionLayout';
@@ -14,16 +15,18 @@ import { UserMfaFlow } from '@/types';
 import { webAuthnStateGuard } from '@/types/guard';
 import { isWebAuthnOptions } from '@/utils/webauthn';
 
-import styles from './index.module.scss';
-
 const WebAuthnVerification = () => {
   const { state } = useLocation();
-  const [, webAuthnState] = validate(state, webAuthnStateGuard);
+  const { data: webAuthnState } = webAuthnStateGuard.safeParse(state);
   const { verificationIdsMap } = useContext(UserInteractionContext);
   const verificationId = verificationIdsMap[VerificationType.WebAuthn];
 
   const handleWebAuthn = useWebAuthnOperation();
   const [isVerifying, setIsVerifying] = useState(false);
+
+  if (!browserSupportsWebAuthn()) {
+    return <ErrorPage title="mfa.webauthn_not_supported" />;
+  }
 
   if (!webAuthnState || !verificationId) {
     return <ErrorPage title="error.invalid_session" />;
@@ -43,7 +46,7 @@ const WebAuthnVerification = () => {
       >
         <Button
           title="action.verify_via_passkey"
-          className={styles.verifyButton}
+          className="my-4"
           isLoading={isVerifying}
           onClick={async () => {
             setIsVerifying(true);

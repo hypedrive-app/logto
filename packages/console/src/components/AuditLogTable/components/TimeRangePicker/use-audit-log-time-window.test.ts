@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 
 import { customRange } from './preset';
 import useAuditLogTimeWindow from './use-audit-log-time-window';
+import { vi } from 'vitest';
 
 const dateInputPattern = 'yyyy-MM-dd';
 
@@ -11,7 +12,7 @@ type UpdateSearchParameters = HookArgs['updateSearchParameters'];
 type UpdatePayload = Parameters<UpdateSearchParameters>[0];
 
 const renderWith = (overrides: Partial<HookArgs> = {}) => {
-  const updateSearchParameters = jest.fn<void, [UpdatePayload]>();
+  const updateSearchParameters = vi.fn<(...args: [UpdatePayload]) => void>();
   const { result, rerender } = renderHook(
     (props: Partial<HookArgs>) =>
       useAuditLogTimeWindow({

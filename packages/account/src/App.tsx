@@ -3,6 +3,7 @@ import { LogtoProvider, ReservedScope, useLogto, UserScope } from '@logto/react'
 import { accountCenterApplicationId, SignInIdentifier } from '@logto/schemas';
 import classNames from 'classnames';
 import { useContext, useMemo } from 'react';
+import { HelmetProvider } from 'react-helmet-async';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 import AppBoundary from '@ac/Providers/AppBoundary';
@@ -13,7 +14,7 @@ import Sidebar from '@ac/components/Sidebar';
 import { buildAccountNavItems } from '@ac/components/account-nav-items';
 import { layoutClassNames } from '@ac/constants/layout';
 
-import styles from './App.module.scss';
+import './index.css';
 import Callback from './Callback';
 import { AccountLayoutProvider } from './Providers/AccountLayoutContext';
 import ErrorBoundary from './Providers/AppBoundary/ErrorBoundary';
@@ -74,8 +75,7 @@ import {
   hasVisibleSecuritySection,
   hasVisibleSessionsPage,
 } from './utils/security-page';
-import '@experience/shared/scss/normalized.scss';
-import './scss/normalized.scss';
+// normalized.scss removed — normalization handled by experience panda.config globalCss
 
 handleAccountCenterRoute();
 void initI18n();
@@ -223,11 +223,11 @@ const Layout = () => {
   const showsSidebar = platform !== 'mobile' && showsMultiPageNav;
 
   return (
-    <div className={classNames(styles.app, layoutClassNames.app)}>
+    <div className={classNames('mobile:flex mobile:min-h-screen mobile:flex-col', layoutClassNames.app)}>
       <div
         className={classNames(
-          styles.layout,
-          isFullPage && styles.fullPage,
+          'absolute inset-0 overflow-auto mobile:static mobile:flex mobile:flex-1 mobile:flex-col',
+          isFullPage && 'flex flex-col mobile:bg-bg',
           showsMultiPageNav && layoutClassNames.withTabNav,
           layoutClassNames.pageContainer
         )}
@@ -236,11 +236,16 @@ const Layout = () => {
         {showsMobileTabNav && <MobileTabNav items={accountNavItems} />}
         <div
           className={classNames(
-            styles.container,
-            !isFullPage && styles.cardContainer,
+            'flex flex-1 justify-center',
+            // Full-page (profile/security/sessions): top-aligned scrollable content
+            isFullPage && 'items-start',
+            'mobile:flex-col mobile:items-stretch mobile:justify-start mobile:[padding-bottom:env(safe-area-inset-bottom)]',
+            // Card mode (home/error/not-found): centre the card both axes
+            !isFullPage &&
+              'min-h-full flex-col items-center justify-center desktop:p-5',
             !isFullPage && layoutClassNames.cardContainer,
-            showsSidebar && styles.withSidebar,
-            showsMobileTabNav && styles.withMobileTabNav
+            showsSidebar &&
+              'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-6 px-6 max-[1060px]:flex max-[1060px]:justify-center'
           )}
         >
           {showsSidebar && <Sidebar items={accountNavItems} />}
@@ -252,8 +257,10 @@ const Layout = () => {
           >
             <main
               className={classNames(
-                styles.main,
-                !isFullPage && styles.cardMain,
+                isFullPage &&
+                  'flex w-[760px] flex-col py-3 max-[800px]:w-auto max-[800px]:p-4 mobile:w-auto mobile:flex-1 mobile:bg-bg mobile:p-4 mobile:px-5',
+                !isFullPage &&
+                  'flex flex-col items-center mobile:relative mobile:flex-1 mobile:bg-elevated mobile:p-4 mobile:px-5 desktop:relative desktop:min-h-[540px] desktop:w-[540px] desktop:rounded-[16px] desktop:border desktop:border-line desktop:bg-elevated desktop:p-6 desktop:shadow-[var(--edge),var(--sh-float)] max-[580px]:desktop:w-auto max-[580px]:desktop:self-stretch',
                 isFullPage ? layoutClassNames.mainContent : layoutClassNames.cardMain
               )}
             >
@@ -264,7 +271,11 @@ const Layout = () => {
               </ErrorBoundary>
               {!isFullPage && !hideLogtoBranding && (
                 <LogtoSignature
-                  className={classNames(styles.signature, layoutClassNames.signature)}
+                  className={classNames(
+                    'mobile:my-10 mobile:mb-2',
+                    'desktop:absolute desktop:bottom-0 desktop:translate-y-[calc(100%+28px)] desktop:pb-7',
+                    layoutClassNames.signature
+                  )}
                   theme={theme}
                 />
               )}
@@ -277,7 +288,8 @@ const Layout = () => {
 };
 
 const App = () => (
-  <BrowserRouter basename={accountCenterBasePath}>
+  <HelmetProvider>
+    <BrowserRouter basename={accountCenterBasePath}>
     <LogtoProvider
       config={{
         endpoint: window.location.origin,
@@ -303,7 +315,8 @@ const App = () => (
         </PageContextProvider>
       </LoadingContextProvider>
     </LogtoProvider>
-  </BrowserRouter>
+    </BrowserRouter>
+  </HelmetProvider>
 );
 
 export default App;

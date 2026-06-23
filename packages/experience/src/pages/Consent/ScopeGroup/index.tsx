@@ -1,12 +1,8 @@
+import { CheckIcon, ChevronDownIcon } from '@heroicons/react/24/outline';
 import { type Nullable } from '@silverhand/essentials';
-import classNames from 'classnames';
 import { useState, useCallback } from 'react';
 
-import DownArrowIcon from '@/assets/icons/arrow-down.svg?react';
-import CheckMark from '@/assets/icons/check-mark.svg?react';
 import { onKeyDownHandler } from '@/shared/utils/a11y';
-
-import styles from './index.module.scss';
 
 type ScopeGroupProps = {
   readonly groupName: string;
@@ -26,22 +22,25 @@ const ScopeGroup = ({ groupName, scopes, isAutoExpand = false }: ScopeGroupProps
   }, []);
 
   return (
-    <div className={classNames(styles.scopeGroup)}>
+    <div className="px-2">
       <div
-        className={styles.scopeGroupHeader}
+        className="flex items-center rounded-[11px] p-2 cursor-pointer overlay-hover"
         role="button"
         tabIndex={0}
         onClick={toggle}
         onKeyDown={onKeyDownHandler(toggle)}
       >
-        <CheckMark className={styles.check} />
-        <div className={styles.scopeGroupName}>{groupName}</div>
-        <DownArrowIcon className={styles.toggleButton} data-expanded={expanded} />
+        <CheckIcon className="text-success w-5 h-5 me-2" />
+        <div className="text-sm flex-1 me-2">{groupName}</div>
+        <ChevronDownIcon
+          className="transition-transform duration-200 ease-in-out relative w-5 h-5 text-muted data-[expanded=true]:rotate-180"
+          data-expanded={expanded}
+        />
       </div>
       {expanded && (
-        <ul className={styles.scopesList}>
+        <ul className="ps-8 text-xs text-muted m-0">
           {scopes.map(({ id, name, description }) => (
-            <li key={id} className={styles.scopeItem}>
+            <li key={id} className="py-0.5 ps-1 pe-0 mb-1.5">
               {description ?? name}
             </li>
           ))}

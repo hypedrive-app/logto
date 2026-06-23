@@ -1,6 +1,6 @@
 import { MissingProfile } from '@logto/schemas';
 import { useLocation, useParams } from 'react-router-dom';
-import { validate } from 'superstruct';
+import { z } from 'zod';
 
 import ErrorPage from '@/pages/ErrorPage';
 import { continueFlowStateGuard } from '@/types/guard';
@@ -18,10 +18,10 @@ const Continue = () => {
   const { method = '' } = useParams<Parameters>();
   const { state } = useLocation();
 
-  const [, continueFlowState] = validate(state, continueFlowStateGuard);
+  const { data: continueFlowState } = continueFlowStateGuard.safeParse(state);
 
   if (!continueFlowState) {
-    return <ErrorPage title="error.invalid_session" rawMessage="flow state not found" />;
+    return <ErrorPage title="error.invalid_session" />;
   }
 
   const { interactionEvent } = continueFlowState;

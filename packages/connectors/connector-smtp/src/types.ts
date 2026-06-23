@@ -93,13 +93,17 @@ export const smtpConfigGuard = z.object({
       requiredTemplateUsageTypes.every((requiredType) =>
         templates.map((template) => template.usageType).includes(requiredType)
       ),
-    (templates) => ({
-      message: `Template with UsageType (${requiredTemplateUsageTypes
+    {
+      // eslint-disable-next-line no-restricted-syntax
+      error: (issue) => {
+        const templates = issue.input as Array<{ usageType: string }>;
+        return `Template with UsageType (${requiredTemplateUsageTypes
         .filter(
           (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
         )
-        .join(', ')}) should be provided!`,
-    })
+        .join(', ')}) should be provided!`;
+      },
+    }
   ),
   ...debuggingGuardObject,
   ...securityGuardObject,
@@ -137,7 +141,7 @@ export const smtpConfigGuard = z.object({
   servername: z.string().optional(),
   ignoreTLS: z.boolean().optional(),
   requireTLS: z.boolean().optional(),
-  customHeaders: z.record(z.string().or(z.string().array())).optional(),
+  customHeaders: z.record(z.string(), z.string().or(z.string().array())).optional(),
 });
 
 export type SmtpConfig = z.infer<typeof smtpConfigGuard>;

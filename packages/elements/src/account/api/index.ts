@@ -32,10 +32,10 @@ export class LogtoAccountApi {
     getAccessToken: GetAccessToken
   ) {
     this.ky = ky.create({
-      prefixUrl: logtoEndpoint,
+      prefix: logtoEndpoint,
       hooks: {
         beforeRequest: [
-          async (request) => {
+          async ({ request }) => {
             request.headers.set('Authorization', `Bearer ${await getAccessToken()}`);
           },
         ],

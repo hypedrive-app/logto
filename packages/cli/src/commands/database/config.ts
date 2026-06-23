@@ -49,6 +49,7 @@ const validRotateKeys = Object.freeze([
 const validPrivateKeyTypes = Object.freeze([
   SupportedSigningKeyAlgorithm.RSA,
   SupportedSigningKeyAlgorithm.EC,
+  SupportedSigningKeyAlgorithm.EdDSA,
 ] as const);
 
 type ValidateRotateKeyFunction = (key: string) => asserts key is (typeof validRotateKeys)[number];

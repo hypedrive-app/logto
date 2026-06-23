@@ -11,8 +11,6 @@ import useApi from '@ac/hooks/use-api';
 import useErrorHandler from '@ac/hooks/use-error-handler';
 import SecondaryPageLayout from '@ac/layouts/SecondaryPageLayout';
 
-import styles from './index.module.scss';
-
 export type IdentifierLabelKey =
   | 'account_center.email_verification.email_label'
   | 'account_center.phone_verification.phone_label';
@@ -118,11 +116,11 @@ const IdentifierSendStep = ({
 
   return (
     <SecondaryPageLayout title={titleKey} description={descriptionKey}>
-      <form className={styles.container} onSubmit={handleSend}>
+      <form className="flex flex-col gap-4 w-full max-w-[400px]" onSubmit={handleSend}>
         <SmartInputField
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
-          className={styles.identifierInput}
+          className="w-full"
           name={name}
           label={t(labelKey)}
           defaultValue={pendingValue}
@@ -141,7 +139,7 @@ const IdentifierSendStep = ({
           title="account_center.code_verification.send"
           type="primary"
           htmlType="submit"
-          className={styles.submit}
+          className="self-start"
           isLoading={loading}
         />
       </form>

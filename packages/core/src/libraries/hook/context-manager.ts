@@ -164,6 +164,9 @@ const interactionEventToHookEvent: Record<InteractionEvent, InteractionHookEvent
   [InteractionEvent.Register]: InteractionHookEvent.PostRegister,
   [InteractionEvent.SignIn]: InteractionHookEvent.PostSignIn,
   [InteractionEvent.ForgotPassword]: InteractionHookEvent.PostResetPassword,
+  // Step-up is semantically a privileged sign-in — fire PostSignIn so webhook
+  // subscribers receive the same event shape they already handle.
+  [InteractionEvent.StepUp]: InteractionHookEvent.PostSignIn,
 };
 
 export class InteractionHookContextManager {

@@ -1,9 +1,10 @@
 import { InteractionHookEvent } from '@logto/schemas';
+import { vi } from 'vitest';
 
 describe('webhook event visibility', () => {
   afterEach(() => {
-    jest.resetModules();
-    jest.clearAllMocks();
+    vi.resetModules();
+    vi.clearAllMocks();
   });
 
   it('always includes the adaptive MFA hook event', async () => {

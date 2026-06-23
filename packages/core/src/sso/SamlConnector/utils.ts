@@ -57,11 +57,14 @@ export const parseXmlMetadata = (
     signInEndpoint: singleSignOnService,
   };
 
-  // The type inference of the return type of `getX509Certificate` is any, will be guarded by later zod parser if it is not string-typed.
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-  const rawX509Certificate: string = idP.entityMeta.getX509Certificate(
+  // samlify 2.13 widened `getX509Certificate` to `string | string[]` (an IdP may publish multiple
+  // signing certs). We use the first one; the value is guarded by a later zod parser anyway.
+  const rawX509CertificateValue = idP.entityMeta.getX509Certificate(
     saml.Constants.wording.certUse.signing
   );
+  const rawX509Certificate: string = Array.isArray(rawX509CertificateValue)
+    ? (rawX509CertificateValue[0] ?? '')
+    : rawX509CertificateValue;
 
   const certificate = tryThat(
     () => getPemCertificate(rawX509Certificate),
