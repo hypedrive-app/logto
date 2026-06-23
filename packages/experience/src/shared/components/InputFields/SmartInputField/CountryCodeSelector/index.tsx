@@ -76,10 +76,10 @@ const CountryCodeSelector = (
       aria-haspopup="listbox"
       aria-expanded={isDropdownOpen}
       aria-disabled={!isInteractive}
-      // Prevent the browser's default focus-shift on tap. Without this, tapping the
-      // selector moves focus toward the adjacent number input → the mobile keyboard
-      // pops up alongside the dropdown. preventDefault keeps focus where we put it.
-      onPointerDown={isInteractive ? (event) => event.preventDefault() : undefined}
+      // IMPORTANT: do NOT preventDefault on pointerdown here — on touch devices that
+      // cancels the synthetic click, so the dropdown never opened. Open on click (fires
+      // reliably on tap + mouse), and keep the keyboard down via the input blur() inside
+      // showDropDown() rather than by blocking the pointer event.
       onClick={isInteractive ? showDropDown : undefined}
       onKeyDown={
         isInteractive
