@@ -46,6 +46,24 @@ export const getDefaultCountryCode = (): CountryCode => {
 export const getDefaultCountryCallingCode = () => getCountryCallingCode(getDefaultCountryCode());
 
 /**
+ * Resolve an ISO country (e.g. "IN") from a bare calling code (e.g. "91"), so the
+ * selector trigger can render the matching flag. Several countries can share a calling
+ * code (e.g. +1 → US/CA/…); we prefer the locale's default country when it matches, then
+ * fall back to the first country libphonenumber lists for that code. Returns undefined
+ * when no country uses the code (so callers can skip the flag gracefully).
+ */
+export const getCountryByCallingCode = (callingCode: string): CountryCode | undefined => {
+  const normalized = callingCode.replace(/^\+/, '');
+
+  const defaultCountryCode = getDefaultCountryCode();
+  if (getCountryCallingCode(defaultCountryCode) === normalized) {
+    return defaultCountryCode;
+  }
+
+  return getCountries().find((code) => getCountryCallingCode(code) === normalized);
+};
+
+/**
  * Resolve the human-readable, localized country name for a country code using the
  * platform `Intl.DisplayNames` API (built into every modern browser, no extra deps,
  * automatically translated to the active locale). Falls back to the raw code if the

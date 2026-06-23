@@ -15,10 +15,13 @@ import ErrorMessage from '@/shared/components/ErrorMessage';
  * The <input> is reached via `[&_input]` descendant variants; placeholder /
  * caret / autofill behaviour is preserved from the original component.
  */
+// `rounded` + a clipped child is avoided here: no `overflow-hidden` on the box, because a
+// static country-code prefix (and its popover/bottom-sheet dropdown) must not be clipped.
+// The prefix carries its own start radius via the box's rounding; the input fills the rest.
 const fieldBoxClass =
-  'relative flex items-stretch h-12 rounded-[11px] border bg-elevated overflow-hidden ' +
+  'relative flex items-stretch h-12 rounded-[11px] border bg-elevated ' +
   'shadow-[var(--sh-input)] transition-[border-color,box-shadow] duration-150 ease-out ' +
-  '[&_input]:flex-1 [&_input]:px-3.5 [&_input]:bg-transparent [&_input]:outline-none ' +
+  '[&_input]:flex-1 [&_input]:min-w-0 [&_input]:pe-3.5 [&_input]:bg-transparent [&_input]:outline-none ' +
   '[&_input]:text-base desktop:[&_input]:text-sm [&_input]:text-ink [&_input]:[caret-color:var(--color-brand-default)] ' +
   '[&_input::placeholder]:text-faint ' +
   '[&_input:-webkit-autofill]:[-webkit-text-fill-color:var(--color-type-primary)] ' +
@@ -95,6 +98,9 @@ const InputField = (
         {prefix}
         <input
           {...props}
+          // Start padding only when there's no prefix; the country selector supplies its
+          // own inset (ps-3.5) so the number text aligns right after the divider.
+          className={classNames(isPrefixVisible ? 'ps-2.5' : 'ps-3.5')}
           ref={innerRef}
           value={value}
           onFocus={(event) => {

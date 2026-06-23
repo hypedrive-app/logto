@@ -1,6 +1,5 @@
 import { XCircleIcon } from '@heroicons/react/24/outline';
 import { SignInIdentifier } from '@logto/schemas';
-import { animated, config, useSpring } from '@react-spring/web';
 import type { Nullable } from '@silverhand/essentials';
 import type { HTMLProps, Ref } from 'react';
 import { useEffect, useImperativeHandle, useRef, forwardRef, useMemo } from 'react';
@@ -9,7 +8,6 @@ import usePasskeyAutofillConditionalUI from '@/hooks/use-passkey-autofill-condit
 import IconButton from '@/shared/components/IconButton';
 import InputField from '@/shared/components/InputFields/InputField';
 
-import AnimatedPrefix from './AnimatedPrefix';
 import CountryCodeSelector from './CountryCodeSelector';
 import type { IdentifierInputType, IdentifierInputValue } from './use-smart-input-field';
 import useSmartInputField from './use-smart-input-field';
@@ -25,8 +23,6 @@ type Props = Omit<HTMLProps<HTMLInputElement>, 'onChange' | 'prefix' | 'value'> 
   readonly defaultValue?: string;
   readonly onChange?: (data: IdentifierInputValue) => void;
 };
-
-const AnimatedInputField = animated(InputField);
 
 const SmartInputField = (
   { defaultValue, enabledTypes = [], onChange, ...rest }: Props,
@@ -49,10 +45,6 @@ const SmartInputField = (
   });
 
   const isPrefixVisible = identifierType === SignInIdentifier.Phone;
-  const { paddingInlineStart } = useSpring({
-    paddingInlineStart: isPrefixVisible ? 4 : 16,
-    config: { ...config.default, clamp: true },
-  });
 
   useEffect(() => {
     onChange?.({
@@ -81,31 +73,30 @@ const SmartInputField = (
   }, [abortConditionalUI]);
 
   return (
-    <AnimatedInputField
+    <InputField
       {...inputHtmlProps}
       {...rest}
       ref={innerRef}
       isSuffixFocusVisible={isInputEditable && Boolean(inputValue)}
-      style={{ paddingInlineStart }}
       value={inputValue}
       isPrefixVisible={isPrefixVisible}
+      // The country selector is a STATIC, in-flow prefix (only for the phone identifier).
+      // No react-spring width animation / absolute positioning / opacity toggle — that
+      // architecture left the trigger un-tappable on iOS. Conditionally rendering a real
+      // flex child gives a reliable tap target on every device.
       prefix={
-        <AnimatedPrefix isVisible={isPrefixVisible}>
+        isPrefixVisible ? (
           <CountryCodeSelector
             value={countryCode}
             inputRef={innerRef}
             isInteractive={isInputEditable}
             onChange={(value) => {
               onCountryCodeChange(value);
-
-              // Focus the input field after the animation is complete
-              // because the animation will cause the input field to lose focus
-              setTimeout(() => {
-                innerRef.current?.focus();
-              }, 300);
+              // Return focus to the number input right after picking a country.
+              innerRef.current?.focus();
             }}
           />
-        </AnimatedPrefix>
+        ) : undefined
       }
       suffix={
         isInputEditable ? (
