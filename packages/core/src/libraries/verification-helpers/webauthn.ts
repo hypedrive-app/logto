@@ -168,7 +168,7 @@ export const verifyWebAuthnAuthentication = async ({
     expectedChallenge: challenge,
     expectedOrigin: origin,
     expectedRPID: rpId,
-    // v13: `authenticator` renamed to `credential`, fields renamed to match WebAuthnCredential.
+    // V13: `authenticator` renamed to `credential`, fields renamed to match WebAuthnCredential.
     credential: {
       publicKey: isoBase64URL.toBuffer(publicKey),
       id: credentialId,

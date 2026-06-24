@@ -14,7 +14,6 @@ import validatePresence from 'oidc-provider/lib/helpers/validate_presence.js';
 import instance from 'oidc-provider/lib/helpers/weak_cache.js';
 
 import { type EnvSet } from '#src/env-set/index.js';
-import { enforceAcrForGrant } from '#src/oidc/acr-enforcement.js';
 import { assertUserHasApplicationAccessForOidc } from '#src/oidc/application-access-control.js';
 import type Libraries from '#src/tenants/Libraries.js';
 import type Queries from '#src/tenants/Queries.js';
@@ -189,20 +188,6 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx,
       .filter(Set.prototype.has.bind(accessToken.resourceServer.scopes))
       .join(' ');
     grant.addResourceScope(resource, accessToken.scope);
-
-    /* === Step-up ACR enforcement (RFC 9470) === */
-    const grantedScopeNames = (accessToken.scope ?? '').split(' ').filter(Boolean);
-    // Token-exchange uses the session ACR when present; absent session means the
-    // impersonator has not authenticated in this context (no step-up possible).
-    const sessionAcr = ctx.oidc.session?.acr;
-    await enforceAcrForGrant(queries, {
-      grantedScopeNames,
-      resourceIndicator: resource,
-      sessionAcr,
-      applicationDefaultAcrs: client.metadata().defaultAcrValues,
-      nowSeconds: Math.floor(Date.now() / 1000),
-    });
-    /* === End Step-up ACR enforcement === */
   } else {
     accessToken.claims = ctx.oidc.claims;
     // Filter scopes from `oidcScopes`,

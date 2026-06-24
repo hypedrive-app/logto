@@ -57,7 +57,7 @@ export const parseXmlMetadata = (
     signInEndpoint: singleSignOnService,
   };
 
-  // samlify 2.13 widened `getX509Certificate` to `string | string[]` (an IdP may publish multiple
+  // Samlify 2.13 widened `getX509Certificate` to `string | string[]` (an IdP may publish multiple
   // signing certs). We use the first one; the value is guarded by a later zod parser anyway.
   const rawX509CertificateValue = idP.entityMeta.getX509Certificate(
     saml.Constants.wording.certUse.signing

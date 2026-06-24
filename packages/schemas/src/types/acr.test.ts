@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { LogtoAcrValues, acrRank, acrSatisfies, acrMax } from '../consts/oidc.js';
 
-import { resolveRequiredAcr, evaluateAcr, AcrShortfallReason } from './acr.js';
+import { evaluateAcr, AcrShortfallReason } from './acr.js';
 
 describe('acrRank', () => {
   it('orders the built-in ladder pwd < mfa < phr', () => {
@@ -42,38 +42,6 @@ describe('acrMax', () => {
 
   it('returns undefined when nothing is recognized', () => {
     expect(acrMax(undefined, 'nope')).toBeUndefined();
-  });
-});
-
-describe('resolveRequiredAcr', () => {
-  it('takes the strongest requirement across every level (a single scope can elevate the request)', () => {
-    expect(
-      resolveRequiredAcr({
-        scopeAcrs: [null, LogtoAcrValues.PhishingResistant],
-        resourceDefaultAcr: LogtoAcrValues.Mfa,
-        applicationDefaultAcrs: [LogtoAcrValues.Password],
-        organizationMinAcr: LogtoAcrValues.Mfa,
-      })
-    ).toBe(LogtoAcrValues.PhishingResistant);
-  });
-
-  it('falls back down the precedence chain when stronger levels are absent', () => {
-    expect(resolveRequiredAcr({ scopeAcrs: [null], resourceDefaultAcr: LogtoAcrValues.Mfa })).toBe(
-      LogtoAcrValues.Mfa
-    );
-    expect(resolveRequiredAcr({ applicationDefaultAcrs: [LogtoAcrValues.Mfa] })).toBe(
-      LogtoAcrValues.Mfa
-    );
-    expect(resolveRequiredAcr({ organizationMinAcr: LogtoAcrValues.PhishingResistant })).toBe(
-      LogtoAcrValues.PhishingResistant
-    );
-  });
-
-  it('returns undefined when nothing requires step-up', () => {
-    expect(resolveRequiredAcr({})).toBeUndefined();
-    expect(
-      resolveRequiredAcr({ scopeAcrs: [null, undefined], resourceDefaultAcr: null })
-    ).toBeUndefined();
   });
 });
 

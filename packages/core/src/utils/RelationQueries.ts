@@ -22,7 +22,7 @@ type TableInfo<
   Schema extends SchemaLike<string>,
 > = Table<Key, TableName> & {
   tableSingular: TableSingular;
-  guard: z.ZodType<Schema, unknown>;
+  guard: z.ZodType<Schema>;
 };
 
 type InferSchema<T> =

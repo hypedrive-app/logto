@@ -121,17 +121,17 @@ export class SignInExperienceValidator {
         );
         break;
       }
-      case InteractionEvent.ForgotPassword: {
+      // Forgot-password and step-up re-authentication of an already-registered user are not
+      // gated by the sign-in mode, so no assertion is needed for these events.
+      case InteractionEvent.ForgotPassword:
+      case InteractionEvent.StepUp: {
         break;
       }
     }
   }
 
   public async guardIdentificationMethod(
-    event:
-      | InteractionEvent.ForgotPassword
-      | InteractionEvent.SignIn
-      | InteractionEvent.StepUp,
+    event: InteractionEvent.ForgotPassword | InteractionEvent.SignIn | InteractionEvent.StepUp,
     verificationRecord: VerificationRecord
   ) {
     const hasVerifiedOneTimeToken =

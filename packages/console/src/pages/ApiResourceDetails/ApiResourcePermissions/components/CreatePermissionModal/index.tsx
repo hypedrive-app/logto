@@ -1,8 +1,7 @@
 import { noSpaceRegEx } from '@logto/core-kit';
 import type { CreateScope, Scope } from '@logto/schemas';
-import { LogtoAcrValues } from '@logto/schemas';
 import { useContext } from 'react';
-import { useController, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 import ReactModal from 'react-modal';
 
@@ -14,7 +13,6 @@ import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
 import Button from '@/ds-components/Button';
 import FormField from '@/ds-components/FormField';
 import ModalLayout from '@/ds-components/ModalLayout';
-import Select from '@/ds-components/Select';
 import TextInput from '@/ds-components/TextInput';
 import useApi from '@/hooks/use-api';
 import modalStyles from '@/scss/modal.module.scss';
@@ -25,7 +23,7 @@ type Props = {
   readonly onClose: (scope?: Scope) => void;
 };
 
-type CreatePermissionFormData = Pick<CreateScope, 'name' | 'description' | 'requiredAcr'>;
+type CreatePermissionFormData = Pick<CreateScope, 'name' | 'description'>;
 
 function CreatePermissionModal({ resourceId, onClose }: Props) {
   const {
@@ -39,23 +37,10 @@ function CreatePermissionModal({ resourceId, onClose }: Props) {
   const {
     handleSubmit,
     register,
-    control,
     formState: { isSubmitting, errors },
   } = useForm<CreatePermissionFormData>();
 
-  const {
-    field: { value: requiredAcr, onChange: onRequiredAcrChange },
-  } = useController({ name: 'requiredAcr', control });
-
   const api = useApi();
-
-  const acrOptions = [
-    { value: LogtoAcrValues.Mfa, title: t('api_resource_details.permission.required_acr_mfa') },
-    {
-      value: LogtoAcrValues.PhishingResistant,
-      title: t('api_resource_details.permission.required_acr_phr'),
-    },
-  ];
 
   const onSubmit = handleSubmit(
     trySubmitSafe(async (formData) => {
@@ -138,19 +123,6 @@ function CreatePermissionModal({ resourceId, onClose }: Props) {
               placeholder={t('api_resource_details.permission.description_placeholder')}
               {...register('description')}
               error={Boolean(errors.description)}
-            />
-          </FormField>
-          <FormField
-            title="api_resource_details.permission.required_acr"
-            tip={t('api_resource_details.permission.required_acr_tip')}
-          >
-            <Select
-              isClearable
-              value={requiredAcr ?? undefined}
-              options={acrOptions}
-              onChange={(value) => {
-                onRequiredAcrChange(value ?? null);
-              }}
             />
           </FormField>
         </form>

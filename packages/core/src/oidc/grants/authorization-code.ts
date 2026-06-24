@@ -1,11 +1,8 @@
 /**
  * @overview Fork of the oidc-provider `authorization_code` grant, extended with:
  *   - Application-level access-control check (mirrors refresh-token / token-exchange grants).
- *   - Scope-level step-up ACR enforcement (RFC 9470): if any granted scope carries a
- *     `required_acr` that exceeds the session's current ACR (`code.acr`), the grant throws
- *     `InsufficientScope` so the client re-authorises with the correct `acr_values`.
  *
- * Apart from those two additions all code is kept verbatim from the upstream file so that it
+ * Apart from that addition all code is kept verbatim from the upstream file so that it
  * stays easy to diff against future oidc-provider upgrades.
  *
  * @see {@link https://github.com/panva/node-oidc-provider/blob/v8.6.1/lib/actions/grants/authorization_code.js | Upstream file (v8.6.1)}
@@ -27,7 +24,6 @@ import instance from 'oidc-provider/lib/helpers/weak_cache.js';
 import checkRar from 'oidc-provider/lib/shared/check_rar.js';
 
 import { type EnvSet } from '#src/env-set/index.js';
-import { enforceAcrForGrant } from '#src/oidc/acr-enforcement.js';
 import { assertUserHasApplicationAccessForOidc } from '#src/oidc/application-access-control.js';
 import type Libraries from '#src/tenants/Libraries.js';
 import type Queries from '#src/tenants/Queries.js';
@@ -51,7 +47,7 @@ type Handler = (
 // Disable FP rules: the original implementation uses mutable variables throughout.
 /* eslint-disable complexity, @silverhand/fp/no-let, @typescript-eslint/no-non-null-assertion, @silverhand/fp/no-mutation, unicorn/no-array-method-this-argument */
 
-export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx, next) => {
+export const buildHandler: Handler = (envSet, _queries, appAccess) => async (ctx, next) => {
   const { client, params } = ctx.oidc;
 
   const providerConfig = instance(ctx.oidc.provider).configuration();
@@ -232,21 +228,6 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx,
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
     at.resourceServer = new ctx.oidc.provider.ResourceServer(resource, resourceServerInfo);
     at.scope = grant.getResourceScopeFiltered(resource, code.scopes);
-
-    /* === Step-up ACR enforcement (RFC 9470) === */
-    // `code.acr` is the ACR the user authenticated at during the authorisation request.
-    // If any granted scope declares a `required_acr` higher than the session's current level,
-    // throw `InsufficientScope` so the client re-initiates `/oidc/auth?acr_values=…` before
-    // retrying the code exchange.
-    const grantedScopeNames = (at.scope ?? '').split(' ').filter(Boolean);
-    await enforceAcrForGrant(queries, {
-      grantedScopeNames,
-      resourceIndicator: resource,
-      sessionAcr: code.acr,
-      applicationDefaultAcrs: client!.metadata().defaultAcrValues,
-      nowSeconds: Math.floor(Date.now() / 1000),
-    });
-    /* === End Step-up ACR enforcement === */
   } else {
     at.claims = code.claims;
     at.scope = grant.getOIDCScopeFiltered(code.scopes);

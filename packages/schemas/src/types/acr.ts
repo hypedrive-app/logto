@@ -1,45 +1,4 @@
-import { acrMax, acrSatisfies, type LogtoAcrValue } from '../consts/oidc.js';
-
-/**
- * The set of step-up requirement inputs that combine into a single effective requirement for a
- * token request. Each is optional; an absent input contributes nothing.
- *
- * Precedence is **not** "first wins" — it is the *strongest* (`max`) of all inputs, because a
- * requirement declared at any level is a floor, never a ceiling. See {@link resolveRequiredAcr}.
- */
-export type RequiredAcrInputs = {
-  /**
-   * The `required_acr` of every scope being granted into the token. The strongest one drives the
-   * requirement, so a single sensitive scope (e.g. `wallet:withdraw`) elevates the whole request.
-   */
-  scopeAcrs?: Array<string | undefined | null>;
-  /** The `default_acr` of the resource the token is being issued for. */
-  resourceDefaultAcr?: string | null;
-  /** The application's `defaultAcrValues` baseline (lowest-priority, may be multiple). */
-  applicationDefaultAcrs?: Array<string | undefined | null>;
-  /** The org-level step-up floor (e.g. "all money actions phishing-resistant for this org"). */
-  organizationMinAcr?: string | null;
-};
-
-/**
- * Resolve the single effective required ACR for a token request by taking the *strongest* of all
- * declared requirements (scope > resource > app > org are all floors; the max wins).
- *
- * Returns `undefined` when nothing requires step-up — the caller issues the token normally.
- *
- * Pure and I/O-free on purpose: the OIDC enforcement layer, the Console preview, and the unit
- * tests all share exactly this definition of "what does this request require?".
- */
-export const resolveRequiredAcr = (inputs: RequiredAcrInputs): LogtoAcrValue | undefined => {
-  const { scopeAcrs, resourceDefaultAcr, applicationDefaultAcrs, organizationMinAcr } = inputs;
-
-  return acrMax(
-    ...(scopeAcrs ?? []).map((value) => value ?? undefined),
-    resourceDefaultAcr ?? undefined,
-    ...(applicationDefaultAcrs ?? []).map((value) => value ?? undefined),
-    organizationMinAcr ?? undefined
-  );
-};
+import { acrSatisfies } from '../consts/oidc.js';
 
 /**
  * The current session's authentication assurance, as seen by the enforcement layer.

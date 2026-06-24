@@ -43,11 +43,16 @@ export const translationSchemas: Record<string, OpenAPIV3.SchemaObject> = {
  * generic conversion can't infer (recursive JSON, translation `$ref`, language enum). They are
  * matched by identity during conversion and replaced with the hand-authored schema below.
  */
-const overrideSchema = (jsonSchema: Record<string, unknown>, replacement: OpenAPIV3.SchemaObject) => {
+const overrideSchema = (
+  jsonSchema: Record<string, unknown>,
+  replacement: OpenAPIV3.SchemaObject
+) => {
   for (const key of Object.keys(jsonSchema)) {
     // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
     delete jsonSchema[key];
   }
+  // Mutate in place: callers hold a reference to `jsonSchema` inside the Zod converter walk.
+  // eslint-disable-next-line @silverhand/fp/no-mutating-assign
   Object.assign(jsonSchema, replacement);
 };
 
@@ -108,7 +113,6 @@ export const zodTypeToSwagger = (
     throw new RequestError('swagger.invalid_zod_type', config);
   }
 
-  // eslint-disable-next-line no-restricted-syntax
   const schema = z.toJSONSchema(config, {
     target: 'openapi-3.0',
     io: 'input',
@@ -130,9 +134,13 @@ export const zodTypeToSwagger = (
       }
 
       if (schema === translationGuard) {
-        overrideSchema(jsonSchema, {
-          $ref: '#/components/schemas/TranslationObject',
-        } as OpenAPIV3.SchemaObject);
+        // A `$ref`-only object is a valid OpenAPI schema node here but doesn't structurally match
+        // SchemaObject, so the assertion is required.
+        overrideSchema(
+          jsonSchema,
+          // eslint-disable-next-line no-restricted-syntax
+          { $ref: '#/components/schemas/TranslationObject' } as OpenAPIV3.SchemaObject
+        );
         return;
       }
 
@@ -145,10 +153,12 @@ export const zodTypeToSwagger = (
   // Recursive guards (e.g. `jsonGuard`) make Zod hoist a shared node to a root `definitions`/
   // `$defs` bucket. The bespoke overrides above already inline those shapes, so drop the now-unused
   // root buckets to keep each schema self-contained (matching the previous converter's output).
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
+  // eslint-disable-next-line @silverhand/fp/no-delete, no-restricted-syntax
   delete (schema as Record<string, unknown>).definitions;
-  // eslint-disable-next-line @typescript-eslint/no-dynamic-delete, @silverhand/fp/no-delete
+  // eslint-disable-next-line @silverhand/fp/no-delete, no-restricted-syntax
   delete (schema as Record<string, unknown>).$defs;
 
+  // The converter returns a dynamically-built JSON schema; narrow it to the OpenAPI union.
+  // eslint-disable-next-line no-restricted-syntax
   return schema as OpenAPIV3.SchemaObject | OpenAPIV3.ReferenceObject;
 };

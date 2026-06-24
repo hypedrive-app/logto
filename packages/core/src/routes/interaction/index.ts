@@ -1,3 +1,7 @@
+/* eslint-disable max-lines -- This is the legacy interaction API entry point; its route
+   handlers form one cohesive OIDC flow and the file already delegates consent/mfa/sso to
+   sibling modules. Splitting the remaining handlers further would add indirection without
+   improving clarity. */
 import type { LogtoErrorCode } from '@logto/phrases';
 import { InteractionEvent, identifierPayloadGuard, profileGuard } from '@logto/schemas';
 import type Router from 'koa-router';
@@ -382,3 +386,5 @@ export default function interactionRoutes<T extends AnonymousRouter>(
   mfaRoutes(router, tenant);
   singleSignOnRoutes(router, tenant);
 }
+
+/* eslint-enable max-lines */

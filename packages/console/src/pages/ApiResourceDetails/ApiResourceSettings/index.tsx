@@ -1,6 +1,5 @@
 import { type Resource } from '@logto/schemas';
-import { LogtoAcrValues } from '@logto/schemas';
-import { useController, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'react-hot-toast';
 import { Trans, useTranslation } from 'react-i18next';
 import { useOutletContext } from 'react-router-dom';
@@ -10,7 +9,6 @@ import FormCard from '@/components/FormCard';
 import UnsavedChangesAlertModal from '@/components/UnsavedChangesAlertModal';
 import { rbac } from '@/consts';
 import FormField from '@/ds-components/FormField';
-import Select from '@/ds-components/Select';
 import Switch from '@/ds-components/Switch';
 import TextInput from '@/ds-components/TextInput';
 import TextLink from '@/ds-components/TextLink';
@@ -31,23 +29,10 @@ function ApiResourceSettings() {
     handleSubmit,
     register,
     reset,
-    control,
     formState: { isDirty, isSubmitting, errors },
   } = useForm<Resource>({
     defaultValues: resource,
   });
-
-  const {
-    field: { value: defaultAcr, onChange: onDefaultAcrChange },
-  } = useController({ name: 'defaultAcr', control });
-
-  const acrOptions = [
-    { value: LogtoAcrValues.Mfa, title: t('api_resource_details.default_acr_mfa') },
-    {
-      value: LogtoAcrValues.PhishingResistant,
-      title: t('api_resource_details.default_acr_phr'),
-    },
-  ];
 
   const api = useApi();
 
@@ -115,21 +100,6 @@ function ApiResourceSettings() {
               placeholder={t('api_resource_details.token_expiration_time_in_seconds_placeholder')}
             />
           </FormField>
-          {!isLogtoManagementApiResource && (
-            <FormField
-              title="api_resource_details.default_acr"
-              tip={t('api_resource_details.default_acr_tip')}
-            >
-              <Select
-                isClearable
-                value={defaultAcr ?? undefined}
-                options={acrOptions}
-                onChange={(value) => {
-                  onDefaultAcrChange(value ?? null);
-                }}
-              />
-            </FormField>
-          )}
           {!isLogtoManagementApiResource && (
             <FormField title="api_resources.default_api">
               <Switch

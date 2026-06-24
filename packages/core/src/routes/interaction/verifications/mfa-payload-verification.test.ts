@@ -45,7 +45,7 @@ const { verifyWebAuthnAuthentication, verifyWebAuthnRegistration } = mockEsm(
     verifyWebAuthnRegistration: jest.fn().mockResolvedValue({
       verified: true,
       registrationInfo: {
-        // v13: credential replaces flat credentialID/credentialPublicKey/counter fields.
+        // V13: credential replaces flat credentialID/credentialPublicKey/counter fields.
         credential: {
           id: 'credentialId',
           publicKey: 'publicKey',

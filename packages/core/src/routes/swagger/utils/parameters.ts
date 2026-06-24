@@ -99,7 +99,7 @@ export const buildParameters: BuildParameters = (
   const rootComponent = camelcase(getRootComponent(path) ?? '');
 
   // Type from Zod is any
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
   return Object.entries(zodParameters.shape).map(([key, value]) => {
     if (inWhere === 'path') {
       if (key === 'id') {

@@ -458,9 +458,10 @@ export default class SchemaRouter<
           // threading it back to the exact `Partial<Schema>` the guard was built from, so the body
           // type no longer lines up with `updateById`. See https://github.com/colinhacks/zod/issues/4817
           // (fix tracked in zod PR #4822). Assert the known guard output until it lands.
-          // eslint-disable-next-line no-restricted-syntax
+
           ctx.body = await queries.updateById(
             ctx.guard.params.id,
+            // eslint-disable-next-line no-restricted-syntax
             ctx.guard.body as Partial<Schema>
           );
           return next();

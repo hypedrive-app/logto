@@ -31,7 +31,6 @@ import validatePresence from 'oidc-provider/lib/helpers/validate_presence.js';
 import instance from 'oidc-provider/lib/helpers/weak_cache.js';
 
 import { type EnvSet } from '#src/env-set/index.js';
-import { enforceAcrForGrant } from '#src/oidc/acr-enforcement.js';
 import { assertUserHasApplicationAccessForOidc } from '#src/oidc/application-access-control.js';
 import type Libraries from '#src/tenants/Libraries.js';
 import type Queries from '#src/tenants/Queries.js';
@@ -244,9 +243,6 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx,
   // the logic is handled in `getResourceServerInfo` and `extraTokenClaims`, see the init file of oidc-provider.
   if (organizationId && !params.resource) {
     /* === RFC 0001 === */
-    // NOTE (step-up ACR): Organization scopes do not carry a `required_acr` field and ACR
-    // enforcement does not apply to org tokens. If org scopes ever need ACR gating, add
-    // `enforceAcrForGrant` here before calling `handleOrganizationToken`.
     /** All available scopes for the user in the organization. */
     const availableScopes = await queries.organizations.relations.usersRoles
       .getUserScopes(organizationId, account.accountId)
@@ -281,20 +277,6 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx,
         // @ts-expect-error -- code from oidc-provider
         [...scope].filter(Set.prototype.has.bind(at.resourceServer.scopes))
       );
-
-      /* === Step-up ACR enforcement (RFC 9470) === */
-      // After scopes are resolved, check if any scope carries a `required_acr` that the
-      // current session does not satisfy. Throws `InsufficientScope` if insufficient so the
-      // client can re-authenticate with the required ACR before retrying.
-      const grantedScopeNames = (at.scope ?? '').split(' ').filter(Boolean);
-      await enforceAcrForGrant(queries, {
-        grantedScopeNames,
-        resourceIndicator: resource,
-        sessionAcr: refreshToken.acr,
-        applicationDefaultAcrs: client.metadata().defaultAcrValues,
-        nowSeconds: Math.floor(Date.now() / 1000),
-      });
-      /* === End Step-up ACR enforcement === */
     } else {
       at.claims = refreshToken.claims;
       at.scope = grant.getOIDCScopeFiltered(scope);

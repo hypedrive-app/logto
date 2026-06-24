@@ -129,8 +129,12 @@ abstract class BaseWebAuthnVerification {
     assertThat(verified, 'session.mfa.webauthn_verification_failed');
     assertThat(registrationInfo, 'session.mfa.webauthn_verification_failed');
 
-    // v13: registrationInfo.credential replaces the flat credentialID/credentialPublicKey/counter fields.
-    const { id: credentialID, publicKey: credentialPublicKey, counter } = registrationInfo.credential;
+    // V13: registrationInfo.credential replaces the flat credentialID/credentialPublicKey/counter fields.
+    const {
+      id: credentialID,
+      publicKey: credentialPublicKey,
+      counter,
+    } = registrationInfo.credential;
 
     this.verified = true;
 
@@ -188,7 +192,7 @@ export class WebAuthnVerification
    */
   async generateWebAuthnAuthenticationOptions(
     ctx: WithLogContext
-  // Use ReturnType to avoid importing the private internal type from @simplewebauthn/server.
+    // Use ReturnType to avoid importing the private internal type from @simplewebauthn/server.
   ): ReturnType<typeof generateWebAuthnAuthenticationOptions> {
     const { hostname } = ctx.URL;
     const { mfaVerifications = [] } = await this.findUser();

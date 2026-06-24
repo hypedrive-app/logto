@@ -5,7 +5,17 @@ import {
   translationGuard,
   customContentGuard,
 } from '@logto/schemas';
-import { string, boolean, number, object, nativeEnum, unknown, literal, union, preprocess } from 'zod';
+import {
+  string,
+  boolean,
+  number,
+  object,
+  nativeEnum,
+  unknown,
+  literal,
+  union,
+  preprocess,
+} from 'zod';
 
 import RequestError from '#src/errors/RequestError/index.js';
 

@@ -50,7 +50,6 @@ const customPhrases = {
   ),
 } satisfies Partial<Queries['customPhrases']>;
 
-// eslint-disable-next-line no-restricted-syntax
 const getPhrases = jest.fn(async () => zhCN as unknown as LocalePhrase);
 
 const tenantContext = new MockTenant(

@@ -139,7 +139,7 @@ describe('koaAppSecretTranspilation middleware', () => {
     ctx.request.body = body;
     findByCredentials.mockResolvedValueOnce({ originalSecret: '2' });
     await koaAppSecretTranspilation(queries)(ctx, next);
-    // eslint-disable-next-line no-restricted-syntax
+
     expect((ctx.request.body as Record<string, unknown>).client_secret).toBe('2');
   });
 

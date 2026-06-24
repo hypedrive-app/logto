@@ -211,7 +211,7 @@ export class SamlApplication {
       optionalRelayState
     );
 
-    // samlify 2.13 types `createLoginResponse` as a union of binding contexts; `entityEndpoint`
+    // Samlify 2.13 types `createLoginResponse` as a union of binding contexts; `entityEndpoint`
     // is present on the post-binding result at runtime but not on every union member.
     // eslint-disable-next-line no-restricted-syntax
     const { context, entityEndpoint } = loginResponse as {
@@ -219,7 +219,6 @@ export class SamlApplication {
       entityEndpoint: string;
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     return { context, entityEndpoint, relayState: optionalRelayState };
   };
 
@@ -432,7 +431,7 @@ export class SamlApplication {
       sessionExpiresAt: Optional<string>;
     }) =>
     (template: string) => {
-      // samlify 2.13 widened `getAssertionConsumerService` to `string | string[]`; for a single
+      // Samlify 2.13 widened `getAssertionConsumerService` to `string | string[]`; for a single
       // POST-binding ACS we take the first URL so it fits the scalar `TagReplacementMap` values.
       const assertionConsumerServiceValue = this.sp.entityMeta.getAssertionConsumerService(
         saml.Constants.wording.binding.post

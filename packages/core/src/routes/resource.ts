@@ -1,4 +1,4 @@
-import { isLogtoAcrValue, isManagementApi, ProductEvent, Resources, Scopes } from '@logto/schemas';
+import { isManagementApi, ProductEvent, Resources, Scopes } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { yes } from '@silverhand/essentials';
 import { boolean, object, string } from 'zod';
@@ -156,16 +156,6 @@ export default function resourceRoutes<T extends ManagementApiRouter>(
       assertThat(
         !isManagementApi(indicator),
         new RequestError({ code: 'resource.cannot_modify_management_api' })
-      );
-
-      assertThat(
-        body.defaultAcr === undefined ||
-          body.defaultAcr === null ||
-          isLogtoAcrValue(body.defaultAcr),
-        new RequestError({
-          code: 'request.invalid_input',
-          details: 'defaultAcr value is not a recognized ACR',
-        })
       );
 
       const resource = await updateResourceById(id, body);

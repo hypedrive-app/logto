@@ -37,7 +37,7 @@ const createProvider = (tenant: MockTenant) =>
  * experience URL, with control over the OIDC `params`, the existing session, and the client's
  * configured metadata.
  */
-const buildLoginInteractionUrl = ({
+const buildLoginInteractionUrl = async ({
   params = {},
   accountId,
   defaultAcrValues,
@@ -50,14 +50,16 @@ const buildLoginInteractionUrl = ({
   const provider = createProvider(tenant);
   const configuration = instance(provider).configuration();
 
+  const session = accountId ? { accountId } : undefined;
+  const client = { metadata: () => ({ defaultAcrValues }) };
   const ctx = createOidcContext({
     params,
-    session: accountId ? ({ accountId } as never) : undefined,
-    client: { metadata: () => ({ defaultAcrValues }) } as never,
+    session: session as never,
+    client: client as never,
   });
 
   // `interactions.url` writes server-side-rendering cookies via the top-level Koa `ctx.cookies`.
-  // eslint-disable-next-line @silverhand/fp/no-mutation, no-restricted-syntax
+  // eslint-disable-next-line @silverhand/fp/no-mutation
   (ctx as { cookies: unknown }).cookies = { get: jest.fn(), set: jest.fn() };
 
   return configuration.interactions.url(ctx, {
@@ -67,8 +69,8 @@ const buildLoginInteractionUrl = ({
 };
 
 describe('oidc interactions.url step-up detection', () => {
-  it('injects step_up_acr when acr_values is present and a session exists', () => {
-    const url = buildLoginInteractionUrl({
+  it('injects step_up_acr when acr_values is present and a session exists', async () => {
+    const url = await buildLoginInteractionUrl({
       params: { acr_values: LogtoAcrValues.Mfa },
       accountId: 'account_id',
     });
@@ -76,8 +78,8 @@ describe('oidc interactions.url step-up detection', () => {
     expect(url).toContain(`${ExtraParamsKey.StepUpAcr}=${encodeURIComponent(LogtoAcrValues.Mfa)}`);
   });
 
-  it('injects step_up_acr for the phishing-resistant ACR when a session exists', () => {
-    const url = buildLoginInteractionUrl({
+  it('injects step_up_acr for the phishing-resistant ACR when a session exists', async () => {
+    const url = await buildLoginInteractionUrl({
       params: { acr_values: LogtoAcrValues.PhishingResistant },
       accountId: 'account_id',
     });
@@ -87,8 +89,8 @@ describe('oidc interactions.url step-up detection', () => {
     );
   });
 
-  it('does NOT inject step_up_acr without an existing session', () => {
-    const url = buildLoginInteractionUrl({
+  it('does NOT inject step_up_acr without an existing session', async () => {
+    const url = await buildLoginInteractionUrl({
       params: { acr_values: LogtoAcrValues.Mfa },
       // No accountId — fresh login.
     });
@@ -96,8 +98,8 @@ describe('oidc interactions.url step-up detection', () => {
     expect(url).not.toContain(ExtraParamsKey.StepUpAcr);
   });
 
-  it('falls back to the client default_acr_values when acr_values is omitted', () => {
-    const url = buildLoginInteractionUrl({
+  it('falls back to the client default_acr_values when acr_values is omitted', async () => {
+    const url = await buildLoginInteractionUrl({
       params: {},
       accountId: 'account_id',
       defaultAcrValues: [LogtoAcrValues.Mfa],
@@ -106,8 +108,8 @@ describe('oidc interactions.url step-up detection', () => {
     expect(url).toContain(`${ExtraParamsKey.StepUpAcr}=${encodeURIComponent(LogtoAcrValues.Mfa)}`);
   });
 
-  it('ignores an unsupported acr value', () => {
-    const url = buildLoginInteractionUrl({
+  it('ignores an unsupported acr value', async () => {
+    const url = await buildLoginInteractionUrl({
       params: { acr_values: 'urn:example:unsupported' },
       accountId: 'account_id',
     });
@@ -115,8 +117,8 @@ describe('oidc interactions.url step-up detection', () => {
     expect(url).not.toContain(ExtraParamsKey.StepUpAcr);
   });
 
-  it('prefers an explicit acr_values over the client default', () => {
-    const url = buildLoginInteractionUrl({
+  it('prefers an explicit acr_values over the client default', async () => {
+    const url = await buildLoginInteractionUrl({
       params: { acr_values: LogtoAcrValues.Password },
       accountId: 'account_id',
       defaultAcrValues: [LogtoAcrValues.Mfa],

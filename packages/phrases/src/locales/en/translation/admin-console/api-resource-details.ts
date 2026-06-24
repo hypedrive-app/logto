@@ -12,12 +12,6 @@ const api_resource_details = {
     'This API represents Hypedrive entity and cannot be modified or deleted. Create a machine-to-machine app to call Hypedrive Management API. <a>Learn more</a>',
   token_expiration_time_in_seconds: 'Token expiration time (in seconds)',
   token_expiration_time_in_seconds_placeholder: 'Enter your token expiration time',
-  default_acr: 'Default step-up requirement',
-  default_acr_tip:
-    'The minimum authentication strength (ACR) required before any scope of this API may be granted in an access token. Overridden by per-scope settings; overrides the app-level default.',
-  default_acr_none: 'None (inherit app default)',
-  default_acr_mfa: 'MFA required',
-  default_acr_phr: 'Phishing-resistant MFA required (WebAuthn / passkey only)',
   delete_description:
     'This action cannot be undone. It will permanently delete the API resource. Please enter the api resource name <span>{{name}}</span> to confirm.',
   enter_your_api_resource_name: 'Enter your API resource name',
@@ -38,12 +32,6 @@ const api_resource_details = {
     delete_description:
       'If this permission is deleted, the user who had this permission will lose the access granted by it.',
     deleted: 'The permission "{{name}}" was successfully deleted.',
-    required_acr: 'Step-up requirement',
-    required_acr_tip:
-      'The minimum authentication strength (ACR) a user session must reach before this specific permission can be issued in an access token. When set, overrides the API-level default.',
-    required_acr_none: 'None (inherit API default)',
-    required_acr_mfa: 'MFA required',
-    required_acr_phr: 'Phishing-resistant MFA required (WebAuthn / passkey only)',
   },
 };
 

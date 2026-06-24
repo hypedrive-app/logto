@@ -430,7 +430,10 @@ export default function signInExperiencesRoutes<T extends ManagementApiRouter>(
         z.object({
           result: z.literal(false),
           issues: z.array(
-            z.object({ code: z.string(), interpolation: z.record(z.string(), z.unknown()).optional() })
+            z.object({
+              code: z.string(),
+              interpolation: z.record(z.string(), z.unknown()).optional(),
+            })
           ),
         })
       ),

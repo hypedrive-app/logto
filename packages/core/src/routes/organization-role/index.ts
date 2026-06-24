@@ -82,15 +82,14 @@ export default function organizationRoleRoutes<T extends ManagementApiRouter>(
     resourceScopeIds: string[];
   };
 
-  const createGuard: z.ZodType<CreateOrganizationRolePayload, unknown> =
-    OrganizationRoles.createGuard
-      .omit({
-        id: true,
-      })
-      .extend({
-        organizationScopeIds: z.array(z.string()).default([]),
-        resourceScopeIds: z.array(z.string()).default([]),
-      });
+  const createGuard: z.ZodType<CreateOrganizationRolePayload> = OrganizationRoles.createGuard
+    .omit({
+      id: true,
+    })
+    .extend({
+      organizationScopeIds: z.array(z.string()).default([]),
+      resourceScopeIds: z.array(z.string()).default([]),
+    });
 
   router.post(
     '/',

@@ -1,3 +1,7 @@
+/* eslint-disable max-lines -- This is the experience verification API entry point; its
+   handlers (password, code, WebAuthn/passkey, SSO, one-time-token, social) form one cohesive
+   set of verification-record endpoints. Splitting them across files would scatter a single
+   API surface without improving clarity. */
 import { TemplateType } from '@logto/connector-kit';
 import {
   AdditionalIdentifier,
@@ -432,3 +436,5 @@ export default function verificationRoutes<T extends UserRouter>(
     }
   );
 }
+
+/* eslint-enable max-lines */

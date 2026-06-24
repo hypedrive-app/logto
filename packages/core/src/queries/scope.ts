@@ -122,21 +122,6 @@ export const createScopeQueries = (pool: CommonQueryMethods) => {
       `)
       : [];
 
-  const findScopesByNamesAndResourceIndicator = async (
-    scopeNames: string[],
-    resourceIndicator: string
-  ): Promise<readonly Scope[]> =>
-    scopeNames.length > 0
-      ? pool.any<Scope>(sql`
-        select ${sql.join(Object.values(fields), sql`, `)}
-        from ${table}
-        inner join ${resources.table}
-          on ${resources.fields.id} = ${fields.resourceId}
-        where ${fields.name} in (${sql.join(scopeNames, sql`, `)})
-        and ${resources.fields.indicator} = ${resourceIndicator}
-      `)
-      : [];
-
   const findScopesByIds = async (scopeIds: string[]): Promise<readonly Scope[]> =>
     scopeIds.length > 0
       ? pool.any<Scope>(sql`
@@ -178,7 +163,6 @@ export const createScopeQueries = (pool: CommonQueryMethods) => {
     findScopesByResourceIds,
     findScopesByIds,
     findScopesByIdsAndResourceIndicator,
-    findScopesByNamesAndResourceIndicator,
     insertScope,
     findScopeById,
     updateScope,

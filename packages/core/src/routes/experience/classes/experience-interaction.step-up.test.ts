@@ -1,4 +1,3 @@
-/* eslint-disable max-lines */
 /**
  * Step-up authentication (RFC 9470) coverage for {@link ExperienceInteraction}.
  *
@@ -98,12 +97,10 @@ const createStepUpInteraction = ({
   const provider = createMockProvider();
   jest.spyOn(provider, 'interactionResult').mockImplementation(interactionResultSpy);
 
-  const tenant = new MockTenant(
-    provider,
-    { users, signInExperiences },
-    undefined,
-    { users: userLibraries, ssoConnectors }
-  );
+  const tenant = new MockTenant(provider, { users, signInExperiences }, undefined, {
+    users: userLibraries,
+    ssoConnectors,
+  });
 
   const logContext = createMockLogContext();
   // @ts-expect-error -- mock test context
@@ -188,9 +185,7 @@ describe('ExperienceInteraction step-up', () => {
     });
 
     it('rejects an invalid stored `stepUpAcr` during parsing', () => {
-      expect(() =>
-        createStepUpInteraction({ acr: 'urn:logto:acr:not-a-real-acr' })
-      ).toThrowError();
+      expect(() => createStepUpInteraction({ acr: 'urn:logto:acr:not-a-real-acr' })).toThrowError();
     });
   });
 
@@ -206,7 +201,9 @@ describe('ExperienceInteraction step-up', () => {
       await experienceInteraction.submit();
 
       expect(interactionResultSpy).toHaveBeenCalledTimes(1);
-      const [, , result] = interactionResultSpy.mock.calls[0]!;
+      const result = interactionResultSpy.mock.calls[0]![2] as {
+        login: { acr?: string; amr?: string[] };
+      };
       expect(result.login.acr).toBe(LogtoAcrValues.Mfa);
       expect(result.login.amr).toContain('mfa');
       expect(result.login.amr).toContain('totp');
@@ -238,7 +235,9 @@ describe('ExperienceInteraction step-up', () => {
       await experienceInteraction.submit();
 
       expect(interactionResultSpy).toHaveBeenCalledTimes(1);
-      const [, , result] = interactionResultSpy.mock.calls[0]!;
+      const result = interactionResultSpy.mock.calls[0]![2] as {
+        login: { acr?: string; amr?: string[] };
+      };
       // The token must report the ACR that was actually satisfied — never `mfa`.
       expect(result.login.acr).toBe(LogtoAcrValues.Password);
       // And `amr` must not falsely assert `mfa` when no factor was verified.
@@ -260,7 +259,9 @@ describe('ExperienceInteraction step-up', () => {
       await experienceInteraction.submit();
 
       expect(interactionResultSpy).toHaveBeenCalledTimes(1);
-      const [, , result] = interactionResultSpy.mock.calls[0]!;
+      const result = interactionResultSpy.mock.calls[0]![2] as {
+        login: { acr?: string; amr?: string[] };
+      };
       expect(result.login.acr).toBe(LogtoAcrValues.PhishingResistant);
       expect(result.login.amr).toContain('mfa');
       expect(result.login.amr).toContain('hwk');

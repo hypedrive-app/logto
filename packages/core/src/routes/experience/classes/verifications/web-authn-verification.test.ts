@@ -18,7 +18,7 @@ await mockEsmWithActual('@simplewebauthn/server', () => ({
   verifyRegistrationResponse: jest.fn().mockResolvedValue({
     verified: true,
     registrationInfo: {
-      // v13: credentialID/credentialPublicKey/counter moved into registrationInfo.credential
+      // V13: credentialID/credentialPublicKey/counter moved into registrationInfo.credential
       credential: {
         id: 'credentialId',
         publicKey: 'publicKey',
