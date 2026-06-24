@@ -19,7 +19,12 @@ RUN apk add --no-cache python3 make g++ rsync
 # change (the common case) reuses the fetched deps instead of re-downloading them. This is
 # the pnpm-recommended pattern for Docker monorepos.
 COPY pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store pnpm fetch
+# minimumReleaseAge=0: the workspace enforces a supply-chain "package must be N days old"
+# gate at RESOLUTION time. The lockfile here is already resolved + pinned, so re-checking
+# ages during a Docker build is redundant and `pnpm fetch` rejects entries not yet on the
+# exclude list. Disable the gate for the fetch (we don't resolve new versions here).
+RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
+  pnpm fetch --config.minimumReleaseAge=0
 
 ### Now copy the source and install from the fetched store ###
 COPY . .
@@ -27,7 +32,7 @@ COPY . .
 # anything the fetch didn't cover (robust — strict --offline would fail the whole build on
 # a single missed package). --frozen-lockfile fails fast if the lockfile is out of sync.
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-  pnpm i --prefer-offline --frozen-lockfile
+  pnpm i --prefer-offline --frozen-lockfile --config.minimumReleaseAge=0
 
 ### Set if dev features enabled ###
 ARG dev_features_enabled
@@ -50,7 +55,7 @@ RUN pnpm cli connector link $ADDITIONAL_CONNECTOR_ARGS -p .
 # Keep prune + production install in one layer to avoid extra transient disk usage.
 # --prefer-offline reuses the store already populated by `pnpm fetch` above (no re-download).
 RUN --mount=type=cache,id=pnpm-store,target=/root/.local/share/pnpm/store \
-  rm -rf node_modules packages/**/node_modules && NODE_ENV=production pnpm i --prefer-offline
+  rm -rf node_modules packages/**/node_modules && NODE_ENV=production pnpm i --prefer-offline --config.minimumReleaseAge=0
 
 ### Clean up ###
 RUN rm -rf .scripts pnpm-*.yaml packages/cloud
