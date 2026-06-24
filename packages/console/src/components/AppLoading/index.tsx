@@ -6,7 +6,7 @@ import styles from './index.module.scss';
 function AppLoading() {
   return (
     <div className={styles.container}>
-      <Logo />
+      <Logo className={styles.logo} />
       <Spinner />
     </div>
   );

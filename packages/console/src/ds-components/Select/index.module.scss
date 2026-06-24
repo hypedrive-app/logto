@@ -7,7 +7,7 @@
   padding: 0 _.unit(2);
   background: var(--color-layer-1);
   border: 1px solid var(--color-border);
-  border-radius: 10px;
+  border-radius: var(--radius-lg);
   outline: 3px solid transparent;
   transition-property: outline, border;
   transition-timing-function: ease-in-out;
@@ -132,7 +132,8 @@
 
 .dropdown {
   padding: _.unit(1);
-  max-height: 288px;
+  // Cap to half the viewport on short screens so the option list never overflows.
+  max-height: min(288px, 50vh);
 }
 
 .selectedOption {

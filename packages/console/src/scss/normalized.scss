@@ -8,7 +8,8 @@
   font-style: normal;
   font-display: swap;
   font-weight: 100 900;
-  src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2')
+  src:
+    url('https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2')
     format('woff2-variations');
 }
 
@@ -59,3 +60,21 @@ input {
   height: 100%;
   flex: 1;
 }
+
+// Respect the user's OS-level "reduce motion" preference (WCAG 2.3.3). We don't kill
+// motion entirely — we collapse it to near-instant so spinners/transitions still convey
+// state without vestibular-triggering movement.
+// The tiny durations + !important here are the W3C-recommended reduced-motion
+// reset; the linter's time-min/no-important rules don't apply to this idiom.
+/* stylelint-disable declaration-no-important, time-min-milliseconds */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* stylelint-enable declaration-no-important, time-min-milliseconds */

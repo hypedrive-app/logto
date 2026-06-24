@@ -7,6 +7,16 @@
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
+
+  // Reclaim horizontal space for the content area on smaller viewports. No layout
+  // rebuild — the sidebar just narrows so the main area stays usable on tablets.
+  @media screen and (max-width: 960px) {
+    width: 216px;
+  }
+
+  @media screen and (max-width: 768px) {
+    width: 200px;
+  }
 }
 
 .menu {

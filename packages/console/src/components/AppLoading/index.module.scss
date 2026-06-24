@@ -5,11 +5,17 @@
   flex-direction: column;
   height: 100vh;
   color: var(--color-text);
+  background-color: var(--color-layer-1);
   align-items: center;
   justify-content: center;
   overflow: hidden;
 
-  svg {
+  .logo {
+    width: auto;
+    // 32px reads as a confident splash mark without a jarring jump to the
+    // topbar's 28px once the app mounts.
+    height: 32px;
+    color: var(--color-text);
     margin-bottom: _.unit(8);
   }
 }

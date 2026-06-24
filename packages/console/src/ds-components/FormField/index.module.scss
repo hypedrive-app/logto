@@ -11,8 +11,9 @@
   align-items: center;
   margin-bottom: _.unit(2);
 
+  // `headlineSpacing="large"` was a no-op (same 8px) — give it real breathing room.
   &.withLargeSpacing {
-    margin-bottom: _.unit(2);
+    margin-bottom: _.unit(3);
   }
 
   .title {
@@ -46,10 +47,12 @@
 .description {
   font: var(--font-body-2);
   color: var(--color-text-secondary);
-  margin-top: _.unit(1);
+  // A touch more separation from the field above (was 4px) so help text reads as
+  // its own line rather than crowding the input.
+  margin-top: _.unit(2);
 
   &.top {
     margin-top: 0;
-    margin-bottom: _.unit(1);
+    margin-bottom: _.unit(2);
   }
 }

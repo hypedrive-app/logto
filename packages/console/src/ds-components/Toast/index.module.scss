@@ -7,7 +7,10 @@ div.toast {
   font: var(--font-body-2);
   color: var(--color-text);
   box-shadow: var(--shadow-1);
-  border-radius: _.unit(2);
+  border-radius: var(--radius-md);
+  // Floor the width so single-word toasts still read as a deliberate notice,
+  // and never exceed the viewport on mobile.
+  min-width: min(280px, calc(100vw - _.unit(8)));
   max-width: 480px;
 
   .image {

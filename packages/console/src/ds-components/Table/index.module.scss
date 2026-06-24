@@ -122,7 +122,9 @@
       border-top: unset;
 
       tr {
-        height: 56px;
+        // min-height so rows with wrapped/multi-line content grow instead of
+        // clipping (was a hard 56px).
+        min-height: 56px;
       }
 
       tr:first-child td {

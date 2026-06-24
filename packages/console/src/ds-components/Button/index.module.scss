@@ -6,7 +6,7 @@
   justify-content: center;
   border: none;
   outline: none;
-  border-radius: _.unit(2);
+  border-radius: var(--radius-md);
   font: var(--font-label-2);
   transition: background-color 0.2s ease-in-out;
   white-space: nowrap;
@@ -238,7 +238,7 @@
     font: var(--font-label-2);
     color: var(--color-text-link);
     padding: _.unit(0.5) _.unit(1);
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
 
     &:disabled {
       color: var(--color-disabled);

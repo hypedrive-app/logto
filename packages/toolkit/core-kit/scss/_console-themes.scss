@@ -133,8 +133,8 @@
   --color-danger-pressed: var(--color-error-30);
   --color-text: var(--color-neutral-10);
   --color-text-link: var(--color-primary-40);
-  --color-text-secondary: var(--color-neutral-50);
-  --color-placeholder: var(--color-neutral-70);
+  --color-text-secondary: var(--color-neutral-40); // WCAG AA 6.05:1 (was neutral-50)
+  --color-placeholder: var(--color-neutral-50); // WCAG AA 4.24:1 (was neutral-70)
   --color-border: var(--color-neutral-80);
   --color-divider: var(--color-neutral-90);
   --color-disabled: var(--color-neutral-80);
@@ -360,7 +360,7 @@
   --color-text: var(--color-neutral-10);
   --color-text-link: var(--color-primary-40);
   --color-text-secondary: var(--color-neutral-50);
-  --color-placeholder: var(--color-neutral-70);
+  --color-placeholder: var(--color-neutral-60); // WCAG AA 4.2:1 (was neutral-70)
   --color-border: var(--color-neutral-80);
   --color-divider: var(--color-neutral-90);
   --color-disabled: var(--color-neutral-80);

@@ -6,8 +6,10 @@
 }
 
 @mixin main-content-width {
-  max-width: 1300px;
-  min-width: 560px;
+  // 1200px keeps body line-length comfortable on wide monitors (1300 ran long).
+  max-width: 1200px;
+  // Let content shrink below 560px so narrow viewports don't force horizontal scroll.
+  min-width: 0;
   margin: 0 auto;
 }
 
