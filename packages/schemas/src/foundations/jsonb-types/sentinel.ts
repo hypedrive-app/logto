@@ -57,8 +57,28 @@ export enum SentinelActivityAction {
    * Used by the message rate limit to throttle sends.
    */
   MessageSend = 'MessageSend',
+  /**
+   * A step-up (RFC 9470) challenge was issued to the subject because the current session's ACR
+   * did not satisfy the ACR required by the requested scope / resource.
+   *
+   * Kept isolated from the primary sign-in actions so step-up traffic can be risk-scored
+   * separately and never leaks lockouts across unrelated verification stages.
+   */
+  StepUpChallenged = 'StepUpChallenged',
+  /**
+   * The subject completed a step-up challenge, raising the session ACR to the required level.
+   */
+  StepUpPassed = 'StepUpPassed',
+  /**
+   * The subject failed a step-up challenge (wrong/expired factor, or an insufficient factor for
+   * the required ACR, e.g. a phishable factor where phishing-resistant was required).
+   */
+  StepUpFailed = 'StepUpFailed',
 }
 export const sentinelActivityActionGuard = z.nativeEnum(SentinelActivityAction);
 
 export type SentinelActivityPayload = Record<string, unknown>;
-export const sentinelActivityPayloadGuard = z.record(z.string(), z.unknown()) satisfies z.ZodType<SentinelActivityPayload>;
+export const sentinelActivityPayloadGuard = z.record(
+  z.string(),
+  z.unknown()
+) satisfies z.ZodType<SentinelActivityPayload>;

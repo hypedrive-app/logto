@@ -21,7 +21,7 @@ const connector_details = {
   test_sms_placeholder: '+1 555-123-4567',
   test_message_sent: 'Test message sent',
   test_sender_description:
-    'Logto uses the "Generic" template for testing. You will receive a message if your connector is rightly configured.',
+    'Hypedrive uses the "Generic" template for testing. You will receive a message if your connector is rightly configured.',
   options_change_email: 'Change email connector',
   options_change_sms: 'Change SMS connector',
   connector_deleted: 'The connector has been successfully deleted',
@@ -37,7 +37,7 @@ const connector_details = {
   logto_email: {
     total_email_sent: 'Total email sent: {{value, number}}',
     total_email_sent_tip:
-      'Logto utilizes SendGrid for secure and stable built-in email. It’s completely free to use. <a>Learn more</a>',
+      'Hypedrive utilizes SendGrid for secure and stable built-in email. It’s completely free to use. <a>Learn more</a>',
     email_template_title: 'Email Template',
     template_description:
       'Built-in email uses default templates for seamless delivery of verification emails. No configuration is required, and you can customize basic brand information.',
@@ -56,7 +56,7 @@ const connector_details = {
     email_logo_tip:
       'Display your brand logo in the top of emails. Use the same image for both light mode and dark mode.',
     urls_not_allowed: 'URLs are not allowed',
-    test_notes: 'Logto uses the “Generic” template for testing.',
+    test_notes: 'Hypedrive uses the “Generic” template for testing.',
   },
   google_one_tap: {
     title: 'Google One Tap',

@@ -13,3 +13,8 @@ The Inkeep AI assistant widget (Logto Cloud feature). On the self-hosted OSS con
 crashed with React #130 ("element type invalid") from inside @inkeep/cxkit-react. It's a
 cloud-only feature (gated on isCloud, which is false here), so removed entirely from the
 Topbar. Delete from archive/ when ready, or restore if Inkeep is ever wanted on cloud.
+
+## 2026-06-24 — Logto Cloud upsell components (dead/ripped)
+- `packages/console/src/pages/GetStarted/OssCloudUpsell.tsx` — "try Logto Cloud" banner; already unrendered (dead), removed from src.
+- `packages/console/src/containers/ConsoleContent/Sidebar/OssCloudCard.tsx` (+ `.module.scss`, `.test.ts`) — sidebar "Try Logto Cloud" promo; already unrendered (dead).
+Why: Hypedrive self-hosted — no Logto Cloud upsells anywhere in the UI.

@@ -30,6 +30,7 @@ const buildScope = (id: string, name: string): Scope => ({
   resourceId,
   name,
   description: null,
+  requiredAcr: null,
   createdAt: 0,
 });
 

@@ -108,6 +108,7 @@ export const mockResource: Resource = {
   indicator: 'logto.dev/api',
   accessTokenTtl: 3600,
   isDefault: false,
+  defaultAcr: null,
 };
 
 export const mockScope: Scope = {
@@ -116,6 +117,7 @@ export const mockScope: Scope = {
   name: 'read:users',
   description: 'read users',
   resourceId: mockResource.id,
+  requiredAcr: null,
   createdAt: 1_645_334_775_356,
 };
 

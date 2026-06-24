@@ -12,10 +12,10 @@ import styles from '../index.module.scss';
 import { createCustomUiCspValidator } from './utils';
 
 type Props = {
-  readonly isDisabled: boolean;
+  readonly isDisabled?: boolean;
 };
 
-function CustomUiCspForm({ isDisabled }: Props) {
+function CustomUiCspForm({ isDisabled = false }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { control } = useFormContext<SignInExperienceForm>();
 
