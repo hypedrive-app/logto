@@ -4,7 +4,7 @@ import { type GuideMetadata } from '../types';
 
 const metadata: Readonly<GuideMetadata> = Object.freeze({
   name: 'WordPress',
-  description: 'Integrate Logto into your WordPress app.',
+  description: 'Integrate Hypedrive into your WordPress app.',
   target: ApplicationType.Traditional,
   furtherReadings: [
     {

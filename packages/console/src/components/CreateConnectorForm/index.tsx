@@ -66,7 +66,7 @@ function EmailConnectorUpsellBanner() {
       <Button
         className={styles.upsellButton}
         type="outline"
-        title={<DangerousRaw>{t(copyKeys.action, { productName: 'Logto Cloud' })}</DangerousRaw>}
+        title={<DangerousRaw>{t(copyKeys.action, { productName: 'Hypedrive' })}</DangerousRaw>}
         trailingIcon={<ExternalLink />}
         onClick={() => {
           window.open(pricingLink, '_blank', 'noopener,noreferrer');

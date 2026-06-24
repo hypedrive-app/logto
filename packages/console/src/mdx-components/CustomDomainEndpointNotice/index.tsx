@@ -18,7 +18,7 @@ function CustomDomainEndpointNotice({ variant = 'access' }: Props) {
         custom domains
       </TextLink>
       {variant === 'replace'
-        ? ', you can replace the Logto endpoint with '
+        ? ', you can replace the Hypedrive endpoint with '
         : ', you can access endpoints at '}
       <code>{'https://{{custom_domain}}/'}</code>.
     </InlineNotification>

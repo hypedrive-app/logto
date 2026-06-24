@@ -56,7 +56,7 @@ export const defaultTenantResponse: TenantResponse = {
  */
 export const defaultLogtoSku: LogtoSkuResponse = {
   id: ReservedPlanId.Development,
-  name: 'Logto Development plan',
+  name: 'Hypedrive Development plan',
   createdAt: new Date(),
   updatedAt: new Date(),
   type: LogtoSkuType.Basic,
@@ -161,7 +161,7 @@ const getAdminTenantEndpoint = () => {
 
 export const adminTenantEndpoint = getAdminTenantEndpoint();
 
-export const mainTitle = isCloud ? 'Logto Cloud' : 'Logto Console';
+export const mainTitle = 'Hypedrive';
 
 // The threshold days to show the convert to production card in the get started page
 export const convertToProductionThresholdDays = 7;
