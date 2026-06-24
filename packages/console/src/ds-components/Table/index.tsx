@@ -188,7 +188,8 @@ function Table<
                             rowClassName?.(row, rowIndex)
                           )}
                           // Make clickable rows keyboard-operable (focus + Enter/Space).
-                          {...(rowClickable && { role: 'button', tabIndex: 0 })}
+                          role={rowClickable ? 'button' : undefined}
+                          tabIndex={rowClickable ? 0 : undefined}
                           onClick={onClick}
                           onKeyDown={conditional(
                             rowClickable &&
