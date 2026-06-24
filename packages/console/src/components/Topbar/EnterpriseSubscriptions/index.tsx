@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // Paywall/upsell UI removed — Hypedrive self-hosted, all features unlocked.
 // Inert, prop-tolerant stub so existing call sites keep type-checking and resolving.
 
-const EnterpriseSubscriptions = (_props?: Record<string, unknown>): null => null;
+function EnterpriseSubscriptions(_props?: Record<string, unknown>): undefined {
+  return undefined;
+}
 
 export default EnterpriseSubscriptions;

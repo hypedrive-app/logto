@@ -1,9 +1,9 @@
 import { LogtoJwtTokenKeyType } from '@logto/schemas';
+import { vi } from 'vitest';
 
 import { Action } from '../../CustomizeJwt/utils/type';
 
 import { formatResponseDataToFormData } from './format';
-import { vi } from 'vitest';
 
 vi.mock('./config', () => ({
   defaultAccessTokenJwtCustomizerCode: 'default-access-script',

@@ -42,7 +42,7 @@ function Topbar({ className, hideTenantSelector, hideTitle }: Props) {
       <LogtoLogo
         className={styles.logo}
         onClick={() => {
-          navigate('/');
+          void navigate('/');
         }}
       />
       {isCloud && !hideTenantSelector && <TenantSelector />}

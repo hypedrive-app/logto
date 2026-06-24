@@ -63,7 +63,7 @@ function Item({ icon, titleKey, modal, externalLink, path, isActive = false }: P
     );
   }
 
-  // react-router-dom v7 resolves a RELATIVE `to` (e.g. "sign-in-experience") against the
+  // React-router-dom v7 resolves a RELATIVE `to` (e.g. "sign-in-experience") against the
   // CURRENT location, not the route — so clicking sidebar items APPENDED segments and
   // compounded into ".../sign-in-experience/sign-in-experience/mfa/..." → "Page not found"
   // (this worked under v6's route-relative resolution). Make the target absolute and

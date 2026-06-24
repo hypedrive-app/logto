@@ -1,9 +1,9 @@
 import { renderHook } from '@testing-library/react';
 import { format } from 'date-fns';
+import { vi } from 'vitest';
 
 import { customRange } from './preset';
 import useAuditLogTimeWindow from './use-audit-log-time-window';
-import { vi } from 'vitest';
 
 const dateInputPattern = 'yyyy-MM-dd';
 

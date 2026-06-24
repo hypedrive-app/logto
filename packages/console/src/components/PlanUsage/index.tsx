@@ -1,7 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 // Paywall/upsell UI removed — Hypedrive self-hosted, all features unlocked.
 // Inert, prop-tolerant stub so existing call sites keep type-checking and resolving.
 
-const PlanUsage = (_props?: Record<string, unknown>): null => null;
+function PlanUsage(_props?: Record<string, unknown>): undefined {
+  return undefined;
+}
 
 export default PlanUsage;

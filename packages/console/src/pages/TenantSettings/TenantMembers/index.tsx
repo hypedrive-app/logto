@@ -43,7 +43,7 @@ function TenantMembers() {
             icon={<MembersIcon />}
             title="tenant_members.members"
             onClick={() => {
-              navigate('.');
+              void navigate('.');
             }}
           />
           <Button
@@ -51,7 +51,7 @@ function TenantMembers() {
             icon={<InvitationIcon />}
             title="tenant_members.invitations"
             onClick={() => {
-              navigate('invitations');
+              void navigate('invitations');
             }}
           />
           <Spacer />
@@ -84,7 +84,7 @@ function TenantMembers() {
 
             // Defer navigation to avoid modal closing render being interrupted
             startTransition(() => {
-              navigate('invitations');
+              void navigate('invitations');
             });
           }}
         />

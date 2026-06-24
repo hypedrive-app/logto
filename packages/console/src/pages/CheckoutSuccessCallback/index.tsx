@@ -38,7 +38,7 @@ function CheckoutSuccessCallback() {
     onExpire: () => {
       toast.error(t('subscription_check_timeout'));
       clearLocalCheckoutSession();
-      navigate(consoleHomePage, { replace: true });
+      void navigate(consoleHomePage, { replace: true });
     },
   });
 
@@ -108,7 +108,7 @@ function CheckoutSuccessCallback() {
 
       // If the tenant is the current tenant, navigate to the callback page
       if (checkoutTenantId === currentTenantId) {
-        navigate(conditional(callbackPage) ?? consoleHomePage, { replace: true });
+        void navigate(conditional(callbackPage) ?? consoleHomePage, { replace: true });
         return;
       }
 

@@ -31,11 +31,11 @@ const useAccountApi = () => {
   const api = useMemo(
     () =>
       ky.create({
-        // ky v2 renamed `prefixUrl` to `prefix`.
+        // Ky v2 renamed `prefixUrl` to `prefix`.
         prefix: getAccountApiPrefixUrl(),
         timeout: requestTimeout,
         hooks: {
-          // ky v2: hooks receive a single state object.
+          // Ky v2: hooks receive a single state object.
           beforeRequest: [
             async ({ request }) => {
               if (isAuthenticated) {

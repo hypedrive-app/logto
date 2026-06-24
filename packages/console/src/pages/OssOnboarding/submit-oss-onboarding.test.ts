@@ -1,8 +1,8 @@
 import { CompanySize, Project, type OssUserOnboardingData } from '@logto/schemas';
 import type { Options } from 'ky';
+import { vi } from 'vitest';
 
 import type { OssOnboardingFormData } from './utils';
-import { vi } from 'vitest';
 
 // Module-level mocks for env constants. Must be declared before importing the module under test.
 // eslint-disable-next-line @silverhand/fp/no-let

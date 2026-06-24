@@ -62,7 +62,7 @@ function OrganizationsTable({ onCreate }: Props) {
       }
       rowGroups={[{ key: 'data', data }]}
       rowClickHandler={({ id }) => {
-        navigate(joinPath(pathname, id));
+        void navigate(joinPath(pathname, id));
       }}
       columns={[
         {

@@ -1,8 +1,10 @@
-import { buildCloudUpsellUrl, openCloudUpsell, ossUpsellEntries } from './oss-upsell';
 import { vi } from 'vitest';
 
+import { buildCloudUpsellUrl, openCloudUpsell, ossUpsellEntries } from './oss-upsell';
+
 describe('oss upsell helpers', () => {
-  const mockWindowOpen = vi.fn<(...args: Parameters<typeof window.open>) => ReturnType<typeof window.open>>();
+  const mockWindowOpen =
+    vi.fn<(...args: Parameters<typeof window.open>) => ReturnType<typeof window.open>>();
 
   beforeEach(() => {
     vi.restoreAllMocks();
@@ -34,9 +36,9 @@ describe('oss upsell helpers', () => {
   });
 
   it('returns the UTM-tagged Cloud URL without navigation when window is unavailable', () => {
-    vi
-      .spyOn(globalThis, 'window', 'get')
-      .mockReturnValue(undefined as unknown as Window & typeof globalThis);
+    vi.spyOn(globalThis, 'window', 'get').mockReturnValue(
+      undefined as unknown as Window & typeof globalThis
+    );
 
     const targetUrl = openCloudUpsell({
       entry: ossUpsellEntries.ossSidebarCloudCard,

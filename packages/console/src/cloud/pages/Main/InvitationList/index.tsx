@@ -76,7 +76,7 @@ function InvitationList({ invitations }: Props) {
             setIsUpdatingOnboardingStatus(true);
             try {
               await update({ isOnboardingDone: false });
-              navigate('/');
+              void navigate('/');
             } finally {
               setIsUpdatingOnboardingStatus(false);
             }

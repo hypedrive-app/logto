@@ -45,7 +45,7 @@ function ConnectorName({ connectorGroup, isDemo = false }: Props) {
               <Button
                 title="general.set_up"
                 onClick={() => {
-                  navigate(`/connectors/${ConnectorsTabs.Passwordless}/create/${type}`);
+                  void navigate(`/connectors/${ConnectorsTabs.Passwordless}/create/${type}`);
                 }}
               />
             )}

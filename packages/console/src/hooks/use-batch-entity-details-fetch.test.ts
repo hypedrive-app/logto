@@ -1,8 +1,8 @@
 import { renderHook, waitFor } from '@testing-library/react';
+import { vi } from 'vitest';
 
 import useApi from './use-api';
 import useBatchEntityDetailsFetch from './use-batch-entity-details-fetch';
-import { vi } from 'vitest';
 
 vi.mock('./use-api', () => ({
   __esModule: true,

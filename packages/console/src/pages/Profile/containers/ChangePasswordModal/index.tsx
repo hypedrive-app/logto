@@ -54,7 +54,7 @@ function ChangePasswordModal() {
 
   const onClose = () => {
     reset();
-    navigate('/profile');
+    void navigate('/profile');
   };
 
   const onSubmit = () => {

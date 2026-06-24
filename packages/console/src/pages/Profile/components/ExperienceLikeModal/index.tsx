@@ -47,7 +47,7 @@ function ExperienceLikeModal({
               if (onGoBack) {
                 onGoBack();
               } else {
-                navigate(-1);
+                void navigate(-1);
               }
             }}
           >
