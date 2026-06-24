@@ -58,9 +58,9 @@ function UserAvatar({ className, size = 'medium', user, hasTooltip = false }: Pr
     '#2FA0FD',
     '#02C2E4',
     '#41BEA6',
-    '#7958FF',
+    '#E11D48',
     '#ED73A3',
-    '#DF96FA',
+    '#FB7185',
     '#ADAAB4',
   ];
 

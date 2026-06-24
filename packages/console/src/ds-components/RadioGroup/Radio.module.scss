@@ -195,6 +195,9 @@
 
   .content {
     .indicator {
+      // The check SVG fills with `currentColor` so it tracks the rose primary.
+      color: var(--color-primary);
+
       svg {
         opacity: 100%;
       }
