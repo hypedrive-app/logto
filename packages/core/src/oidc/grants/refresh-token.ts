@@ -244,6 +244,9 @@ export const buildHandler: Handler = (envSet, queries, appAccess) => async (ctx,
   // the logic is handled in `getResourceServerInfo` and `extraTokenClaims`, see the init file of oidc-provider.
   if (organizationId && !params.resource) {
     /* === RFC 0001 === */
+    // NOTE (step-up ACR): Organization scopes do not carry a `required_acr` field and ACR
+    // enforcement does not apply to org tokens. If org scopes ever need ACR gating, add
+    // `enforceAcrForGrant` here before calling `handleOrganizationToken`.
     /** All available scopes for the user in the organization. */
     const availableScopes = await queries.organizations.relations.usersRoles
       .getUserScopes(organizationId, account.accountId)

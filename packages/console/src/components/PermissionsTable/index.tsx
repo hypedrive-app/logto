@@ -1,5 +1,6 @@
 import type { AdminConsoleKey } from '@logto/phrases';
 import type { ScopeResponse } from '@logto/schemas';
+import { LogtoAcrValues } from '@logto/schemas';
 import { conditional } from '@silverhand/essentials';
 import { useState } from 'react';
 import { toast } from 'react-hot-toast';
@@ -17,6 +18,7 @@ import TablePlaceholder from '@/ds-components/Table/TablePlaceholder';
 import type { Column } from '@/ds-components/Table/types';
 import Tag from '@/ds-components/Tag';
 import TextLink from '@/ds-components/TextLink';
+import Tooltip from '@/ds-components/Tip/Tooltip';
 import useApi from '@/hooks/use-api';
 import useDocumentationUrl from '@/hooks/use-documentation-url';
 
@@ -49,6 +51,11 @@ type Props = {
    * The API column displays the API resource that the permission belongs to.
    */
   readonly isApiColumnVisible?: boolean;
+  /**
+   * When `true`, adds a "Step-up" badge column showing the scope's `required_acr` and enables
+   * the `requiredAcr` field in the edit modal. Pass `true` only for API resource scope tables.
+   */
+  readonly hasRequiredAcrField?: boolean;
   /** Whether the create guide is visible or not.
    * If true, the table will display a placeholder guiding the user to create a new permission if no permissions are found.
    */
@@ -83,6 +90,7 @@ function PermissionsTable({
   createButtonTitle,
   isReadOnly = false,
   isApiColumnVisible = false,
+  hasRequiredAcrField = false,
   isCreateGuideVisible = false,
   pagination,
   search: { keyword, searchHandler, clearSearchHandler },
@@ -112,11 +120,38 @@ function PermissionsTable({
     render: ({ name }) => <Tag variant="cell">{name}</Tag>,
   };
 
+  // When hasRequiredAcrField is true, shrink description by 3 cols to fit the ACR badge column.
   const descriptionColumn: Column<ScopeResponse> = {
     title: t('permissions.description_column'),
     dataIndex: 'description',
-    colSpan: isApiColumnVisible ? 5 : 9,
+    colSpan: isApiColumnVisible ? (hasRequiredAcrField ? 3 : 5) : hasRequiredAcrField ? 6 : 9,
     render: ({ description }) => <div className={styles.description}>{description}</div>,
+  };
+
+  const acrBadgeColumn: Column<ScopeResponse> = {
+    title: t('permissions.required_acr_column'),
+    dataIndex: 'requiredAcr',
+    colSpan: isApiColumnVisible ? 2 : 3,
+    render: ({ requiredAcr }) => {
+      if (!requiredAcr) {
+        return null;
+      }
+
+      const label =
+        requiredAcr === LogtoAcrValues.PhishingResistant
+          ? t('api_resource_details.permission.required_acr_phr')
+          : t('api_resource_details.permission.required_acr_mfa');
+
+      const shortLabel = requiredAcr === LogtoAcrValues.PhishingResistant ? 'Passkey' : 'MFA';
+
+      return (
+        <Tooltip content={label}>
+          <Tag status="info" size="small">
+            {shortLabel}
+          </Tag>
+        </Tooltip>
+      );
+    },
   };
 
   const apiColumn: Column<ScopeResponse> = {
@@ -164,6 +199,7 @@ function PermissionsTable({
   const columns = [
     nameColumn,
     descriptionColumn,
+    conditional(hasRequiredAcrField && acrBadgeColumn),
     conditional(isApiColumnVisible && apiColumn),
     actionColumn,
     // eslint-disable-next-line unicorn/prefer-native-coercion-functions
@@ -238,7 +274,8 @@ function PermissionsTable({
       {editingScope && (
         <EditScopeModal
           scopeName={editingScope.name}
-          data={editingScope}
+          data={{ description: editingScope.description, requiredAcr: editingScope.requiredAcr }}
+          hasRequiredAcrField={hasRequiredAcrField}
           text={{
             title: 'permissions.edit_title',
             nameField: 'api_resource_details.permission.name',

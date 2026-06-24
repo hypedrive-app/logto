@@ -4,6 +4,7 @@ const permissions = {
   name_column: 'Permission',
   description_column: 'Description',
   api_column: 'API',
+  required_acr_column: 'Step-up',
   placeholder_title: 'Permission',
   placeholder_description:
     'Permission refers to the authorization to access a resource (we call it API resource).',

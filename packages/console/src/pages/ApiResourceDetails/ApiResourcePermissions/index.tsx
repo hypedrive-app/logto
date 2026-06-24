@@ -58,6 +58,7 @@ function ApiResourcePermissions() {
     <>
       <PermissionsTable
         isCreateGuideVisible
+        hasRequiredAcrField
         scopes={scopes}
         isLoading={isLoading}
         isReadOnly={isLogtoManagementApiResource}

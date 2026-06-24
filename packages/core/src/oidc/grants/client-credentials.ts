@@ -121,12 +121,21 @@ export const buildHandler: (
     token.scope =
       scopes.filter(Set.prototype.has.bind(new Set(resourceServer.scope.split(' ')))).join(' ') ||
       undefined;
+
+    // Step-up ACR enforcement (RFC 9470) is intentionally SKIPPED for client_credentials.
+    // M2M (service-to-service) tokens have no user session and therefore no ACR — calling
+    // `enforceAcrForGrant` with `sessionAcr = undefined` would permanently block any scope that
+    // carries a `required_acr`. ACR is a user-authentication concept; M2M callers should be
+    // granted or denied access through RBAC roles and client credentials alone.
   }
 
   // Issue organization token only if resource server is not present.
   // If it's present, the flow falls into the `checkResource` and `if (resourceServer)` block above.
   if (organizationId && !resourceServer) {
     /* === RFC 0006 === */
+    // NOTE (step-up ACR): Organization scopes do not carry a `required_acr` field and ACR
+    // enforcement does not apply to org tokens. If org scopes ever need ACR gating, add
+    // `enforceAcrForGrant` here before calling `handleOrganizationToken`.
     const availableScopes = await queries.organizations.relations.appsRoles
       .getApplicationScopes(organizationId, client.clientId)
       .then((scope) => scope.map(({ name }) => name));

@@ -1,4 +1,4 @@
-import { Scopes, isManagementApi } from '@logto/schemas';
+import { Scopes, isLogtoAcrValue, isManagementApi } from '@logto/schemas';
 import { generateStandardId } from '@logto/shared';
 import { tryThat } from '@silverhand/essentials';
 import { object, string } from 'zod';
@@ -79,7 +79,7 @@ export default function resourceScopeRoutes<T extends ManagementApiRouter>(
     '/resources/:resourceId/scopes',
     koaGuard({
       params: object({ resourceId: string().min(1) }),
-      body: Scopes.createGuard.pick({ name: true, description: true }),
+      body: Scopes.createGuard.pick({ name: true, description: true, requiredAcr: true }),
       response: Scopes.guard,
       status: [201, 400, 403, 404, 422],
     }),
@@ -92,6 +92,16 @@ export default function resourceScopeRoutes<T extends ManagementApiRouter>(
       await quota.guardTenantUsageByKey('scopesPerResourceLimit', { entityId: resourceId });
 
       assertThat(!/\s/.test(body.name), 'scope.name_with_space');
+
+      assertThat(
+        body.requiredAcr === undefined ||
+          body.requiredAcr === null ||
+          isLogtoAcrValue(body.requiredAcr),
+        new RequestError({
+          code: 'request.invalid_input',
+          details: 'requiredAcr value is not a recognized ACR',
+        })
+      );
 
       const { indicator } = await findResourceById(resourceId);
       assertThat(
@@ -123,7 +133,7 @@ export default function resourceScopeRoutes<T extends ManagementApiRouter>(
     '/resources/:resourceId/scopes/:scopeId',
     koaGuard({
       params: object({ resourceId: string().min(1), scopeId: string().min(1) }),
-      body: Scopes.createGuard.pick({ name: true, description: true }).partial(),
+      body: Scopes.createGuard.pick({ name: true, description: true, requiredAcr: true }).partial(),
       response: Scopes.guard,
       status: [200, 400, 404, 422],
     }),
@@ -150,6 +160,16 @@ export default function resourceScopeRoutes<T extends ManagementApiRouter>(
           })
         );
       }
+
+      assertThat(
+        body.requiredAcr === undefined ||
+          body.requiredAcr === null ||
+          isLogtoAcrValue(body.requiredAcr),
+        new RequestError({
+          code: 'request.invalid_input',
+          details: 'requiredAcr value is not a recognized ACR',
+        })
+      );
 
       ctx.body = await updateScopeById(scopeId, body);
 

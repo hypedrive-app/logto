@@ -6,6 +6,7 @@ import { type EnvSet } from '#src/env-set/index.js';
 import type Libraries from '#src/tenants/Libraries.js';
 import type Queries from '#src/tenants/Queries.js';
 
+import * as authorizationCode from './authorization-code.js';
 import * as clientCredentials from './client-credentials.js';
 import * as refreshToken from './refresh-token.js';
 import * as tokenExchange from './token-exchange/index.js';
@@ -30,6 +31,11 @@ export const registerGrants = (
       : [[...parameters], []];
 
   // Override the default grants
+  oidc.registerGrantType(
+    GrantType.AuthorizationCode,
+    authorizationCode.buildHandler(envSet, queries, libraries.applicationAccessControl),
+    ...getParameterConfig([...authorizationCode.parameters])
+  );
   oidc.registerGrantType(
     GrantType.RefreshToken,
     refreshToken.buildHandler(envSet, queries, libraries.applicationAccessControl),
