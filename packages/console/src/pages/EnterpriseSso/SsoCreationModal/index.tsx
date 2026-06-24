@@ -121,7 +121,9 @@ function SsoCreationModal({ isOpen, onClose: rawOnClose }: Props) {
       } catch (error: unknown) {
         if (error instanceof HTTPError) {
           const { response } = error;
-          const metadata = await response.clone().json<RequestErrorBody>();
+          // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
+          // eslint-disable-next-line no-restricted-syntax
+          const metadata = error.data as RequestErrorBody;
 
           if (metadata.code === duplicateConnectorNameErrorCode) {
             setError('connectorName', { type: 'custom', message: metadata.message });

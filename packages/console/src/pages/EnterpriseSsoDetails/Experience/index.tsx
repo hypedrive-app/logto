@@ -157,7 +157,9 @@ function Experience({ data, isDeleted, onUpdated, isDarkModeEnabled }: Props) {
       } catch (error: unknown) {
         if (error instanceof HTTPError) {
           const { response } = error;
-          const metadata = await response.clone().json<RequestErrorBody<{ data: string[] }>>();
+          // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
+          // eslint-disable-next-line no-restricted-syntax
+          const metadata = error.data as RequestErrorBody<{ data: string[] }>;
 
           /**
            * Should render invalid domains:

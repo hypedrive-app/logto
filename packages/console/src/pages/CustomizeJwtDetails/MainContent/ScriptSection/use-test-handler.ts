@@ -36,7 +36,9 @@ const useTestHandler = () => {
       .catch(async (error: unknown) => {
         if (error instanceof HTTPError) {
           const { response } = error;
-          const errorResponse = await response.clone().json<RequestErrorBody>();
+          // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
+          // eslint-disable-next-line no-restricted-syntax
+          const errorResponse = error.data as RequestErrorBody;
           const { code, data } = errorResponse;
 
           // Get error message from cloud connection client.

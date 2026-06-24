@@ -1,3 +1,4 @@
+import { type RequestErrorBody } from '@logto/schemas';
 import type ky from 'ky';
 import { HTTPError } from 'ky';
 import { useCallback } from 'react';
@@ -46,11 +47,13 @@ const useSwrFetcher: UseSwrFetcherHook = <T>(api: KyInstance) => {
         return data;
       } catch (error: unknown) {
         if (error instanceof HTTPError) {
-          const { response } = error;
-
-          // See https://stackoverflow.com/questions/53511974/javascript-fetch-failed-to-execute-json-on-response-body-stream-is-locked
-          // for why `.clone()` is needed
-          throw new RequestError(response.status, await response.clone().json());
+          // Ky v2 pre-parses the response body into `error.data` before this runs and, in
+          // doing so, consumes the stream — so `error.response.json()`/`.clone().json()`
+          // would throw "Response body is already used" (surfacing as React #130 mid-render).
+          // Read the pre-parsed body from `error.data` instead.
+          // eslint-disable-next-line no-restricted-syntax
+          const body = error.data as RequestErrorBody | undefined;
+          throw new RequestError(error.response.status, body);
         }
         throw error;
       }

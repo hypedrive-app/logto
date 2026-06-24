@@ -56,55 +56,60 @@ const useGlobalRequestErrorHandler = (toastDisabledErrorCodes?: LogtoErrorCode[]
   const postSignOutRedirectUri = useRedirectUri('signOut');
 
   const handleError = useCallback(
-    async (response: Response) => {
+    async (error: HTTPError) => {
       const fallbackErrorMessage = t('errors.unknown_server_error');
+      const { response } = error;
 
-      try {
-        // Clone the response to avoid "Response body is already used".
-        const data = await response.clone().json<RequestErrorBody>();
+      // Ky v2 pre-parses the response body into `error.data` (and consumes the stream while
+      // doing so, so `response.json()`/`.clone().json()` here would throw "Response body is
+      // already used"). Read the pre-parsed body from `error.data`.
+      // eslint-disable-next-line no-restricted-syntax
+      const data = error.data as RequestErrorBody | undefined;
 
-        // This is what will happen when the user still has the legacy refresh token without
-        // organization scope. We should sign them out and redirect to the sign in page.
-        // TODO: This is a temporary solution to prevent the user from getting stuck in Console,
-        // which can be removed after all legacy refresh tokens are expired, i.e. after Jan 10th,
-        // 2024.
-        if (response.status === 403 && data.message === 'Insufficient permissions.') {
-          await signOut(postSignOutRedirectUri.href);
-          return;
-        }
-
-        // Inform and redirect un-authorized users to sign in page.
-        if (data.code === 'auth.forbidden') {
-          await show({
-            ModalContent: data.message,
-            type: 'alert',
-            cancelButtonText: 'general.got_it',
-          });
-
-          await signOut(postSignOutRedirectUri.href);
-          return;
-        }
-
-        // Toast system limit exceeded error
-        if (data.code === 'system_limit.limit_exceeded') {
-          toastWithAction({
-            message: parseSystemLimitErrorMessage(data),
-            actionText: 'general.contact_us_action',
-            actionHref: contactEmailLink,
-            variant: 'error',
-          });
-          return;
-        }
-
-        // Skip showing toast for specific error codes.
-        if (toastDisabledErrorCodes?.includes(data.code)) {
-          return;
-        }
-
-        toast.error([data.message, data.details].join('\n') || fallbackErrorMessage);
-      } catch {
+      if (!data) {
         toast.error(httpCodeToMessage[response.status] ?? fallbackErrorMessage);
+        return;
       }
+
+      // This is what will happen when the user still has the legacy refresh token without
+      // organization scope. We should sign them out and redirect to the sign in page.
+      // TODO: This is a temporary solution to prevent the user from getting stuck in Console,
+      // which can be removed after all legacy refresh tokens are expired, i.e. after Jan 10th,
+      // 2024.
+      if (response.status === 403 && data.message === 'Insufficient permissions.') {
+        await signOut(postSignOutRedirectUri.href);
+        return;
+      }
+
+      // Inform and redirect un-authorized users to sign in page.
+      if (data.code === 'auth.forbidden') {
+        await show({
+          ModalContent: data.message,
+          type: 'alert',
+          cancelButtonText: 'general.got_it',
+        });
+
+        await signOut(postSignOutRedirectUri.href);
+        return;
+      }
+
+      // Toast system limit exceeded error
+      if (data.code === 'system_limit.limit_exceeded') {
+        toastWithAction({
+          message: parseSystemLimitErrorMessage(data),
+          actionText: 'general.contact_us_action',
+          actionHref: contactEmailLink,
+          variant: 'error',
+        });
+        return;
+      }
+
+      // Skip showing toast for specific error codes.
+      if (toastDisabledErrorCodes?.includes(data.code)) {
+        return;
+      }
+
+      toast.error([data.message, data.details].join('\n') || fallbackErrorMessage);
     },
     [
       t,
@@ -151,23 +156,23 @@ export const useStaticApi = ({
   const api = useMemo(
     () =>
       ky.create({
-        // ky v2 renamed `prefixUrl` to `prefix`.
+        // Ky v2 renamed `prefixUrl` to `prefix`.
         prefix: prefixUrl,
         timeout,
         signal,
         hooks: {
-          // ky v2: beforeError receives a state object `{ error, request, options }` and
+          // Ky v2: beforeError receives a state object `{ error, request, options }` and
           // fires for all error types, so narrow to HTTPError before reading `.response`.
           beforeError: conditionalArray(
             !disableGlobalErrorHandling &&
               (async ({ error }) => {
                 if (error instanceof HTTPError) {
-                  await handleError(error.response);
+                  await handleError(error);
                 }
                 return error;
               })
           ),
-          // ky v2: hooks receive a single state object instead of positional args.
+          // Ky v2: hooks receive a single state object instead of positional args.
           beforeRequest: [
             async ({ request }) => {
               if (isAuthenticated) {

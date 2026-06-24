@@ -59,7 +59,9 @@ function TestWebhook({ hookId }: Props) {
       });
     } catch (error: unknown) {
       if (error instanceof HTTPError) {
-        const { code, data, message } = await error.response.clone().json<RequestErrorBody>();
+        // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
+        // eslint-disable-next-line no-restricted-syntax
+        const { code, data, message } = error.data as RequestErrorBody;
 
         if (code === 'hook.send_test_payload_failed') {
           setResult({

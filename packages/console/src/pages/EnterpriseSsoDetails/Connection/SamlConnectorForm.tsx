@@ -91,7 +91,9 @@ function SamlConnectorForm({ isDeleted, data, onUpdated }: Props) {
         reset(result.config);
       } catch (error: unknown) {
         if (error instanceof HTTPError) {
-          const errorBody = await error.response.clone().json<RequestErrorBody>();
+          // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
+          // eslint-disable-next-line no-restricted-syntax
+          const errorBody = error.data as RequestErrorBody;
 
           // Manually handle the error to show the error message in the form.
           if (manualHandleErrorCodes.includes(errorBody.code)) {

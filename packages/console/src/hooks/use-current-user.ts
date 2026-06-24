@@ -23,13 +23,15 @@ const useCurrentUser = () => {
       return await accountApi.get('').json<UserProfileResponse>();
     } catch (error: unknown) {
       if (error instanceof HTTPError) {
-        const { response } = error;
-        const data = await response.clone().json<RequestErrorBody>();
+        // Ky v2 already parsed the body into `error.data` (consuming the stream), so
+        // `response.json()` would throw "Response body is already used". Use `error.data`.
+        // eslint-disable-next-line no-restricted-syntax
+        const data = error.data as RequestErrorBody | undefined;
 
-        if (response.status === 401 && data.code === 'auth.unauthorized') {
+        if (error.response.status === 401 && data?.code === 'auth.unauthorized') {
           await signOut(postSignOutRedirectUri.href);
         } else {
-          throw new RequestError(response.status, data);
+          throw new RequestError(error.response.status, data);
         }
       }
 
@@ -62,14 +64,16 @@ const useCurrentUser = () => {
         // TODO: Move shared Account API error handling into `useAccountApi()` once we define
         // how callers opt into the right UX (for example toast versus modal feedback).
         if (error instanceof HTTPError) {
-          const { response } = error;
+          // Ky v2 pre-parses the body into `error.data`; reading the stream again would
+          // throw "Response body is already used".
+          // eslint-disable-next-line no-restricted-syntax
+          const data = error.data as RequestErrorBody | undefined;
 
-          try {
-            const data = await response.clone().json<RequestErrorBody>();
+          if (data) {
             toast.error(
               [data.message, data.details].join('\n') || t('errors.unknown_server_error')
             );
-          } catch {
+          } else {
             toast.error(t('errors.unknown_server_error'));
           }
 
