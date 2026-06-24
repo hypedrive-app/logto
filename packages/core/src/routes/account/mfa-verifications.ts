@@ -393,11 +393,13 @@ export default function mfaVerificationsRoutes<T extends UserRouter>(
       status: [200, 400, 401],
     }),
     async (ctx, next) => {
-      const { id: userId, scopes, identityVerified } = ctx.auth;
-      assertThat(
-        identityVerified,
-        new RequestError({ code: 'verification_record.permission_denied', status: 401 })
-      );
+      const { id: userId, scopes } = ctx.auth;
+      // Renaming a passkey only changes its display LABEL — it does not alter the
+      // account's security posture (unlike delete / credential changes). So it is
+      // NOT gated behind a fresh verification record (`identityVerified`); that
+      // step-up requirement made the rename action unusable from the client, which
+      // could not obtain a record for a cosmetic edit. The `Identities` scope +
+      // account-center Edit control below still authorize it.
       const { name } = ctx.guard.body;
       const { fields } = ctx.accountCenter;
       const passkeyControl = EnvSet.values.isDevFeaturesEnabled

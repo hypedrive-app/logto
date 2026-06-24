@@ -8,7 +8,9 @@ import {
   socialVerificationCallbackPayloadGuard,
   verificationCodeIdentifierGuard,
   VerificationType,
+  webAuthnAuthenticationOptionsGuard,
   webAuthnRegistrationOptionsGuard,
+  webAuthnVerificationPayloadGuard,
 } from '@logto/schemas';
 import { z } from 'zod';
 
@@ -345,6 +347,81 @@ export default function verificationRoutes<T extends UserRouter>(
         libraries,
       });
       await webAuthnVerification.verifyWebAuthnRegistration(ctx, payload);
+      await updateVerificationRecord(webAuthnVerification, queries);
+
+      ctx.body = {
+        verificationRecordId: webAuthnVerification.id,
+      };
+
+      return next();
+    }
+  );
+
+  /**
+   * WebAuthn authentication (passkey re-auth)
+   *
+   * Mirrors the registration pair above, but produces an AUTHENTICATION
+   * verification record: a signed-in user proves possession of an already-bound
+   * passkey to mint a verification record for a sensitive Account-API action
+   * (e.g. deleting an MFA factor). This is the Account-API analogue of the
+   * experience-flow `/web-authn/authentication[/verify]` endpoints; the upstream
+   * Account API only ships the registration variants, so the client had no
+   * endpoint to call for passkey re-auth.
+   */
+  router.post(
+    `${verificationApiPrefix}/web-authn`,
+    koaGuard({
+      response: z.object({
+        verificationRecordId: z.string(),
+        authenticationOptions: webAuthnAuthenticationOptionsGuard,
+        expiresAt: z.string(),
+      }),
+      status: [200],
+    }),
+    async (ctx, next) => {
+      const {
+        auth: { id: userId },
+      } = ctx;
+
+      const webAuthnVerification = WebAuthnVerification.create(libraries, queries, userId);
+
+      const authenticationOptions =
+        await webAuthnVerification.generateWebAuthnAuthenticationOptions(ctx);
+
+      const { expiresAt } = await insertVerificationRecord(webAuthnVerification, queries, userId);
+
+      ctx.body = {
+        verificationRecordId: webAuthnVerification.id,
+        authenticationOptions,
+        expiresAt: new Date(expiresAt).toISOString(),
+      };
+
+      return next();
+    }
+  );
+
+  router.post(
+    `${verificationApiPrefix}/web-authn/verify`,
+    koaGuard({
+      body: z.object({
+        verificationRecordId: z.string(),
+        payload: webAuthnVerificationPayloadGuard,
+      }),
+      response: z.object({
+        verificationRecordId: z.string(),
+      }),
+      status: [200, 400, 404],
+    }),
+    async (ctx, next) => {
+      const { verificationRecordId, payload } = ctx.guard.body;
+
+      const webAuthnVerification = await buildVerificationRecordByIdAndType({
+        type: VerificationType.WebAuthn,
+        id: verificationRecordId,
+        queries,
+        libraries,
+      });
+      await webAuthnVerification.verifyWebAuthnAuthentication(ctx, payload);
       await updateVerificationRecord(webAuthnVerification, queries);
 
       ctx.body = {
