@@ -18,3 +18,10 @@ Topbar. Delete from archive/ when ready, or restore if Inkeep is ever wanted on 
 - `packages/console/src/pages/GetStarted/OssCloudUpsell.tsx` — "try Logto Cloud" banner; already unrendered (dead), removed from src.
 - `packages/console/src/containers/ConsoleContent/Sidebar/OssCloudCard.tsx` (+ `.module.scss`, `.test.ts`) — sidebar "Try Logto Cloud" promo; already unrendered (dead).
 Why: Hypedrive self-hosted — no Logto Cloud upsells anywhere in the UI.
+
+## 2026-06-24 — console dead-code prune (import/no-unused-modules orphans)
+Files orphaned (imported nowhere across the package) and moved out of `src/`:
+- `packages/console/src/containers/ConsoleContent/Sidebar/oss-cloud-card.ts` — helper module (`ossCloudSidebarCardDismissDuration`, `parseOssCloudSidebarCardDismissedUntil`, `shouldShowOssCloudSidebarCard`); orphaned leftover after the OssCloudCard removal above (no importer remained).
+- `packages/console/src/components/FeatureTag/CloudTag.tsx` — `CloudTag` component (always returned null on self-hosted); only re-exported, consumed nowhere. Re-export line removed from `FeatureTag/index.tsx`.
+- `packages/console/src/components/PlanUsage/PlanUsageCard/` (`index.tsx` + `index.module.scss`) — `PlanUsageCard` (stub returning null); imported nowhere.
+Also removed (declarations only, files kept): `LogtoEnterpriseResponse` type from `cloud/types/router.ts`; `inkeepApiKey` from `consts/env.ts`; and from `components/PlanUsage/utils.ts` the dead exports `usageKeyPriceMap`, `formatNumber`, `getUsageByKey`, `getQuotaByKey`, `getToolTipByKey`, `shouldHideQuotaNotice` plus their now-orphaned locals (`tooltipKeyMap`, `enterpriseTooltipKeyMap`, `isRbacEnabled`) and now-unused imports.

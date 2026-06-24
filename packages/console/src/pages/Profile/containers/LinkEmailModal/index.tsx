@@ -33,7 +33,7 @@ function LinkEmailModal() {
   const api = useStaticApi({ prefixUrl: adminTenantEndpoint, resourceIndicator: meApi.indicator });
 
   const onClose = () => {
-    navigate('/profile');
+    void navigate('/profile');
   };
 
   const onSubmit = () => {
@@ -42,7 +42,7 @@ function LinkEmailModal() {
       trySubmitSafe(async ({ email }) => {
         await api.post(`me/verification-codes`, { json: { email } });
         reset();
-        navigate('../verification-code', { state: { email, action: 'changeEmail' } });
+        void navigate('../verification-code', { state: { email, action: 'changeEmail' } });
       })
     )();
   };

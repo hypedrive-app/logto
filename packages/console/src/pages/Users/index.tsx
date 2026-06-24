@@ -72,7 +72,7 @@ function Users() {
           size="large"
           title="users.create"
           onClick={() => {
-            navigate({
+            void navigate({
               pathname: createUserPathname,
               search,
             });
@@ -148,7 +148,7 @@ function Users() {
                   size="large"
                   icon={<Plus />}
                   onClick={() => {
-                    navigate({
+                    void navigate({
                       pathname: createUserPathname,
                       search,
                     });
@@ -159,7 +159,7 @@ function Users() {
           )
         }
         rowClickHandler={({ id }) => {
-          navigate(buildDetailsPathname(id));
+          void navigate(buildDetailsPathname(id));
         }}
         pagination={{
           page,
@@ -174,7 +174,7 @@ function Users() {
       {isCreating && (
         <CreateForm
           onClose={() => {
-            navigate({
+            void navigate({
               pathname: usersPathname,
               search,
             });

@@ -70,10 +70,6 @@ export type RegionResponse = GetArrayElementType<
   GuardedResponse<GetRoutes['/api/me/regions']>['regions']
 >;
 
-export type LogtoEnterpriseResponse = GetArrayElementType<
-  GuardedResponse<GetRoutes['/api/me/logto-enterprises']>['logtoEnterprises']
->;
-
 export type LogtoEnterpriseSubscriptionResponse = GuardedResponse<
   GetRoutes['/api/me/logto-enterprises/:id']
 >;

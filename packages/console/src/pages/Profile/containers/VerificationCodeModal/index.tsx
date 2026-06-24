@@ -49,7 +49,7 @@ function VerificationCodeModal() {
   });
 
   const onClose = useCallback(() => {
-    navigate('/profile');
+    void navigate('/profile');
     void reload();
   }, [navigate, reload]);
 
@@ -71,7 +71,7 @@ function VerificationCodeModal() {
       }
 
       if (action === 'changePassword') {
-        navigate('../change-password', { state });
+        void navigate('../change-password', { state });
       }
     } catch (error: unknown) {
       void handleError(error, async (code, message) => {
@@ -147,7 +147,7 @@ function VerificationCodeModal() {
           className={styles.link}
           icon={<ArrowConnection />}
           onClick={() => {
-            navigate('../verify-password', { state });
+            void navigate('../verify-password', { state });
           }}
         >
           {t('profile.password.verify_via_password')}

@@ -136,7 +136,7 @@ function ProfileFieldPartSubForm({ index }: Props) {
                 disabled={isBuiltInFieldName}
                 error={formErrors?.label?.message}
                 placeholder={t('sign_in_exp.custom_profile_fields.details.label_placeholder')}
-                value={value || fallbackValue}
+                value={value === '' ? fallbackValue : (value ?? fallbackValue)}
                 description={cond(
                   isBuiltInFieldName && (
                     <Trans components={{ a: <TextLink to="/sign-in-experience/content" /> }}>

@@ -35,7 +35,7 @@ function CaptchaCard({ captchaProvider }: Props) {
         icon={<Gear />}
         title="security.bot_protection.settings"
         onClick={() => {
-          navigate('details');
+          void navigate('details');
         }}
       />
     </div>

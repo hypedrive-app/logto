@@ -111,6 +111,16 @@ function Settings({ data }: Props) {
   );
   const showRedirectUriWildcardWarning = hasWildcardUri(redirectUris);
   const showPostLogoutUriWildcardWarning = hasWildcardUri(postLogoutRedirectUris);
+  // Hoisted so the repeated `applicationType !== M2M && !isDeviceFlow` guard below isn't
+  // re-evaluated inline at every JSX site (keeps this component under the complexity cap).
+  const showRedirectUriFields =
+    applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow;
+  // Likewise hoist the `<warning> && !isDeviceFlow` combinations so the inline `&&`
+  // operators don't push this component back over the complexity cap.
+  const showRedirectUriWildcard = showRedirectUriWildcardWarning && !isDeviceFlow;
+  const showRedirectUriMixed = showRedirectUriMixedWarning && !isDeviceFlow;
+  const showPostLogoutUriWildcard = showPostLogoutUriWildcardWarning && !isDeviceFlow;
+  const showPostLogoutUriMixed = showPostLogoutUriMixedWarning && !isDeviceFlow;
 
   if (isProtectedApp) {
     return <ProtectedAppSettings data={data} />;
@@ -162,7 +172,7 @@ function Settings({ data }: Props) {
           placeholder={t('application_details.description_placeholder')}
         />
       </FormField>
-      {applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow && (
+      {showRedirectUriFields && (
         <Controller
           name="oidcClientMetadata.redirectUris"
           control={control}
@@ -204,9 +214,9 @@ function Settings({ data }: Props) {
           )}
         />
       )}
-      {showRedirectUriWildcardWarning && !isDeviceFlow && <WildcardUriWarning />}
-      {showRedirectUriMixedWarning && !isDeviceFlow && <MixedUriWarning />}
-      {applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow && (
+      {showRedirectUriWildcard && <WildcardUriWarning />}
+      {showRedirectUriMixed && <MixedUriWarning />}
+      {showRedirectUriFields && (
         <Controller
           name="oidcClientMetadata.postLogoutRedirectUris"
           control={control}
@@ -226,9 +236,9 @@ function Settings({ data }: Props) {
           )}
         />
       )}
-      {showPostLogoutUriWildcardWarning && !isDeviceFlow && <WildcardUriWarning />}
-      {showPostLogoutUriMixedWarning && !isDeviceFlow && <MixedUriWarning />}
-      {applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow && (
+      {showPostLogoutUriWildcard && <WildcardUriWarning />}
+      {showPostLogoutUriMixed && <MixedUriWarning />}
+      {showRedirectUriFields && (
         <Controller
           name="customClientMetadata.corsAllowedOrigins"
           control={control}
@@ -259,7 +269,7 @@ function Settings({ data }: Props) {
           )}
         />
       )}
-      {applicationType !== ApplicationType.MachineToMachine && !isDeviceFlow && (
+      {showRedirectUriFields && (
         <Controller
           name={`customClientMetadata.${CustomClientMetadataKey.DefaultAcrValues}`}
           control={control}
@@ -268,7 +278,7 @@ function Settings({ data }: Props) {
             <MultiTextInputField
               title="application_details.default_acr_values"
               tip={t('application_details.default_acr_values_tip')}
-              value={(value as string[] | undefined) ?? []}
+              value={value ?? []}
               error={convertRhfErrorMessage(error?.message)}
               placeholder={LogtoAcrValues.Mfa}
               onChange={onChange}

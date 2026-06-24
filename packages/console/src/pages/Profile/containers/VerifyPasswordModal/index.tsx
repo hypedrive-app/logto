@@ -46,7 +46,7 @@ function VerifyPasswordModal() {
   const { email } = parseLocationState(state);
 
   const onClose = () => {
-    navigate('/profile');
+    void navigate('/profile');
   };
 
   const onSubmit = () => {
@@ -55,7 +55,7 @@ function VerifyPasswordModal() {
       try {
         await api.post(`me/password/verify`, { json: { password } });
         reset();
-        navigate('../change-password', { state });
+        void navigate('../change-password', { state });
       } catch (error: unknown) {
         void handleError(error, async (code, message) => {
           if (code === 'session.invalid_credentials') {
@@ -110,7 +110,7 @@ function VerifyPasswordModal() {
           icon={<ArrowConnection />}
           onClick={() => {
             void api.post('me/verification-codes', { json: { email } });
-            navigate('../verification-code', { state });
+            void navigate('../verification-code', { state });
           }}
         >
           {t('profile.code.verify_via_code')}

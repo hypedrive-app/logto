@@ -85,7 +85,7 @@ function Roles() {
           size="large"
           title="roles.create"
           onClick={() => {
-            navigate({ pathname: createRolePathname, search });
+            void navigate({ pathname: createRolePathname, search });
           }}
         />
       </div>
@@ -141,7 +141,7 @@ function Roles() {
           },
         ]}
         rowClickHandler={({ id }) => {
-          navigate(buildDetailsPathname(id));
+          void navigate(buildDetailsPathname(id));
         }}
         filter={
           <Search
@@ -186,7 +186,7 @@ function Roles() {
                   size="large"
                   icon={<Plus />}
                   onClick={() => {
-                    navigate({ pathname: createRolePathname, search });
+                    void navigate({ pathname: createRolePathname, search });
                   }}
                 />
               }
@@ -198,7 +198,7 @@ function Roles() {
       {isCreating && (
         <CreateRoleModal
           onClose={() => {
-            navigate({ pathname: rolesPathname, search });
+            void navigate({ pathname: rolesPathname, search });
           }}
         />
       )}
