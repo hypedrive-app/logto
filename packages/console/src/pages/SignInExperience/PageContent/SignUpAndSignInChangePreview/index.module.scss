@@ -8,7 +8,7 @@
   .content {
     display: flex;
     margin-top: _.unit(3);
-    border-radius: 8px;
+    border-radius: 10px;
     font: var(--font-body-2);
     justify-content: space-between;
     align-items: stretch;
@@ -17,7 +17,7 @@
     .section {
       flex: 1;
       background: var(--color-layer-2);
-      border-radius: 8px;
+      border-radius: 10px;
       padding: _.unit(5);
       color: var(--color-text);
 

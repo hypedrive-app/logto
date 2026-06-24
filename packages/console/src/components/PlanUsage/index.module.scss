@@ -1,7 +1,7 @@
 @use '@/scss/underscore' as _;
 
 .container {
-  border-radius: 12px;
+  border-radius: 13px;
   border: 1px solid var(--color-divider);
   background: var(--color-layer-1);
   padding: _.unit(5) _.unit(6);
@@ -45,12 +45,12 @@
 }
 
 .usageBar {
-  border-radius: 4px;
+  border-radius: 6px;
   background-color: var(--color-layer-2);
   height: 18px;
 
   .usageBarInner {
-    border-radius: 4px;
+    border-radius: 6px;
     background-color: var(--color-primary-80);
     height: 18px;
 

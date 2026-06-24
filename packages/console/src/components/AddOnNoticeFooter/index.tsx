@@ -1,38 +1,7 @@
-import { type AdminConsoleKey } from '@logto/phrases';
-import { type ReactNode } from 'react';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Paywall/upsell UI removed — Hypedrive self-hosted, all features unlocked.
+// Inert, prop-tolerant stub so existing call sites keep type-checking and resolving.
 
-import Button from '@/ds-components/Button';
-
-import styles from './index.module.scss';
-
-type Props = {
-  readonly children: ReactNode;
-  readonly isLoading?: boolean;
-  readonly buttonTitle?: AdminConsoleKey;
-  readonly isCreateButtonDisabled?: boolean;
-  readonly onClick: () => void;
-};
-
-function AddOnNoticeFooter({
-  children,
-  isLoading,
-  onClick,
-  isCreateButtonDisabled,
-  buttonTitle,
-}: Props) {
-  return (
-    <div className={styles.container}>
-      <div className={styles.description}>{children}</div>
-      <Button
-        size="large"
-        type="primary"
-        title={buttonTitle ?? 'upsell.upgrade_plan'}
-        isLoading={isLoading}
-        disabled={isCreateButtonDisabled}
-        onClick={onClick}
-      />
-    </div>
-  );
-}
+const AddOnNoticeFooter = (_props?: Record<string, unknown>): null => null;
 
 export default AddOnNoticeFooter;

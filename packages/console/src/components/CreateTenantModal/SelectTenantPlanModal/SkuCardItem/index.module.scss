@@ -3,7 +3,7 @@
 .container {
   position: relative;
   flex: 1;
-  border-radius: 12px;
+  border-radius: 13px;
   border: 1px solid var(--color-divider);
   display: flex;
   flex-direction: column;
@@ -81,7 +81,7 @@
 
 .mostPopularTag {
   position: absolute;
-  border-radius: 4px;
+  border-radius: 6px;
   border-end-end-radius: unset;
   font: var(--font-label-3);
   padding-block: _.unit(1.5);

@@ -6,7 +6,7 @@
   gap: _.unit(2);
   background-color: var(--color-layer-1);
   border: 1px solid transparent;
-  border-radius: 12px;
+  border-radius: 13px;
   padding: _.unit(3);
   min-width: 220px;
   max-width: 460px;
@@ -78,6 +78,6 @@
   width: 48px;
   height: 48px;
   flex-shrink: 0;
-  border-radius: 12px;
+  border-radius: 13px;
   @include _.shimmering-animation;
 }

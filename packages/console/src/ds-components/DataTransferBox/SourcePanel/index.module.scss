@@ -20,7 +20,7 @@
   .skeletonCheckbox {
     width: 20px;
     height: 20px;
-    border-radius: 4px;
+    border-radius: 6px;
     flex-shrink: 0;
     @include _.shimmering-animation;
   }
@@ -41,7 +41,7 @@
   .skeletonContent {
     width: 48%;
     height: 16px;
-    border-radius: 6px;
+    border-radius: 8px;
     @include _.shimmering-animation;
   }
 }

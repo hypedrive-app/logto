@@ -18,7 +18,7 @@
 .table {
   overflow: hidden;
   border: 1px solid var(--color-divider);
-  border-radius: 12px;
+  border-radius: 13px;
 }
 
 .headerRow,
@@ -71,7 +71,7 @@
   display: inline-flex;
   align-items: center;
   width: fit-content;
-  border-radius: 6px;
+  border-radius: 8px;
   padding: _.unit(0.5) _.unit(2);
   font: var(--font-body-2);
   font-family: 'Roboto Mono', monospace;

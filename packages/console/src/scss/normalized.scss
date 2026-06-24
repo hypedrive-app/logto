@@ -1,10 +1,23 @@
 @use '@/scss/underscore' as _;
 @use '@logto/core-kit/scss/fonts';
 
+// Geist Variable — the Hypedrive UI typeface (matches experience/account and the
+// marketing site). Replaces the previous system `sans-serif` for a premium, crisp look.
+@font-face {
+  font-family: 'Geist Variable';
+  font-style: normal;
+  font-display: swap;
+  font-weight: 100 900;
+  src: url('https://cdn.jsdelivr.net/fontsource/fonts/geist:vf@latest/latin-wght-normal.woff2')
+    format('woff2-variations');
+}
+
+$font-sans: 'Geist Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', roboto, sans-serif;
+
 body {
   margin: 0;
   padding: 0;
-  font-family: sans-serif;
+  font-family: $font-sans;
   background: var(--color-base);
   color: var(--color-text);
   -webkit-font-smoothing: antialiased;
@@ -33,7 +46,7 @@ input {
   background: var(--color-neutral-variant-80);
   background-clip: content-box;
   border: 4px solid transparent;
-  border-radius: 12px;
+  border-radius: 13px;
   min-height: 40px;
 }
 

@@ -1,7 +1,7 @@
 @use '@/scss/underscore' as _;
 
 .trigger {
-  border-radius: 6px;
+  border-radius: 8px;
   border: 1px solid var(--color-border);
   outline: 3px solid transparent;
   transition-property: outline, border;
@@ -46,7 +46,7 @@
   // under <body>, which falls back to generic `sans-serif`.
   font-family: var(--font-family);
   padding: _.unit(2);
-  border-radius: 8px;
+  border-radius: 10px;
 
   // react-day-picker re-declares `--rdp-*` on `.rdp` itself, so overrides
   // must live at that same scope to win the cascade.
@@ -69,7 +69,7 @@
 
   :global(.rdp-nav_button) {
     color: var(--color-text-secondary);
-    border-radius: 6px;
+    border-radius: 8px;
 
     &:hover:not([disabled]) {
       background: var(--color-hover-variant);
@@ -105,7 +105,7 @@
   border: none;
   cursor: pointer;
   padding: _.unit(1) _.unit(2);
-  border-radius: 6px;
+  border-radius: 8px;
   color: var(--color-primary);
   font: var(--font-label-2);
   font-family: var(--font-family);

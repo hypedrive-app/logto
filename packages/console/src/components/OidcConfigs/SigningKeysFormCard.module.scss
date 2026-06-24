@@ -11,7 +11,7 @@
   color: var(--color-text);
   line-height: 26px;
   padding: 0 _.unit(2);
-  border-radius: 6px;
+  border-radius: 8px;
   background-color: var(--color-bg-info-tag);
   max-width: 100%;
   overflow: hidden;
@@ -41,7 +41,7 @@
   display: flex;
   align-items: center;
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: 10px;
   padding: _.unit(4);
   gap: _.unit(2);
 

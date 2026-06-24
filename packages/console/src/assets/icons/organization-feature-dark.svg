@@ -3,13 +3,13 @@
 <circle cx="7" cy="19" r="1.5" stroke="#78767F"/>
 <rect x="36.879" y="7" width="3" height="3" rx="0.5" transform="rotate(-45 36.879 7)" stroke="#78767F"/>
 <rect x="18.7071" y="44.8281" width="3" height="3" rx="0.5" transform="rotate(-45 18.7071 44.8281)" stroke="#78767F"/>
-<path d="M20.8 11.2002V17.6002H27.2V11.2002H20.8Z" fill="#FAABFF" fill-opacity="0.3"/>
-<path opacity="0.6" d="M11.2 30.3994V36.7994H17.6V30.3994H11.2Z" fill="#FAABFF" fill-opacity="0.3"/>
-<path d="M30.4001 30.3994V36.7994H36.8001V30.3994H30.4001Z" fill="#FAABFF" fill-opacity="0.3"/>
+<path d="M20.8 11.2002V17.6002H27.2V11.2002H20.8Z" fill="#ffb3c1" fill-opacity="0.3"/>
+<path opacity="0.6" d="M11.2 30.3994V36.7994H17.6V30.3994H11.2Z" fill="#ffb3c1" fill-opacity="0.3"/>
+<path d="M30.4001 30.3994V36.7994H36.8001V30.3994H30.4001Z" fill="#ffb3c1" fill-opacity="0.3"/>
 <defs>
 <linearGradient id="paint0_linear_9450_17742" x1="13.5" y1="35.6662" x2="34.9996" y2="12.6661" gradientUnits="userSpaceOnUse">
-<stop stop-color="#5D34F2"/>
-<stop offset="1" stop-color="#FF88FA"/>
+<stop stop-color="#e84a6c"/>
+<stop offset="1" stop-color="#ff9bb0"/>
 </linearGradient>
 </defs>
 </svg>

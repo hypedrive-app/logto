@@ -1,50 +1,7 @@
-import classNames from 'classnames';
-import useSWR from 'swr';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// Paywall/upsell UI removed — Hypedrive self-hosted, all features unlocked.
+// Inert, prop-tolerant stub so existing call sites keep type-checking and resolving.
 
-import CardIcon from '@/assets/icons/card.svg?react';
-import { useCloudApi } from '@/cloud/hooks/use-cloud-api';
-import { type LogtoEnterpriseResponse } from '@/cloud/types/router';
-import { GlobalRoute } from '@/contexts/TenantsProvider';
-import DynamicT from '@/ds-components/DynamicT';
-import TextLink from '@/ds-components/TextLink';
-
-import styles from '../index.module.scss';
-
-type Props = {
-  readonly className?: string;
-};
-
-function EnterpriseSubscriptions({ className }: Props) {
-  const cloudApi = useCloudApi();
-
-  const { data } = useSWR<{ logtoEnterprises: LogtoEnterpriseResponse[] }, Error>(
-    '/api/me/logto-enterprises',
-    async () => cloudApi.get('/api/me/logto-enterprises')
-  );
-
-  if (!data || data.logtoEnterprises.length === 0) {
-    return null;
-  }
-
-  // Currently only support one enterprise subscription per user
-  // If there are multiple, consider adding a dropdown selector in the future
-  const defaultEnterpriseSubscription = data.logtoEnterprises[0];
-
-  if (!defaultEnterpriseSubscription) {
-    return null;
-  }
-
-  return (
-    <TextLink
-      className={classNames(styles.button, className)}
-      icon={<CardIcon className={styles.icon} />}
-      onClick={() => {
-        window.open(`${GlobalRoute.EnterpriseSubscription}/${defaultEnterpriseSubscription.id}`);
-      }}
-    >
-      <DynamicT forKey="topbar.subscription" />
-    </TextLink>
-  );
-}
+const EnterpriseSubscriptions = (_props?: Record<string, unknown>): null => null;
 
 export default EnterpriseSubscriptions;

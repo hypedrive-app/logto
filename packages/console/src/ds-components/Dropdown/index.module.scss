@@ -3,7 +3,7 @@
 .content {
   box-shadow: var(--shadow-2);
   position: absolute;
-  border-radius: 8px;
+  border-radius: 10px;
 
   &.onTop {
     box-shadow: var(--shadow-2-reversed);
@@ -17,7 +17,7 @@
 .dropdownContainer {
   background: var(--color-float);
   border: 1px solid var(--color-divider);
-  border-radius: 8px;
+  border-radius: 10px;
 }
 
 .title {

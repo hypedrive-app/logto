@@ -5,13 +5,13 @@
   align-items: center;
   padding: _.unit(2);
   margin-inline-start: _.unit(4);
-  border-radius: 8px;
+  border-radius: 10px;
 
   .image {
     width: 36px;
     height: 36px;
     margin-inline-end: _.unit(2);
-    border-radius: 6px;
+    border-radius: 8px;
     @include _.shimmering-animation;
   }
 

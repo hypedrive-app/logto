@@ -1,15 +1,13 @@
-import classNames from 'classnames';
 import type { ReactNode } from 'react';
-
-import styles from './index.module.scss';
 
 type Props = {
   readonly className?: string;
-  readonly children: ReactNode;
+  readonly children?: ReactNode;
 };
 
-function CloudTag({ className, children }: Props) {
-  return <div className={classNames(styles.tag, styles.cloud, className)}>{children}</div>;
+// Hypedrive self-hosted — no "Cloud" feature badges.
+function CloudTag(_props: Props) {
+  return null;
 }
 
 export default CloudTag;

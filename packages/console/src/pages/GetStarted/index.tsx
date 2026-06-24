@@ -36,7 +36,6 @@ import CreateApiForm from '../ApiResources/components/CreateForm';
 import ProtectedAppModal from '../Applications/components/ProtectedAppModal';
 
 import ConvertToProductionCard from './ConvertToProductionCard';
-import OssCloudUpsell from './OssCloudUpsell';
 import styles from './index.module.scss';
 
 const icons = {
@@ -126,23 +125,7 @@ function GetStarted() {
     return daysSinceCreation >= convertToProductionThresholdDays;
   }, [isDevTenant, currentTenant]);
 
-  const shouldShowOssCloudUpsell = !isCloud;
-  const shouldShowOssCloudBanner =
-    shouldShowOssCloudUpsell &&
-    isUserPreferencesLoaded &&
-    !userPreferences.ossGetStartedCloudUpsellDismissed;
-
-  const persistOssCloudBannerDismissal = useCallback(async () => {
-    try {
-      await updateUserPreferences({ ossGetStartedCloudUpsellDismissed: true });
-    } catch (error: unknown) {
-      void error;
-    }
-  }, [updateUserPreferences]);
-
-  const onDismissOssCloudBanner = useCallback(() => {
-    void persistOssCloudBannerDismissal();
-  }, [persistOssCloudBannerDismissal]);
+  // Hypedrive self-hosted — no "try Logto Cloud" upsell.
 
   return (
     <div className={styles.container}>
@@ -152,12 +135,6 @@ function GetStarted() {
         <div className={styles.subtitle}>{t('get_started.subtitle')}</div>
       </div>
       {shouldShowConvertToProductionCard && <ConvertToProductionCard />}
-      {shouldShowOssCloudUpsell && (
-        <OssCloudUpsell
-          isBannerVisible={shouldShowOssCloudBanner}
-          onDismissBanner={onDismissOssCloudBanner}
-        />
-      )}
       <Card className={styles.card}>
         <div className={styles.title}>
           {t(`get_started.develop.title${isCloud ? '_cloud' : ''}`)}

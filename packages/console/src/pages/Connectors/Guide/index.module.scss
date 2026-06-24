@@ -49,7 +49,7 @@
       flex-direction: column;
       background-color: var(--color-layer-1);
       border: 1.5px solid var(--color-focused-variant);
-      border-radius: 16px;
+      border-radius: 18px;
       margin: 0 _.unit(6) 0 0;
       overflow-y: auto;
       position: sticky;
@@ -80,7 +80,7 @@
 
       .block {
         background-color: var(--color-layer-1);
-        border-radius: 16px;
+        border-radius: 18px;
         padding: 0 _.unit(6) _.unit(6);
         margin-bottom: _.unit(4);
 

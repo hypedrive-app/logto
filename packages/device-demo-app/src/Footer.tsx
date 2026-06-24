@@ -5,7 +5,7 @@ import logtoLogoDark from './assets/logto-logo-dark.svg';
 import logtoLogoLight from './assets/logto-logo-light.svg';
 import logtoLogoShadow from './assets/logto-logo-shadow.svg';
 
-const logtoUrl = `https://logto.io/?${new URLSearchParams({
+const hypedriveUrl = `https://hypedrive.app/?${new URLSearchParams({
   utm_source: 'sign_in',
   utm_medium: 'powered_by',
 }).toString()}`;
@@ -33,17 +33,17 @@ const Footer = ({ isDarkMode }: { readonly isDarkMode: boolean }) => (
   <div className={styles.footerContainer}>
     <a
       className={styles.footer}
-      href={logtoUrl}
+      href={hypedriveUrl}
       target="_blank"
       rel="noopener noreferrer"
-      aria-label="Powered By Logto"
+      aria-label="Powered By Hypedrive"
     >
       <span>Powered by</span>
-      <img className={styles.staticLogo} src={logtoLogoShadow} alt="Logto" />
+      <img className={styles.staticLogo} src={logtoLogoShadow} alt="Hypedrive" />
       <img
         className={styles.highlightLogo}
         src={isDarkMode ? logtoLogoDark : logtoLogoLight}
-        alt="Logto"
+        alt="Hypedrive"
       />
     </a>
   </div>

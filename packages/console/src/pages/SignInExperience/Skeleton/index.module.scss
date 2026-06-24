@@ -10,7 +10,7 @@
   .content {
     .card {
       background-color: var(--color-layer-1);
-      border-radius: 16px;
+      border-radius: 18px;
       padding: _.unit(6);
 
       >:not(:first-child) {
@@ -43,7 +43,7 @@
         height: 103px;
         padding: _.unit(6);
         background-color: var(--color-layer-1);
-        border-radius: 16px 16px 0 0;
+        border-radius: 18px 16px 0 0;
 
         .info {
           .title {
@@ -84,7 +84,7 @@
           background: var(--color-surface);
           margin: 0 auto;
           padding: _.unit(6);
-          border-radius: 16px;
+          border-radius: 18px;
           transform: scale(0.6);
           transform-origin: top;
 

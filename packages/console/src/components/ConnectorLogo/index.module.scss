@@ -1,7 +1,7 @@
 .container {
   width: 40px;
   height: 40px;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--color-hover);
   display: flex;
   align-items: center;
@@ -16,7 +16,7 @@
   &.large {
     width: 60px;
     height: 60px;
-    border-radius: 12px;
+    border-radius: 13px;
 
     > img {
       width: 42px;

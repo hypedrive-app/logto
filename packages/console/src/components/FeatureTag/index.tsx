@@ -4,7 +4,6 @@ import { useContext } from 'react';
 
 import { isCloud } from '@/consts/env';
 import { SubscriptionDataContext } from '@/contexts/SubscriptionDataProvider';
-import { TenantsContext } from '@/contexts/TenantsProvider';
 import { isProPlan } from '@/utils/subscription';
 
 import styles from './index.module.scss';
@@ -84,23 +83,9 @@ export type Props = {
  * ))}
  * ```
  */
-function FeatureTag(props: Props) {
-  const { className, isEnterprise } = props;
-  const { isDevTenant } = useContext(TenantsContext);
-
-  const { isVisible } = props;
-
-  // Dev tenant should always see the tag since they have access to almost all features, and it's
-  // useful for developers to know which features need to be paid for in production.
-  if (!isDevTenant && !isVisible) {
-    return null;
-  }
-
-  if (isEnterprise) {
-    return <div className={classNames(styles.tag, className)}>{planTagMap.enterprise}</div>;
-  }
-
-  return <div className={classNames(styles.tag, className)}>{planTagMap[props.plan]}</div>;
+function FeatureTag(_props: Props) {
+  // Hypedrive self-hosted — no paywall, so no "Pro"/"Enterprise" feature tags are shown.
+  return null;
 }
 
 export default FeatureTag;

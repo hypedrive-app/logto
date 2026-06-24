@@ -27,7 +27,7 @@
     font-family: 'Roboto Mono', monospace;
     font-size: 14px;
     line-height: 20px;
-    border-radius: 6px;
+    border-radius: 8px;
     background: var(--color-neutral-variant-90);
     padding: _.unit(0.5) _.unit(2);
   }
@@ -57,7 +57,7 @@
 
   &.outlined {
     padding: _.unit(0.5) _.unit(2);
-    border-radius: 10px;
+    border-radius: 11px;
     background: var(--color-success-container);
     font: var(--font-label-3);
 

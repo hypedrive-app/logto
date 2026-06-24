@@ -17,7 +17,7 @@
       flex-shrink: 0;
       max-width: 204px;
       padding: _.unit(1) _.unit(2);
-      border-radius: 6px;
+      border-radius: 8px;
       background: var(--color-neutral-95);
       @include _.text-ellipsis;
     }

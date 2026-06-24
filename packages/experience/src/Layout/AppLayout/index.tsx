@@ -1,18 +1,13 @@
 import classNames from 'classnames';
-import { useContext } from 'react';
 import { Outlet } from 'react-router-dom';
 
-import PageContext from '@/Providers/PageContextProvider/PageContext';
 import usePlatform from '@/hooks/use-platform';
-import LogtoSignature from '@/shared/components/LogtoSignature';
 import { layoutClassNames } from '@/utils/consts';
 
 import CustomContent from './CustomContent';
 
 const AppLayout = () => {
-  const { experienceSettings, theme } = useContext(PageContext);
   const { isMobile } = usePlatform();
-  const hideLogtoBranding = experienceSettings?.hideLogtoBranding === true;
 
   return (
     <div className="absolute inset-0 overflow-auto desktop:bg-bg">
@@ -36,16 +31,6 @@ const AppLayout = () => {
           )}
         >
           <Outlet />
-          {!hideLogtoBranding && (
-            <LogtoSignature
-              className={classNames(
-                'mobile:my-10 mobile:mb-2',
-                'desktop:absolute desktop:bottom-0 desktop:translate-y-[calc(100%+28px)] desktop:pb-7',
-                layoutClassNames.signature
-              )}
-              theme={theme}
-            />
-          )}
         </main>
       </div>
     </div>

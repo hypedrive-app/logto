@@ -4,7 +4,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  border-radius: 8px;
+  border-radius: 10px;
   background-color: var(--color-code-bg);
 
 
@@ -35,7 +35,7 @@
           &:hover {
             color: var(--color-code-white);
             background-color: var(--color-code-dark-bg-focused);
-            border-radius: 8px;
+            border-radius: 10px;
           }
         }
       }

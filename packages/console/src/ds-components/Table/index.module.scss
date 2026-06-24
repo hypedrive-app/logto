@@ -15,7 +15,7 @@
 
   .filterContainer {
     background-color: var(--color-layer-1);
-    border-radius: 12px 12px 0 0;
+    border-radius: 13px 12px 0 0;
     padding: _.unit(3) _.unit(3) 0;
 
     .filter {
@@ -33,7 +33,7 @@
 
   .headerTable {
     background-color: var(--color-layer-1);
-    border-radius: 12px 12px 0 0;
+    border-radius: 13px 12px 0 0;
     padding: 0 _.unit(3);
 
     thead {
@@ -60,7 +60,7 @@
     border-radius: 0 0 12px 12px;
 
     &.roundedTopCorners {
-      border-radius: 12px;
+      border-radius: 13px;
     }
 
     tbody {

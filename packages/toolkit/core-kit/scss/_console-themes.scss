@@ -2,17 +2,17 @@
   // tonal palettes
   --color-all-0: #000;
   --color-all-100: #fff;
-  --color-primary-10: #190064;
-  --color-primary-20: #2d009d;
-  --color-primary-30: #4300da;
-  --color-primary-40: #5d34f2;
-  --color-primary-50: #7958ff;
-  --color-primary-60: #947dff;
-  --color-primary-70: #af9eff;
-  --color-primary-80: #cabeff;
-  --color-primary-90: #e6deff;
-  --color-primary-95: #f5eeff;
-  --color-primary-99: #fffbff;
+  --color-primary-10: #2a0410;
+  --color-primary-20: #670c23;
+  --color-primary-30: #a41535;
+  --color-primary-40: #e11d48;
+  --color-primary-50: #e64266;
+  --color-primary-60: #eb6683;
+  --color-primary-70: #f08ba1;
+  --color-primary-80: #f5afbf;
+  --color-primary-90: #fad4dc;
+  --color-primary-95: #fde6eb;
+  --color-primary-99: #fff5f7;
   --color-secondary-10: #201c00;
   --color-secondary-20: #373100;
   --color-secondary-30: #4f4700;
@@ -153,10 +153,10 @@
   --color-hover: rgba(25, 28, 29, 8%); // 8% Neutral-10
   --color-pressed: rgba(25, 28, 29, 12%); // 12% Neutral-10
   --color-focused: rgba(25, 28, 29, 16%); // 16% Neutral-10
-  --color-hover-variant: rgba(93, 52, 242, 8%); // 8% Primary-40
-  --color-pressed-variant: rgba(93, 52, 242, 12%); // 12% Primary-40
-  --color-focused-variant: rgba(93, 52, 242, 16%); // 16% Primary-40
-  --color-env-tag-development: rgba(93, 52, 242, 15%);
+  --color-hover-variant: rgba(232, 74, 108, 8%); // 8% Primary-40
+  --color-pressed-variant: rgba(232, 74, 108, 12%); // 12% Primary-40
+  --color-focused-variant: rgba(232, 74, 108, 16%); // 16% Primary-40
+  --color-env-tag-development: rgba(232, 74, 108, 15%);
   --color-env-tag-staging: rgba(255, 185, 90, 35%);
   --color-env-tag-production: rgba(131, 218, 133, 35%);
   --color-specific-icon-bg: #f3effa;
@@ -166,20 +166,21 @@
   --color-specific-focused-inside: var(--color-primary-30);
   --color-specific-focused-outside: var(--color-primary-40);
   --color-specific-button-icon: rgba(255, 255, 255, 70%); // 70% static white
-  --color-overlay-primary-subtle: rgba(93, 52, 242, 4%); // 4% Primary-40
-  --color-overlay-primary-hover: rgba(93, 52, 242, 8%); // 8% Primary-40
-  --color-overlay-primary-pressed: rgba(93, 52, 242, 12%); // 12% Primary-40
-  --color-function-n-overlay-primary-focused: rgba(93, 52, 242, 16%); // 16% Primary-40
+  --color-overlay-primary-subtle: rgba(232, 74, 108, 4%); // 4% Primary-40
+  --color-overlay-primary-hover: rgba(232, 74, 108, 8%); // 8% Primary-40
+  --color-overlay-primary-pressed: rgba(232, 74, 108, 12%); // 12% Primary-40
+  --color-function-n-overlay-primary-focused: rgba(232, 74, 108, 16%); // 16% Primary-40
   --color-overlay-danger-hover: rgba(186, 27, 27, 8%); // 8% Error-40
   --color-overlay-dark-bg-hover: rgba(255, 255, 255, 12%); // 12% static white
   --color-overlay-dark-bg-pressed: rgba(255, 255, 255, 18%); // 18% static white
   --color-overlay-dark-bg-focused: rgba(255, 255, 255, 24%); // 24% static white
 
-  // Shadows
-  --shadow-1: 0 4px 8px rgba(0, 0, 0, 8%);
-  --shadow-2: 0 4px 12px rgba(0, 0, 0, 12%);
-  --shadow-2-reversed: 0 -4px 12px rgba(0, 0, 0, 12%);
-  --shadow-3: 0 4px 16px rgba(0, 0, 0, 20%);
+  // Shadows — layered (tight contact + soft ambient) for a subtle premium float,
+  // not a flat heavy drop. Cool-gray tint reads softer; low opacities stay light.
+  --shadow-1: 0 1px 1px rgba(16, 24, 40, 4%), 0 3px 8px -2px rgba(16, 24, 40, 6%);
+  --shadow-2: 0 1px 2px rgba(16, 24, 40, 5%), 0 8px 20px -6px rgba(16, 24, 40, 8%);
+  --shadow-2-reversed: 0 -1px 2px rgba(16, 24, 40, 5%), 0 -8px 20px -6px rgba(16, 24, 40, 8%);
+  --shadow-3: 0 2px 4px rgba(16, 24, 40, 6%), 0 16px 32px -10px rgba(16, 24, 40, 11%);
 
   // Client specific variables (not available in design system)
   --color-checkbox-disabled-background: var(--color-neutral-95);
@@ -227,17 +228,17 @@
   // tonal palettes
   --color-all-0: #fff;
   --color-all-100: #000;
-  --color-primary-10: #fffbff;
-  --color-primary-20: #f5eeff;
-  --color-primary-30: #e6deff;
-  --color-primary-40: #cabeff;
-  --color-primary-50: #af9eff;
-  --color-primary-60: #947dff;
-  --color-primary-70: #7958ff;
-  --color-primary-80: #5d34f2;
-  --color-primary-90: #4300da;
-  --color-primary-95: #2d009d;
-  --color-primary-99: #190064;
+  --color-primary-10: #fff5f7;
+  --color-primary-20: #fde6eb;
+  --color-primary-30: #fad4dc;
+  --color-primary-40: #f5afbf;
+  --color-primary-50: #f08ba1;
+  --color-primary-60: #eb6683;
+  --color-primary-70: #e64266;
+  --color-primary-80: #e11d48;
+  --color-primary-90: #a41535;
+  --color-primary-95: #670c23;
+  --color-primary-99: #2a0410;
   --color-secondary-10: #fffbf7;
   --color-secondary-20: #fff480;
   --color-secondary-30: #f4e560;
@@ -318,7 +319,7 @@
 
   // color aliases
   --color-static-white: #fff;
-  --color-primary: var(--color-primary-70);
+  --color-primary: var(--color-primary-60);
   --color-on-primary: var(--color-all-0);
   --color-primary-container: var(--color-primary-30);
   --color-on-primary-container: var(--color-primary-30);
@@ -378,10 +379,10 @@
   --color-hover: rgba(247, 248, 248, 8%); // 8% Neutral-10
   --color-pressed: rgba(247, 248, 248, 12%); // 12% Neutral-10
   --color-focused: rgba(247, 248, 248, 16%); // 16% Neutral-10
-  --color-hover-variant: rgba(202, 190, 255, 8%); // 8% Primary-40
-  --color-pressed-variant: rgba(202, 190, 255, 12%); // 12% Primary-40
-  --color-focused-variant: rgba(202, 190, 255, 16%); // 16% Primary-40
-  --color-env-tag-development: rgba(202, 190, 255, 32%);
+  --color-hover-variant: rgba(248, 190, 202, 8%); // 8% Primary-40
+  --color-pressed-variant: rgba(248, 190, 202, 12%); // 12% Primary-40
+  --color-focused-variant: rgba(248, 190, 202, 16%); // 16% Primary-40
+  --color-env-tag-development: rgba(248, 190, 202, 32%);
   --color-env-tag-staging: rgba(235, 153, 24, 36%);
   --color-env-tag-production: rgba(104, 190, 108, 36%);
   --color-specific-icon-bg: rgba(247, 248, 248, 12%);
@@ -389,22 +390,23 @@
   --color-specific-unselected-disabled: var(--color-hover); // 8% Neutral-10
   --color-specific-selected-disabled: var(--color-primary-80);
   --color-specific-focused-inside: var(--color-primary-40);
-  --color-specific-focused-outside: rgba(#cabeff, 32%); // 32% Primary-40
+  --color-specific-focused-outside: rgba(#f8beca, 32%); // 32% Primary-40
   --color-specific-button-icon: rgba(255, 255, 255, 60%); // 60% static white
-  --color-overlay-primary-subtle: rgba(202, 190, 255, 4%); // 4% Primary-40
-  --color-overlay-primary-hover: rgba(202, 190, 255, 8%); // 8% Primary-40
-  --color-overlay-primary-pressed: rgba(202, 190, 255, 12%); // 12% Primary-40
-  --color-function-n-overlay-primary-focused: rgba(202, 190, 255, 16%); // 16% Primary-40
+  --color-overlay-primary-subtle: rgba(248, 190, 202, 4%); // 4% Primary-40
+  --color-overlay-primary-hover: rgba(248, 190, 202, 8%); // 8% Primary-40
+  --color-overlay-primary-pressed: rgba(248, 190, 202, 12%); // 12% Primary-40
+  --color-function-n-overlay-primary-focused: rgba(248, 190, 202, 16%); // 16% Primary-40
   --color-overlay-danger-hover: rgba(186, 27, 27, 8%); // 8% Error-40
   --color-overlay-dark-bg-hover: rgba(255, 255, 255, 12%); // 12% static white
   --color-overlay-dark-bg-pressed: rgba(255, 255, 255, 18%); // 18% static white
   --color-overlay-dark-bg-focused: rgba(255, 255, 255, 24%); // 24% static white
 
-  // Shadows
-  --shadow-1: 0 4px 8px rgba(0, 0, 0, 8%);
-  --shadow-2: 0 4px 12px rgba(0, 0, 0, 12%);
-  --shadow-2-reversed: 0 -4px 12px rgba(0, 0, 0, 12%);
-  --shadow-3: 0 4px 16px rgba(0, 0, 0, 20%);
+  // Shadows — layered (tight contact + soft ambient) for a subtle premium float,
+  // not a flat heavy drop. Cool-gray tint reads softer; low opacities stay light.
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 24%), 0 4px 10px -2px rgba(0, 0, 0, 28%);
+  --shadow-2: 0 1px 3px rgba(0, 0, 0, 28%), 0 10px 24px -6px rgba(0, 0, 0, 38%);
+  --shadow-2-reversed: 0 -1px 3px rgba(0, 0, 0, 28%), 0 -10px 24px -6px rgba(0, 0, 0, 38%);
+  --shadow-3: 0 2px 5px rgba(0, 0, 0, 32%), 0 18px 38px -10px rgba(0, 0, 0, 48%);
 
   // Client specific variables (not available in design system)
   --color-checkbox-disabled-background: rgba(247, 248, 248, 8%);
@@ -428,7 +430,7 @@
   --color-bg-body: var(--color-surface);
   --color-bg-body-overlay: var(--color-surface-2);
   --color-bg-layer-1:
-    linear-gradient(0deg, rgba(202, 190, 255, 8%), rgba(202, 190, 255, 8%)),
+    linear-gradient(0deg, rgba(248, 190, 202, 8%), rgba(248, 190, 202, 8%)),
     linear-gradient(0deg, rgba(196, 199, 199, 2%), rgba(196, 199, 199, 2%)),
     #191c1d;
   --color-bg-layer-2: var(--color-surface-4);

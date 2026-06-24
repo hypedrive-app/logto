@@ -2,7 +2,7 @@
 
 .tipBubble {
   position: absolute;
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--color-tooltip-background);
   color: var(--color-tooltip-text);
   box-shadow: var(--shadow-2);
@@ -21,10 +21,10 @@
   }
 
   a {
-    color: #cabeff;
+    color: #f8beca;
 
     &:active {
-      color: #cabeff;
+      color: #f8beca;
     }
   }
 

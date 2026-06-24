@@ -13,7 +13,7 @@
   .shimmer {
     width: 25%;
     height: _.unit(12);
-    border-radius: 8px;
+    border-radius: 10px;
     @include _.shimmering-animation;
   }
 }
@@ -24,7 +24,7 @@
   .shimmer {
     width: 100%;
     height: _.unit(12);
-    border-radius: 8px;
+    border-radius: 10px;
     @include _.shimmering-animation;
   }
 }

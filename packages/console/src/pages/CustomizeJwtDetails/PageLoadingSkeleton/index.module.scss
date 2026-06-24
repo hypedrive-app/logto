@@ -21,7 +21,7 @@
 }
 
 .blockShimmer {
-  border-radius: 8px;
+  border-radius: 10px;
   flex: 1;
   @include _.shimmering-animation;
 }
@@ -34,7 +34,7 @@
 .textShimmer {
   width: 100%;
   height: _.unit(6);
-  border-radius: 8px;
+  border-radius: 10px;
   @include _.shimmering-animation;
 
   &:not(:last-child) {

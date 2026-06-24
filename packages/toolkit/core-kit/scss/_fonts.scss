@@ -1,4 +1,9 @@
+// Geist Variable is the Hypedrive UI typeface (matches experience/account + the marketing
+// site). It leads the stack so every type-scale token below renders in Geist; the system
+// fonts remain as fallbacks while the variable font loads. The `@font-face` that fetches
+// Geist lives in `console/src/scss/normalized.scss`.
 $font-family:
+  'Geist Variable',
   -apple-system,
   system-ui,
   'BlinkMacSystemFont',

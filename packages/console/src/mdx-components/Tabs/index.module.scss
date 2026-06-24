@@ -22,7 +22,7 @@
       font: var(--font-label-2);
       color: var(--color-text-secondary);
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 6px;
 
       &:hover {
         background-color: var(--color-hover-variant);
@@ -43,7 +43,7 @@
         left: 0;
         right: 0;
         border-top: 2px solid var(--color-text-link);
-        border-radius: 8px 8px 0 0;
+        border-radius: 10px 8px 0 0;
       }
     }
   }

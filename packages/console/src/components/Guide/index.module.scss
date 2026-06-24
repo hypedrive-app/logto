@@ -51,7 +51,7 @@
     code:not(pre > code) {
       background: var(--color-layer-2);
       font: var(--font-body-2);
-      border-radius: 4px;
+      border-radius: 6px;
 
       &:not(a > code) {
         padding: _.unit(1);

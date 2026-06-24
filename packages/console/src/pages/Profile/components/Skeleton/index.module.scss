@@ -11,7 +11,7 @@
   padding: _.unit(6) _.unit(8);
   display: flex;
   background: var(--color-layer-1);
-  border-radius: 12px;
+  border-radius: 13px;
 
   &:not(:first-child) {
     margin-top: _.unit(4);
@@ -55,7 +55,7 @@
     width: 100%;
     border-spacing: 0;
     border: 1px solid var(--color-neutral-variant-90);
-    border-radius: 8px;
+    border-radius: 10px;
 
     td {
       font: var(--font-body-2);

@@ -2,7 +2,7 @@
 
 .panel {
   border: 1px solid var(--color-on-info-container);
-  border-radius: 8px;
+  border-radius: 10px;
   overflow: hidden;
 
   .header {
@@ -38,10 +38,10 @@
   }
 
   &.purple {
-    border-color: #947dff;
+    border-color: #f0849b;
 
     .header {
-      background: #947dff; // Static purple color in both light and dark themes
+      background: #f0849b; // Static purple color in both light and dark themes
     }
   }
 }
