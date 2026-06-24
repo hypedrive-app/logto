@@ -32,6 +32,28 @@ type GenerateWebAuthnRegistrationOptionsParameters = {
   >;
 };
 
+/**
+ * Derive a HUMAN-readable Relying Party name from the RP ID (a bare domain).
+ *
+ * `rpName` is shown by the authenticator / OS during enrolment ("Save a passkey
+ * for <rpName>?"), so it should be a friendly brand name, not a raw hostname.
+ * The spec only requires `rpID` (the domain) to be technically correct; `rpName`
+ * is purely display. Upstream Logto sets `rpName: rpId`, which surfaces the ugly
+ * domain (e.g. "auth.hypedrive.app"). Derive the registrable label instead:
+ * drop a leading `auth.`/`www.`/`login.`/`id.` subdomain + the TLD, then
+ * title-case — `auth.hypedrive.app` → `Hypedrive`, `login.acme.co.uk` → `Acme`.
+ */
+export const deriveRpName = (rpId: string): string => {
+  const labels = rpId.split('.').filter(Boolean);
+  // Strip a known auth-style subdomain prefix.
+  if (labels.length > 2 && ['auth', 'www', 'login', 'id', 'account'].includes(labels[0] ?? '')) {
+    labels.shift();
+  }
+  // The registrable name is the first remaining label (before the TLD).
+  const brand = labels[0] ?? rpId;
+  return brand.charAt(0).toUpperCase() + brand.slice(1);
+};
+
 export const generateWebAuthnRegistrationOptions = async ({
   rpId,
   user,
@@ -39,7 +61,7 @@ export const generateWebAuthnRegistrationOptions = async ({
   const { username, name, primaryEmail, primaryPhone, id, mfaVerifications } = user;
 
   const options: GenerateRegistrationOptionsOpts = {
-    rpName: rpId,
+    rpName: deriveRpName(rpId),
     rpID: rpId,
     userID: Uint8Array.from(Buffer.from(id)),
     userName: getUserDisplayName({ username, primaryEmail, primaryPhone }) ?? 'Unnamed User',
