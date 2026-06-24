@@ -105,40 +105,52 @@ function Providers() {
     []
   );
 
+  const appTree = (
+    <LogtoProvider
+      unstable_enableCache
+      config={{
+        endpoint: adminTenantEndpoint.href,
+        appId: adminConsoleApplicationId,
+        resources,
+        scopes,
+        prompt: [Prompt.Login, Prompt.Consent],
+      }}
+    >
+      <AppThemeProvider>
+        <Helmet titleTemplate={`%s - ${mainTitle}`} defaultTitle={mainTitle} />
+        <Toast />
+        <AppConfirmModalProvider>
+          <ErrorBoundary>
+            <LogtoErrorBoundary>
+              <AppDataProvider>
+                <GlobalScripts />
+                <Content />
+              </AppDataProvider>
+            </LogtoErrorBoundary>
+          </ErrorBoundary>
+        </AppConfirmModalProvider>
+      </AppThemeProvider>
+    </LogtoProvider>
+  );
+
+  // Only mount PostHogProvider when an API key is configured (cloud analytics).
+  // With no key (Hypedrive self-hosted), `posthog-js/react` falls back to an
+  // uninitialised global instance that renders as a non-component object and
+  // crashes the whole app with React error #130.
+  if (!postHogKey) {
+    return appTree;
+  }
+
   return (
     <PostHogProvider
-      apiKey={postHogKey ?? ''} // Empty key will disable PostHog
+      apiKey={postHogKey}
       options={{
         ui_host: postHogUiHost,
         api_host: postHogHost,
         defaults: '2025-05-24',
       }}
     >
-      <LogtoProvider
-        unstable_enableCache
-        config={{
-          endpoint: adminTenantEndpoint.href,
-          appId: adminConsoleApplicationId,
-          resources,
-          scopes,
-          prompt: [Prompt.Login, Prompt.Consent],
-        }}
-      >
-        <AppThemeProvider>
-          <Helmet titleTemplate={`%s - ${mainTitle}`} defaultTitle={mainTitle} />
-          <Toast />
-          <AppConfirmModalProvider>
-            <ErrorBoundary>
-              <LogtoErrorBoundary>
-                <AppDataProvider>
-                  <GlobalScripts />
-                  <Content />
-                </AppDataProvider>
-              </LogtoErrorBoundary>
-            </ErrorBoundary>
-          </AppConfirmModalProvider>
-        </AppThemeProvider>
-      </LogtoProvider>
+      {appTree}
     </PostHogProvider>
   );
 }
