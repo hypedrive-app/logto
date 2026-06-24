@@ -37,6 +37,11 @@ function SignUpForm({ signInExperience }: Props) {
     name: 'signUp.verify',
   });
 
+  const signUpPassword = useWatch({
+    control,
+    name: 'signUp.password',
+  });
+
   const showAuthenticationFields = useMemo(
     () => signUpIdentifiers.length > 0,
     [signUpIdentifiers.length]
@@ -47,7 +52,10 @@ function SignUpForm({ signInExperience }: Props) {
   }, [setValue]);
 
   useEffect(() => {
-    if (signUpIdentifiers.length === 0) {
+    // Each `setValue` below only fires when the derived value actually differs from the
+    // current one. Previously these ran unconditionally with `shouldDirty: true` on every
+    // mount, which flipped the form to "dirty" (and showed the save bar) without any edit.
+    if (signUpIdentifiers.length === 0 && signUpPassword) {
       setValue('signUp.password', false, { shouldDirty: true });
     }
 
@@ -58,7 +66,8 @@ function SignUpForm({ signInExperience }: Props) {
      */
     if (
       signUpIdentifiers.length === 1 &&
-      signUpIdentifiers[0]?.identifier === SignInIdentifier.Username
+      signUpIdentifiers[0]?.identifier === SignInIdentifier.Username &&
+      !signUpPassword
     ) {
       setValue('signUp.password', true, { shouldDirty: true });
     }
@@ -66,8 +75,10 @@ function SignUpForm({ signInExperience }: Props) {
     const isSignUpVerify = signUpIdentifiers.some(
       ({ identifier }) => identifier !== SignInIdentifier.Username
     );
-    setValue('signUp.verify', isSignUpVerify, { shouldDirty: true });
-  }, [setValue, signUpIdentifiers]);
+    if (isSignUpVerify !== signUpVerify) {
+      setValue('signUp.verify', isSignUpVerify, { shouldDirty: true });
+    }
+  }, [setValue, signUpIdentifiers, signUpPassword, signUpVerify]);
 
   useSignUpPasswordListeners(signInExperience);
 

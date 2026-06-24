@@ -86,6 +86,7 @@ function PageContent({ data, onSignInExperienceUpdated, onAccountCenterUpdated }
 
   const {
     reset,
+    resetField,
     handleSubmit,
     getValues,
     watch,
@@ -215,7 +216,11 @@ function PageContent({ data, onSignInExperienceUpdated, onAccountCenterUpdated }
       ];
 
       if (initialMethods.length === 0) {
-        setValue('forgotPasswordMethods', []);
+        // Pure normalization of a null/absent value to an empty array — there is no
+        // real change to save, so reset the field's default too. Using `setValue`
+        // here left the default as `null`, so `[] !== null` made the form look dirty
+        // and the "save changes" bar appeared without any user edit.
+        resetField('forgotPasswordMethods', { defaultValue: [] });
         return;
       }
 
@@ -226,7 +231,15 @@ function PageContent({ data, onSignInExperienceUpdated, onAccountCenterUpdated }
         forgotPasswordMethods: initialMethods,
       });
     }
-  }, [hasPasswordMethod, setValue, isConnectorTypeEnabled, isConnectorsReady, onSubmit, formData]);
+  }, [
+    hasPasswordMethod,
+    setValue,
+    resetField,
+    isConnectorTypeEnabled,
+    isConnectorsReady,
+    onSubmit,
+    formData,
+  ]);
 
   return (
     <>
