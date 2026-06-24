@@ -35,7 +35,6 @@ const useTestHandler = () => {
       .json<JsonObject>()
       .catch(async (error: unknown) => {
         if (error instanceof HTTPError) {
-          const { response } = error;
           // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
           // eslint-disable-next-line no-restricted-syntax
           const errorResponse = error.data as RequestErrorBody;

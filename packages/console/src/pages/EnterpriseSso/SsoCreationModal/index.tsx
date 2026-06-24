@@ -120,7 +120,6 @@ function SsoCreationModal({ isOpen, onClose: rawOnClose }: Props) {
         onClose(createdSsoConnector);
       } catch (error: unknown) {
         if (error instanceof HTTPError) {
-          const { response } = error;
           // Ky v2 pre-parses the response body into `error.data`; reading the stream again throws.
           // eslint-disable-next-line no-restricted-syntax
           const metadata = error.data as RequestErrorBody;
