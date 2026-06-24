@@ -53,3 +53,8 @@ packages/connectors/connector-whatsapp/test-send.mjs
 
 # Turborepo
 .turbo
+
+# Local scratch archive: files moved here by the destructive-command hook (instead of
+# rm/stash). Keep untracked dumps out of git; already-tracked archive entries (README,
+# the Inkeep/OssCloud files) stay tracked since gitignore doesn't affect tracked files.
+/archive/
