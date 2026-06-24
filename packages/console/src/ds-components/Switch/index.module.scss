@@ -44,6 +44,9 @@
 
   input:disabled + .slider {
     cursor: not-allowed;
+    // Fade the whole control so a disabled switch reads as inactive rather than
+    // looking like a live toggle (the track previously kept its full colour).
+    opacity: 50%;
   }
 
   input:disabled + .slider::before {

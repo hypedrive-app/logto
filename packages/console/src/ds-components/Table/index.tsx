@@ -1,6 +1,6 @@
 import { conditional } from '@silverhand/essentials';
 import classNames from 'classnames';
-import type { ReactNode } from 'react';
+import type { KeyboardEvent, ReactNode } from 'react';
 import { Fragment } from 'react';
 import type { FieldPath, FieldValues } from 'react-hook-form';
 
@@ -187,7 +187,19 @@ function Table<
                             !isRowHoverEffectDisabled && styles.hoverEffect,
                             rowClassName?.(row, rowIndex)
                           )}
+                          // Make clickable rows keyboard-operable (focus + Enter/Space).
+                          {...(rowClickable && { role: 'button', tabIndex: 0 })}
                           onClick={onClick}
+                          onKeyDown={conditional(
+                            rowClickable &&
+                              onClick &&
+                              ((event: KeyboardEvent<HTMLTableRowElement>) => {
+                                if (event.key === 'Enter' || event.key === ' ') {
+                                  event.preventDefault();
+                                  onClick();
+                                }
+                              })
+                          )}
                         >
                           {columns.map(({ dataIndex, colSpan, className, render }) => (
                             <td key={dataIndex} colSpan={colSpan} className={className}>

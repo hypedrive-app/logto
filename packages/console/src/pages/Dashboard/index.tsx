@@ -15,6 +15,7 @@ import useSWR from 'swr';
 import AppError from '@/components/AppError';
 import PageMeta from '@/components/PageMeta';
 import Card from '@/ds-components/Card';
+import CardTitle from '@/ds-components/CardTitle';
 import DatePicker from '@/ds-components/DatePicker';
 import type { RequestError } from '@/hooks/use-api';
 
@@ -77,10 +78,11 @@ function Dashboard() {
   return (
     <div className={styles.container}>
       <PageMeta titleKey="dashboard.title" />
-      <div className={styles.header}>
-        <div className={styles.title}>{t('dashboard.title')}</div>
-        <div className={styles.subtitle}>{t('dashboard.description')}</div>
-      </div>
+      <CardTitle
+        className={styles.header}
+        title="dashboard.title"
+        subtitle="dashboard.description"
+      />
       {isLoading && <Skeleton />}
       {error && <AppError errorMessage={error.body?.message} />}
       {!isLoading && totalData && newData && activeData && (

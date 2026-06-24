@@ -2,7 +2,7 @@
 
 .item {
   padding: _.unit(2);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   font: var(--font-body-2);
   cursor: pointer;
   display: flex;
@@ -11,6 +11,13 @@
   gap: _.unit(4);
 
   &:hover {
+    background: var(--color-hover);
+  }
+
+  // Keyboard (arrow-key) focus gets a distinct ring so it doesn't blur with mouse hover.
+  &:focus-visible {
+    outline: 2px solid var(--color-primary-40);
+    outline-offset: -2px;
     background: var(--color-hover);
   }
 

@@ -22,6 +22,7 @@ import { AppDataContext } from '@/contexts/AppDataProvider';
 import { TenantsContext } from '@/contexts/TenantsProvider';
 import { LinkButton } from '@/ds-components/Button';
 import Card from '@/ds-components/Card';
+import CardTitle from '@/ds-components/CardTitle';
 import Spacer from '@/ds-components/Spacer';
 import Tag from '@/ds-components/Tag';
 import TextLink from '@/ds-components/TextLink';
@@ -89,7 +90,7 @@ function GetStarted() {
   const onAppCreationCompleted = useCallback(
     (newApp?: Application) => {
       if (newApp && selectedGuide) {
-        navigate(`/applications/${newApp.id}/guide/${selectedGuide.id}`, { replace: true });
+        void navigate(`/applications/${newApp.id}/guide/${selectedGuide.id}`, { replace: true });
         return;
       }
       setShowCreateAppForm(false);
@@ -106,7 +107,9 @@ function GetStarted() {
   const onCloseCreateApiForm = useCallback(
     (newResource?: Resource) => {
       if (newResource && selectedGuide) {
-        navigate(`/api-resources/${newResource.id}/guide/${selectedGuide.id}`, { replace: true });
+        void navigate(`/api-resources/${newResource.id}/guide/${selectedGuide.id}`, {
+          replace: true,
+        });
         return;
       }
       setShowCreateApiForm(false);
@@ -130,10 +133,11 @@ function GetStarted() {
   return (
     <div className={styles.container}>
       <PageMeta titleKey="get_started.page_title" />
-      <div className={styles.header}>
-        <div className={styles.title}>{t('get_started.title')}</div>
-        <div className={styles.subtitle}>{t('get_started.subtitle')}</div>
-      </div>
+      <CardTitle
+        className={styles.header}
+        title="get_started.title"
+        subtitle="get_started.subtitle"
+      />
       {shouldShowConvertToProductionCard && <ConvertToProductionCard />}
       <Card className={styles.card}>
         <div className={styles.title}>

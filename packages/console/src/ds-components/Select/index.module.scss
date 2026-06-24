@@ -72,6 +72,13 @@
     outline-color: var(--color-focused-variant);
   }
 
+  // Keyboard focus on the closed trigger gets the same ring as the open state,
+  // so tabbing to a Select is visible before it's opened.
+  &:focus-visible {
+    border-color: var(--color-primary);
+    outline-color: var(--color-focused-variant);
+  }
+
   &.error {
     border-color: var(--color-error);
 
