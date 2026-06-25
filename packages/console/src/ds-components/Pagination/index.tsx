@@ -1,6 +1,5 @@
 import classNames from 'classnames';
 import { useTranslation } from 'react-i18next';
-import ReactPaginate from 'react-paginate';
 
 import ArrowLeft from '@/assets/icons/arrow-left.svg?react';
 import ArrowRight from '@/assets/icons/arrow-right.svg?react';
@@ -11,6 +10,7 @@ import DangerousRaw from '../DangerousRaw';
 import FlipOnRtl from '../FlipOnRtl';
 
 import styles from './index.module.scss';
+import { getPaginationRange } from './use-pagination-range';
 
 export type Props = {
   readonly page: number;
@@ -93,24 +93,17 @@ function Pagination({
   const min = (page - 1) * pageSize + 1;
   const max = Math.min(page * pageSize, cachedTotalCount);
 
+  // In pico mode only the prev/next controls are shown (no numbered pages), matching the
+  // previous `pageRangeDisplayed={-1}` / `marginPagesDisplayed={0}` behavior.
+  const pages = isPicoMode ? [] : getPaginationRange({ pageCount, page });
+
   return (
     <div className={classNames(styles.container, isPicoMode && styles.pico, className)}>
       <div className={styles.positionInfo}>
         {t('general.page_info', { min, max, total: cachedTotalCount })}
       </div>
-      <ReactPaginate
-        className={styles.pagination}
-        pageCount={pageCount}
-        forcePage={page - 1}
-        pageLabelBuilder={(pageNumber: number) => (
-          <Button
-            type={pageNumber === page ? 'outline' : 'default'}
-            className={classNames(styles.button, pageNumber === page && styles.active)}
-            size="small"
-            title={<DangerousRaw>{pageNumber}</DangerousRaw>}
-          />
-        )}
-        previousLabel={
+      <ul className={styles.pagination}>
+        <li>
           <Button
             className={styles.button}
             size="small"
@@ -119,10 +112,34 @@ function Pagination({
                 <ArrowLeft />
               </FlipOnRtl>
             }
+            aria-label={t('general.back')}
             disabled={page === 1}
+            onClick={() => {
+              onChange?.(page - 1);
+            }}
           />
-        }
-        nextLabel={
+        </li>
+        {pages.map((item, index) =>
+          item === 'ellipsis' ? (
+            // eslint-disable-next-line react/no-array-index-key
+            <li key={`ellipsis-${index}`} className={styles.disabled}>
+              <Button className={styles.button} size="small" title={<DangerousRaw>...</DangerousRaw>} />
+            </li>
+          ) : (
+            <li key={item}>
+              <Button
+                type={item === page ? 'outline' : 'default'}
+                className={classNames(styles.button, item === page && styles.active)}
+                size="small"
+                title={<DangerousRaw>{item}</DangerousRaw>}
+                onClick={() => {
+                  onChange?.(item);
+                }}
+              />
+            </li>
+          )
+        )}
+        <li>
           <Button
             className={styles.button}
             size="small"
@@ -131,19 +148,14 @@ function Pagination({
                 <ArrowRight />
               </FlipOnRtl>
             }
+            aria-label={t('general.next')}
             disabled={page === pageCount}
+            onClick={() => {
+              onChange?.(page + 1);
+            }}
           />
-        }
-        breakLabel={
-          <Button className={styles.button} size="small" title={<DangerousRaw>...</DangerousRaw>} />
-        }
-        disabledClassName={styles.disabled}
-        pageRangeDisplayed={isPicoMode ? -1 : undefined}
-        marginPagesDisplayed={isPicoMode ? 0 : undefined}
-        onPageChange={({ selected }) => {
-          onChange?.(selected + 1);
-        }}
-      />
+        </li>
+      </ul>
     </div>
   );
 }
