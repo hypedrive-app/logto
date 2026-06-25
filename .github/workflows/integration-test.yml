@@ -28,6 +28,7 @@ jobs:
         with:
           artifact-name: integration-test-${{ github.sha }}-dev-features-${{ matrix.dev-features-enabled }}
           pnpm-version: 11
+          node-version: ^24.0.0
 
   run-logto:
     strategy:

@@ -57,6 +57,7 @@ jobs:
           artifact-name: alteration-integration-test-${{ github.sha }}
           branch: ${{ github.base_ref }}
           pnpm-version: 11
+          node-version: ^24.0.0
 
   run-logto:
     strategy:
