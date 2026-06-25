@@ -52,6 +52,7 @@ minimumReleaseAgeExclude:
   - '@posthog/core@1.37.2'
   - '@posthog/types@1.391.1'
   - nanoid@5.1.16
+  - node-releases@2.0.50
   - posthog-js@1.393.4
 
 # Dependency overrides (security pins) + peer rules.
