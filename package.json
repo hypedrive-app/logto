@@ -39,7 +39,6 @@
     "typescript": "catalog:",
     "vite": "catalog:"
   },
-  "packageManager": "pnpm@11.8.0",
   "engines": {
     "node": "^22.14.0 || ^24.0.0",
     "pnpm": "^9.0.0 || ^10.0.0 || ^11.0.0"
