@@ -14,7 +14,10 @@ function ChartTooltip({ label, payload }: Props) {
 
   return (
     <div className={styles.chartTooltip}>
-      <div className={styles.value}>{formatNumberWithComma(payload[0].payload.count)}</div>
+      <div className={styles.value}>
+        <span className={styles.dot} />
+        {formatNumberWithComma(payload[0].payload.count)}
+      </div>
       <div className={styles.label}>{label}</div>
     </div>
   );

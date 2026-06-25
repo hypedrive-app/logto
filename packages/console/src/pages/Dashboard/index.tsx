@@ -143,17 +143,41 @@ function Dashboard() {
             <div className={styles.curveLabel}>{t('dashboard.active_users_last_30_days')}</div>
             <div className={styles.curve}>
               <ResponsiveContainer width="100%" height="100%">
-                <AreaChart data={areaChartData}>
-                  <CartesianGrid vertical={false} stroke="var(--color-divider)" />
+                <AreaChart data={areaChartData} margin={{ top: 8, right: 8, bottom: 0, left: 0 }}>
+                  <defs>
+                    {/* Soft vertical gradient under the curve for a cleaner, less flat fill. */}
+                    <linearGradient id="dashboard-area-fill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="var(--color-primary)" stopOpacity={0.16} />
+                      <stop offset="100%" stopColor="var(--color-primary)" stopOpacity={0} />
+                    </linearGradient>
+                  </defs>
+                  <CartesianGrid
+                    vertical={false}
+                    stroke="var(--color-divider)"
+                    strokeDasharray="3 3"
+                  />
                   <Area
                     type="monotone"
                     dataKey="count"
                     stroke="var(--color-primary)"
                     strokeWidth={2}
-                    fill="var(--color-hover-variant)"
+                    fill="url(#dashboard-area-fill)"
+                    activeDot={{
+                      r: 4,
+                      strokeWidth: 2,
+                      stroke: 'var(--color-layer-1)',
+                      fill: 'var(--color-primary)',
+                    }}
                     animationDuration={isRtl ? 0 : 1500}
                   />
-                  <XAxis dataKey="date" tickLine={false} tick={tickStyle} />
+                  <XAxis
+                    dataKey="date"
+                    tickLine={false}
+                    axisLine={false}
+                    tick={tickStyle}
+                    tickMargin={8}
+                    minTickGap={24}
+                  />
                   <YAxis
                     width={35}
                     orientation={isRtl ? 'right' : 'left'}
@@ -162,7 +186,15 @@ function Dashboard() {
                     tick={tickStyle}
                     tickFormatter={(tick) => tickFormatter.format(Number(tick)).toLowerCase()}
                   />
-                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--color-primary)' }} />
+                  <Tooltip
+                    content={<ChartTooltip />}
+                    cursor={{
+                      stroke: 'var(--color-primary)',
+                      strokeWidth: 1,
+                      strokeDasharray: '4 4',
+                      strokeOpacity: 0.5,
+                    }}
+                  />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
