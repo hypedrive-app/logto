@@ -52,43 +52,45 @@ function Markdown({ className, children }: Props) {
   };
 
   return (
-    <ReactMarkdown
-      remarkPlugins={[remarkGfm]}
-      className={classNames(styles.markdown, className)}
-      components={{
-        code: ({ className, children, ...props }) => {
-          const [, codeBlockType] = /language-(\w+)/.exec(className ?? '') ?? [];
+    // react-markdown v10 removed the `className` prop; wrap in a styled element instead.
+    <div className={classNames(styles.markdown, className)}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code: ({ className, children, ...props }) => {
+            const [, codeBlockType] = /language-(\w+)/.exec(className ?? '') ?? [];
 
-          return codeBlockType ? (
-            <CodeEditor isReadonly language={codeBlockType} value={String(children)} />
-          ) : (
-            <code className={styles.inlineCode} {...props}>
-              {children}
-            </code>
-          );
-        },
-        img: ({ src, alt }) => {
-          return <GithubRawImage src={src} alt={alt} />;
-        },
-        a: ({ href, children }) => {
-          const isExternalLink = href?.startsWith('http');
+            return codeBlockType ? (
+              <CodeEditor isReadonly language={codeBlockType} value={String(children)} />
+            ) : (
+              <code className={styles.inlineCode} {...props}>
+                {children}
+              </code>
+            );
+          },
+          img: ({ src, alt }) => {
+            return <GithubRawImage src={src} alt={alt} />;
+          },
+          a: ({ href, children }) => {
+            const isExternalLink = href?.startsWith('http');
 
-          return (
-            <a href={href} target={isExternalLink ? '_blank' : '_self'} rel="noopener">
-              {children}
-            </a>
-          );
-        },
-        h1: ({ children }) => <h1 id={generateTocId(String(children))}>{children}</h1>,
-        h2: ({ children }) => <h2 id={generateTocId(String(children))}>{children}</h2>,
-        h3: ({ children }) => <h3 id={generateTocId(String(children))}>{children}</h3>,
-        h4: ({ children }) => <h4 id={generateTocId(String(children))}>{children}</h4>,
-        h5: ({ children }) => <h5 id={generateTocId(String(children))}>{children}</h5>,
-        h6: ({ children }) => <h6 id={generateTocId(String(children))}>{children}</h6>,
-      }}
-    >
-      {children}
-    </ReactMarkdown>
+            return (
+              <a href={href} target={isExternalLink ? '_blank' : '_self'} rel="noopener">
+                {children}
+              </a>
+            );
+          },
+          h1: ({ children }) => <h1 id={generateTocId(String(children))}>{children}</h1>,
+          h2: ({ children }) => <h2 id={generateTocId(String(children))}>{children}</h2>,
+          h3: ({ children }) => <h3 id={generateTocId(String(children))}>{children}</h3>,
+          h4: ({ children }) => <h4 id={generateTocId(String(children))}>{children}</h4>,
+          h5: ({ children }) => <h5 id={generateTocId(String(children))}>{children}</h5>,
+          h6: ({ children }) => <h6 id={generateTocId(String(children))}>{children}</h6>,
+        }}
+      >
+        {children}
+      </ReactMarkdown>
+    </div>
   );
 }
 
