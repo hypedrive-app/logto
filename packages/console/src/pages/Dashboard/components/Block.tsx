@@ -42,8 +42,13 @@ const percentLabel = (count: number, delta: number): string | undefined => {
 };
 
 function Block({ variant = 'default', count, delta, title, tip, icon, caption }: Props) {
-  const deltaLabel = delta !== undefined && `${conditionalString(delta >= 0 && '+')}${delta}`;
+  // Relative figure for the badge; falls back to the absolute change when there
+  // is no meaningful baseline (e.g. growth from 0) so the trend is still shown.
   const pct = delta === undefined ? undefined : percentLabel(count, delta);
+  const deltaLabel =
+    delta === undefined
+      ? undefined
+      : (pct ?? `${conditionalString(delta >= 0 && '+')}${delta}`);
 
   return (
     <Card className={classNames(styles.block, styles[variant])}>
@@ -62,18 +67,19 @@ function Block({ variant = 'default', count, delta, title, tip, icon, caption }:
           </ToggleTip>
         )}
       </div>
-      <div className={styles.content}>
-        <div className={styles.number}>{formatNumberWithComma(count)}</div>
-        {delta !== undefined && (
-          <div className={classNames(styles.delta, delta < 0 && styles.down)}>
-            <span>({deltaLabel})</span>
-            {pct && <span className={styles.percent}>{pct}</span>}
-            {delta > 0 && <ArrowUp />}
-            {delta < 0 && <ArrowDown />}
-          </div>
-        )}
-      </div>
-      {caption && <div className={styles.caption}>{caption}</div>}
+      <div className={styles.number}>{formatNumberWithComma(count)}</div>
+      {(deltaLabel ?? caption) && (
+        <div className={styles.trend}>
+          {delta !== undefined && deltaLabel && (
+            <span className={classNames(styles.delta, delta < 0 && styles.down)}>
+              {delta > 0 && <ArrowUp />}
+              {delta < 0 && <ArrowDown />}
+              {deltaLabel}
+            </span>
+          )}
+          {caption && <span className={styles.caption}>{caption}</span>}
+        </div>
+      )}
     </Card>
   );
 }
