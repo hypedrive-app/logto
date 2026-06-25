@@ -1,0 +1,46 @@
+@use '@/scss/underscore' as _;
+
+.card {
+  margin-top: _.unit(4);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: _.unit(4);
+  margin-bottom: _.unit(2);
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: _.unit(4);
+  padding: _.unit(3) 0;
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-divider);
+  }
+}
+
+.empty {
+  padding: _.unit(6) 0;
+  text-align: center;
+  font: var(--font-body-2);
+  color: var(--color-text-secondary);
+}
+
+.placeholder {
+  height: 160px;
+  border-radius: 8px;
+  @include _.shimmering-animation;
+}

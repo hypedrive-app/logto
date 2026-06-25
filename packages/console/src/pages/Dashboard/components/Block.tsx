@@ -1,6 +1,7 @@
 import type { AdminConsoleKey } from '@logto/phrases';
 import { conditionalString } from '@silverhand/essentials';
 import classNames from 'classnames';
+import type { ReactNode } from 'react';
 
 import ArrowDown from '@/assets/icons/arrow-down.svg?react';
 import ArrowUp from '@/assets/icons/arrow-up.svg?react';
@@ -20,15 +21,39 @@ type Props = {
   readonly title: AdminConsoleKey;
   readonly tip?: ToggleTipProps['content'];
   readonly variant?: 'bordered' | 'default' | 'plain';
+  /** Optional leading metric icon for visual hierarchy. */
+  readonly icon?: ReactNode;
+  /** Optional comparison caption under the number, e.g. "vs yesterday". */
+  readonly caption?: ReactNode;
 };
 
-function Block({ variant = 'default', count, delta, title, tip }: Props) {
+/**
+ * Relative change as a percentage of the previous period. `delta` is the
+ * absolute change, so the previous value is `count - delta`; guard the zero
+ * baseline (a jump from 0 has no meaningful percentage).
+ */
+const percentLabel = (count: number, delta: number): string | undefined => {
+  const previous = count - delta;
+  if (previous <= 0) {
+    return undefined;
+  }
+  const pct = Math.round((delta / previous) * 100);
+  return `${conditionalString(pct >= 0 && '+')}${pct}%`;
+};
+
+function Block({ variant = 'default', count, delta, title, tip, icon, caption }: Props) {
   const deltaLabel = delta !== undefined && `${conditionalString(delta >= 0 && '+')}${delta}`;
+  const pct = delta === undefined ? undefined : percentLabel(count, delta);
 
   return (
     <Card className={classNames(styles.block, styles[variant])}>
       <div className={styles.title}>
-        <DynamicT forKey={title} />
+        {icon && (variant === 'default' || variant === 'bordered') && (
+          <span className={styles.icon}>{icon}</span>
+        )}
+        <span className={styles.titleText}>
+          <DynamicT forKey={title} />
+        </span>
         {tip && (
           <ToggleTip anchorClassName={styles.toggleTipButton} content={tip}>
             <IconButton size="small">
@@ -42,11 +67,13 @@ function Block({ variant = 'default', count, delta, title, tip }: Props) {
         {delta !== undefined && (
           <div className={classNames(styles.delta, delta < 0 && styles.down)}>
             <span>({deltaLabel})</span>
+            {pct && <span className={styles.percent}>{pct}</span>}
             {delta > 0 && <ArrowUp />}
             {delta < 0 && <ArrowDown />}
           </div>
         )}
       </div>
+      {caption && <div className={styles.caption}>{caption}</div>}
     </Card>
   );
 }

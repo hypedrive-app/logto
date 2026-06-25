@@ -9,30 +9,62 @@
   color: var(--color-success-50);
   display: flex;
   align-items: center;
+  gap: _.unit(0.5);
 
   &.down {
     color: var(--color-error-50);
   }
+
+  // The "(12%)" relative figure beside the absolute delta.
+  .percent {
+    opacity: 85%;
+  }
+}
+
+// "vs yesterday" / "vs last week" — quiet caption under the number row so the
+// delta has context instead of a bare "+5".
+.caption {
+  font: var(--font-body-3);
+  color: var(--color-text-secondary);
+  margin-top: _.unit(1);
 }
 
 .block {
-  flex: 1;
-
-  &:not(:last-child) {
-    margin-inline-end: _.unit(4);
-  }
-
+  // Parent (.blocks) is now a CSS grid with `gap`, so each card needs neither a
+  // per-block margin nor flex sizing — the grid track sizes them evenly.
   &.bordered {
     border: 1px solid var(--color-divider);
-    width: 360px;
-    flex: unset;
   }
 
   .title {
     font: var(--font-title-2);
-    margin-bottom: 24px;
+    margin-bottom: _.unit(3);
     display: flex;
     align-items: center;
+    gap: _.unit(1.5);
+
+    // A subtle leading metric icon for visual hierarchy (Stripe/Vercel-style
+    // stat cards). Tinted container keeps it quiet, not decorative.
+    .icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      background: var(--color-hover-variant);
+      color: var(--color-primary);
+      flex-shrink: 0;
+
+      > svg {
+        width: 16px;
+        height: 16px;
+      }
+    }
+
+    .titleText {
+      flex: 1;
+    }
 
     .toggleTipButton {
       margin-inline-start: _.unit(0.5);

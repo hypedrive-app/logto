@@ -12,7 +12,11 @@ import {
 } from 'recharts';
 import useSWR from 'swr';
 
+import BarGraph from '@/assets/icons/bar-graph.svg?react';
+import Calendar from '@/assets/icons/calendar.svg?react';
+import UserIcon from '@/assets/icons/user.svg?react';
 import AppError from '@/components/AppError';
+import EmptyDataPlaceholder from '@/components/EmptyDataPlaceholder';
 import PageMeta from '@/components/PageMeta';
 import Card from '@/ds-components/Card';
 import CardTitle from '@/ds-components/CardTitle';
@@ -21,6 +25,7 @@ import type { RequestError } from '@/hooks/use-api';
 
 import Block from './components/Block';
 import ChartTooltip from './components/ChartTooltip';
+import RecentActivity from './components/RecentActivity';
 import Skeleton from './components/Skeleton';
 import styles from './index.module.scss';
 import type { ActiveUsersResponse, NewUsersResponse, TotalUsersResponse } from './types';
@@ -85,46 +90,60 @@ function Dashboard() {
       />
       {isLoading && <Skeleton />}
       {error && <AppError errorMessage={error.body?.message} />}
-      {!isLoading && totalData && newData && activeData && (
+      {!isLoading && totalData && newData && activeData && totalData.totalUserCount === 0 && (
+        <Card className={styles.emptyCard}>
+          <EmptyDataPlaceholder size="large" title={t('dashboard.empty_title')} />
+          <div className={styles.emptyDescription}>{t('dashboard.empty_description')}</div>
+        </Card>
+      )}
+      {!isLoading && totalData && newData && activeData && totalData.totalUserCount > 0 && (
         <>
           <div className={styles.blocks}>
             <Block
+              icon={<UserIcon />}
               title="dashboard.total_users"
               tip={t('dashboard.total_users_tip')}
               count={totalData.totalUserCount}
             />
             <Block
+              icon={<UserIcon />}
               title="dashboard.new_users_today"
               tip={t('dashboard.new_users_today_tip')}
               count={newData.today.count}
               delta={newData.today.delta}
+              caption={t('dashboard.vs_yesterday')}
             />
             <Block
+              icon={<UserIcon />}
               title="dashboard.new_users_7_days"
               tip={t('dashboard.new_users_7_days_tip')}
               count={newData.last7Days.count}
               delta={newData.last7Days.delta}
+              caption={t('dashboard.vs_previous_7_days')}
             />
           </div>
           <Card className={styles.activeCard}>
-            <Block
-              title="dashboard.daily_active_users"
-              tip={t('dashboard.daily_active_users_tip')}
-              count={activeData.dau.count}
-              delta={activeData.dau.delta}
-              variant="plain"
-            />
-            <div className={styles.datePicker}>
-              <DatePicker
-                value={date}
-                max={startOfDay(new Date())}
-                todayLabel={t('general.today')}
-                onChange={handleDateChange}
+            <div className={styles.activeHeader}>
+              <Block
+                title="dashboard.daily_active_users"
+                tip={t('dashboard.daily_active_users_tip')}
+                count={activeData.dau.count}
+                delta={activeData.dau.delta}
+                variant="plain"
               />
+              <div className={styles.datePicker}>
+                <DatePicker
+                  value={date}
+                  max={startOfDay(new Date())}
+                  todayLabel={t('general.today')}
+                  onChange={handleDateChange}
+                />
+              </div>
             </div>
+            <div className={styles.curveLabel}>{t('dashboard.active_users_last_30_days')}</div>
             <div className={styles.curve}>
-              <ResponsiveContainer>
-                <AreaChart data={areaChartData} width={1100} height={168}>
+              <ResponsiveContainer width="100%" height="100%">
+                <AreaChart data={areaChartData}>
                   <CartesianGrid vertical={false} stroke="var(--color-divider)" />
                   <Area
                     type="monotone"
@@ -143,12 +162,13 @@ function Dashboard() {
                     tick={tickStyle}
                     tickFormatter={(tick) => tickFormatter.format(Number(tick)).toLowerCase()}
                   />
-                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--color-primary' }} />
+                  <Tooltip content={<ChartTooltip />} cursor={{ stroke: 'var(--color-primary)' }} />
                 </AreaChart>
               </ResponsiveContainer>
             </div>
             <div className={styles.blocks}>
               <Block
+                icon={<Calendar />}
                 title="dashboard.weekly_active_users"
                 tip={t('dashboard.weekly_active_users_tip')}
                 count={activeData.wau.count}
@@ -156,6 +176,7 @@ function Dashboard() {
                 variant="bordered"
               />
               <Block
+                icon={<BarGraph />}
                 title="dashboard.monthly_active_users"
                 tip={t('dashboard.monthly_active_users_tip')}
                 count={activeData.mau.count}
@@ -164,6 +185,7 @@ function Dashboard() {
               />
             </div>
           </Card>
+          <RecentActivity />
         </>
       )}
     </div>

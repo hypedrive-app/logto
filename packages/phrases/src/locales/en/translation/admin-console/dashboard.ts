@@ -16,6 +16,14 @@ const dashboard = {
   monthly_active_users: 'Monthly active users',
   monthly_active_users_tip:
     'The number of unique users exchanged tokens on your apps in the past 30 days',
+  vs_yesterday: 'vs yesterday',
+  vs_previous_7_days: 'vs previous 7 days',
+  active_users_last_30_days: 'Active users · last 30 days',
+  empty_title: 'No data yet',
+  empty_description: 'Once people start signing in to your apps, their activity will show up here.',
+  recent_activity: 'Recent activity',
+  view_all: 'View all',
+  no_recent_activity: 'No recent activity yet.',
 };
 
 export default Object.freeze(dashboard);

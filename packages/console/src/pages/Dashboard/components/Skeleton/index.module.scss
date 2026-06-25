@@ -11,18 +11,13 @@
   @include _.shimmering-animation;
 }
 
+// Mirror the live dashboard's responsive grid so the skeleton→content swap
+// doesn't shift the layout.
 .blocks {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: _.unit(4);
   margin-bottom: _.unit(4);
-}
-
-.block {
-  flex: 1;
-
-  &:not(:last-child) {
-    margin-inline-end: _.unit(4);
-  }
 }
 
 .dau {
@@ -36,12 +31,11 @@
 }
 
 .activeBlocks {
-  display: flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: _.unit(4);
 
   .block {
     border: 1px solid var(--color-divider);
-    width: 360px;
-    flex: unset;
   }
 }
