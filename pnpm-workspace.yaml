@@ -49,6 +49,10 @@ minimumReleaseAgeExclude:
   - '@aws-sdk/nested-clients@3.997.23'
   - '@aws-sdk/token-providers@3.1074.0'
   - '@aws-sdk/xml-builder@3.972.31'
+  - '@posthog/core@1.37.2'
+  - '@posthog/types@1.391.1'
+  - nanoid@5.1.16
+  - posthog-js@1.393.4
 
 # Dependency overrides (security pins) + peer rules.
 # Moved here from root package.json's `pnpm` field: pnpm 11 no longer reads `pnpm.overrides`
