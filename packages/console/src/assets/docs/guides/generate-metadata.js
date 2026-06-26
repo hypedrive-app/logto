@@ -28,7 +28,7 @@ const data = await Promise.all(
     );
 
     const config = existsSync(`${directory}/config.json`)
-      ? await import(`./${directory}/config.json`, { assert: { type: 'json' } }).then(
+      ? await import(`./${directory}/config.json`, { with: { type: 'json' } }).then(
           (module) => module.default
         )
       : undefined;

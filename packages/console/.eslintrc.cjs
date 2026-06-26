@@ -7,6 +7,10 @@ module.exports = {
   parserOptions: {
     project: ['./tsconfig.json', './tsconfig.scripts.gen.json'],
   },
+  // A standalone `node generate-metadata.js` codegen helper (not app code, run by hand).
+  // It uses `import(..., { with: { type: 'json' } })` import attributes that the current
+  // eslint parser can't parse; it's outside the typed-lint project anyway, so ignore it.
+  ignorePatterns: ['src/assets/docs/guides/generate-metadata.js'],
   rules: {
     'react/function-component-definition': [
       'error',
