@@ -60,6 +60,13 @@ function Search({
     setMinInputWidth(ctx.measureText(placeholder).width);
   }, [placeholder]);
 
+  // A custom property (`--search-min-width`) isn't part of `CSSProperties`, so
+  // type the style object as a string map — assignable to `style` without an
+  // `as` cast (which the lint config forbids).
+  const searchMinWidthStyle: Record<string, string> = {
+    '--search-min-width': `${minInputWidth}px`,
+  };
+
   return (
     <div className={styles.search}>
       <canvas ref={canvasRef} />
@@ -68,7 +75,10 @@ function Search({
         value={inputValue}
         icon={<SearchIcon className={styles.searchIcon} />}
         placeholder={placeholder}
-        style={{ minWidth: `${minInputWidth}px` }}
+        // Expose the canvas-measured min width as a custom property so the
+        // stylesheet can apply it on desktop yet drop it on phones (where the
+        // input wraps to full width) without needing `!important`.
+        style={searchMinWidthStyle}
         onChange={handleSearchChange}
         onKeyPress={handleSearchKeyPress}
       />

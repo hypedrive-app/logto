@@ -4,15 +4,22 @@
   display: flex;
   align-items: center;
 
+  // Apply the canvas-measured placeholder width (exposed as a custom property by
+  // index.tsx) here rather than inline, so the mobile media query can drop it
+  // cleanly without `!important`.
+  > :first-child {
+    min-width: var(--search-min-width, 0);
+  }
+
   @media screen and (max-width: 640px) {
     flex-wrap: wrap;
     gap: _.unit(2);
 
-    // The TextInput is the first child; let it take the full row and shrink,
-    // overriding the inline canvas-measured min-width set in index.tsx.
+    // The TextInput is the first child; let it take the full row and shrink to
+    // full width, ignoring the desktop min-width.
     > :first-child {
       flex: 1 1 100%;
-      min-width: 0 !important;
+      min-width: 0;
     }
 
     // Spacing is handled by `gap` once wrapped; drop the inline-start margin so
