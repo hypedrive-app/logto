@@ -10,6 +10,7 @@ import TextLink from '@/components/TextLink';
 import useErrorHandler from '@/hooks/use-error-handler';
 import useNavigateWithPreservedSearchParams from '@/hooks/use-navigate-with-preserved-search-params';
 import UserProfile from '@/pages/Consent/UserProfile';
+import { getRedirectUriOrigin } from '@/pages/Consent/util';
 import ErrorPage from '@/pages/ErrorPage';
 import { queryKeys } from '@/query-client';
 import Button from '@/shared/components/Button';
@@ -55,6 +56,9 @@ const SwitchAccount = () => {
     branding,
   } = experienceSettings;
   const logoUrl = getBrandingLogoUrl({ theme, branding, isDarkModeEnabled });
+  const redirectUriOrigin = consentData.redirectUri
+    ? getRedirectUriOrigin(consentData.redirectUri)
+    : undefined;
 
   return (
     <StaticPageLayout>
@@ -87,8 +91,10 @@ const SwitchAccount = () => {
         <div className="mt-6">
           <TextLink
             text="action.back_to_current_account"
-            onClick={async () => {
-              history.back();
+            onClick={() => {
+              if (redirectUriOrigin) {
+                window.location.assign(redirectUriOrigin);
+              }
             }}
           />
         </div>

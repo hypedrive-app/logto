@@ -13,8 +13,6 @@ import Callback from '@/pages/Callback';
 import CheckoutSuccessCallback from '@/pages/CheckoutSuccessCallback';
 import ExternalGoogleOneTapLanding from '@/pages/ExternalGoogleOneTapLanding';
 import OneTimeTokenLanding from '@/pages/OneTimeTokenLanding';
-import Profile from '@/pages/Profile';
-import HandleSocialCallback from '@/pages/Profile/containers/HandleSocialCallback';
 
 import styles from './AppRoutes.module.scss';
 import DeleteAccount from './pages/DeleteAccount';
@@ -45,11 +43,7 @@ function AppRoutes() {
             element={<AcceptInvitation />}
           />
           <Route element={<ProtectedRoutes />}>
-            <Route
-              path={GlobalRoute.Profile + '/*'}
-              element={isDevFeaturesEnabled ? <RedirectToAccountCenter /> : <Profile />}
-            />
-            <Route path={GlobalRoute.HandleSocial} element={<HandleSocialCallback />} />
+            <Route path={GlobalRoute.Profile + '/*'} element={<RedirectToAccountCenter />} />
             <Route
               path={GlobalRoute.CheckoutSuccessCallback}
               element={<CheckoutSuccessCallback />}

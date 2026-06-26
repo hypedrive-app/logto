@@ -22,7 +22,6 @@ import { dropLeadingSlash } from '@/utils/url';
 import { __Internal__ImportError } from './internal';
 
 const Welcome = safeLazy(async () => import('@/pages/Welcome'));
-const Profile = safeLazy(async () => import('@/pages/Profile'));
 const OssOnboarding = safeLazy(async () => import('@/pages/OssOnboarding'));
 
 function Layout() {
@@ -56,7 +55,7 @@ export function ConsoleRoutes() {
           <Route element={<ProtectedRoutes />}>
             <Route
               path={dropLeadingSlash(GlobalRoute.Profile) + '/*'}
-              element={isDevFeaturesEnabled ? <RedirectToAccountCenter /> : <Profile />}
+              element={<RedirectToAccountCenter />}
             />
             <Route element={<TenantAccess />}>
               {!isCloud && isProduction && isDevFeaturesEnabled && (
