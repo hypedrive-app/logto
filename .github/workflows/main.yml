@@ -14,6 +14,7 @@ concurrency:
 jobs:
   main-generated-files:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
 
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +37,7 @@ jobs:
 
   main-build:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -51,6 +53,7 @@ jobs:
 
   main-check:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -69,6 +72,7 @@ jobs:
 
   main-lint:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -90,6 +94,7 @@ jobs:
 
   main-test:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
 
     steps:
       - uses: actions/checkout@v4
@@ -126,6 +131,7 @@ jobs:
 
   main-dockerize:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
@@ -144,6 +150,7 @@ jobs:
 
   main-alteration:
     runs-on: ubuntu-latest
+    timeout-minutes: 20
 
     steps:
       # ** Checkout fresh and alteration ref **
