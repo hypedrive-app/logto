@@ -4,6 +4,24 @@
   display: flex;
   align-items: center;
 
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: _.unit(2);
+
+    // The TextInput is the first child; let it take the full row and shrink,
+    // overriding the inline canvas-measured min-width set in index.tsx.
+    > :first-child {
+      flex: 1 1 100%;
+      min-width: 0 !important;
+    }
+
+    // Spacing is handled by `gap` once wrapped; drop the inline-start margin so
+    // buttons aren't double-spaced.
+    > :not(:first-child) {
+      margin-inline-start: 0;
+    }
+  }
+
   >:not(:first-child) {
     margin-inline-start: _.unit(2);
   }

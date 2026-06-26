@@ -4,6 +4,7 @@
   display: flex;
   align-items: center;
   white-space: nowrap;
+  min-width: 0;
 
   > svg {
     flex-shrink: 0;

@@ -84,7 +84,7 @@ function Webhooks() {
         errorMessage={error?.body?.message ?? error?.message}
         columns={[
           {
-            title: <DynamicT forKey="webhooks.table.name" />,
+            title: t('webhooks.table.name'),
             dataIndex: 'name',
             colSpan: 4,
             render: ({ id, name }) => {
@@ -98,7 +98,7 @@ function Webhooks() {
             },
           },
           {
-            title: <DynamicT forKey="webhooks.table.events" />,
+            title: t('webhooks.table.events'),
             dataIndex: 'events',
             colSpan: 7,
             render: ({ event, events }) => {
@@ -107,7 +107,7 @@ function Webhooks() {
             },
           },
           {
-            title: <DynamicT forKey="webhooks.table.success_rate" />,
+            title: t('webhooks.table.success_rate'),
             dataIndex: 'successRate',
             colSpan: 3,
             render: ({ enabled, executionStats }) => {
@@ -121,7 +121,7 @@ function Webhooks() {
             },
           },
           {
-            title: <DynamicT forKey="webhooks.table.requests" />,
+            title: t('webhooks.table.requests'),
             dataIndex: 'Requests',
             colSpan: 2,
             render: ({ enabled, executionStats: { requestCount } }) => {

@@ -19,6 +19,12 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
+
+  // When the panels stack (<=768px), the outer box grows to auto height; give
+  // each panel a usable minimum height so the list area isn't crushed.
+  @media screen and (max-width: 768px) {
+    min-height: 220px;
+  }
 }
 
 .boxTopBar {

@@ -30,4 +30,23 @@
   .action {
     margin-top: _.unit(6);
   }
+
+  // Phones: shrink the decorative artwork so it doesn't dominate the short
+  // viewport, let the description use the full width within the gutters, and
+  // give the empty-state action room to breathe. Shared by every list page's
+  // empty state.
+  @media screen and (max-width: 640px) {
+    .image > svg {
+      width: 140px;
+      height: 140px;
+    }
+
+    .description {
+      max-width: 100%;
+    }
+
+    .action {
+      margin-top: _.unit(5);
+    }
+  }
 }

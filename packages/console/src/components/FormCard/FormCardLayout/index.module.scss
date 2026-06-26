@@ -30,6 +30,9 @@ $column-width: calc((100% - 23 * $gutter-width) / 24);
       flex-direction: column;
       justify-content: unset;
       gap: _.unit(4);
+      // Tighten the inline padding when the card stacks so the form column
+      // keeps usable width on narrow viewports.
+      padding: _.unit(5) _.unit(4);
     }
 
     .introduction,

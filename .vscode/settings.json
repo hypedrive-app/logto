@@ -1,5 +1,17 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
+  // Agent/workflow git worktrees live here as full repo copies. Hide them from the
+  // editor, file watcher, search, and the TS server so their (often stale) tsconfigs
+  // don't surface phantom "Cannot read file / No inputs found" errors in Problems.
+  "files.exclude": {
+    "**/.claude/worktrees": true
+  },
+  "files.watcherExclude": {
+    "**/.claude/worktrees/**": true
+  },
+  "search.exclude": {
+    "**/.claude/worktrees": true
+  },
   "[scss]": {
     "editor.codeActionsOnSave": {
       "source.fixAll.stylelint": "explicit"

@@ -98,6 +98,21 @@
       height: 56px;
     }
   }
+
+  @media screen and (max-width: 640px) {
+    // Drop the fixed column widths on phone so the rule-name column isn't
+    // pinned to ~44% (which squeezes the remaining columns into ~100px).
+    table-layout: auto;
+
+    th,
+    td {
+      padding: _.unit(2);
+    }
+
+    thead th:first-child {
+      width: auto;
+    }
+  }
 }
 
 .ruleGroupRow {

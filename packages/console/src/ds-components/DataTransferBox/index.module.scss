@@ -1,3 +1,9 @@
 .dataTransferBox {
   height: 360px;
+
+  // When the panels stack vertically (<=768px) let the box grow so each panel
+  // keeps a usable height instead of splitting the fixed 360px in half.
+  @media screen and (max-width: 768px) {
+    height: auto;
+  }
 }

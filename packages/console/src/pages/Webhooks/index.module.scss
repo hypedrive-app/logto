@@ -10,4 +10,8 @@
   font: var(--font-body-2);
   text-align: end;
   margin-inline-end: _.unit(4);
+
+  @media screen and (max-width: 640px) {
+    margin-inline-end: 0;
+  }
 }

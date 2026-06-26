@@ -117,7 +117,7 @@ function Roles() {
             render: ({ description }) => <Breakable>{description}</Breakable>,
           },
           {
-            title: <span>{t('roles.col_assigned_entities')}</span>,
+            title: t('roles.col_assigned_entities'),
             dataIndex: 'entities',
             colSpan: 5,
             render: ({

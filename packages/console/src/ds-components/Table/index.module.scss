@@ -204,6 +204,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+
+  // On phones let the footer (selection summary + pagination) wrap onto two
+  // lines instead of crowding into one cramped row. Shared by every list page.
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: _.unit(2);
+    justify-content: center;
+  }
 }
 
 .pagination {
@@ -253,6 +261,16 @@
             border-top: none;
             padding: _.unit(1.5) 0;
             text-align: end;
+            min-width: 0;
+            overflow-wrap: anywhere;
+
+            // Make the value side (everything except the ::before label) able to
+            // shrink and break long unbreakable tokens (IDs, URLs, user-agents)
+            // so they don't push the folded card wider than the viewport.
+            > * {
+              min-width: 0;
+              overflow-wrap: anywhere;
+            }
 
             // Column title from the header, shown as a muted leading label.
             &[data-label]::before {
@@ -261,6 +279,29 @@
               font: var(--font-label-2);
               color: var(--color-text-secondary);
               text-align: start;
+            }
+          }
+
+          // The first cell is the row's identity (name + avatar via ItemPreview).
+          // Render it as the card's heading: full-width, start-aligned, no leading
+          // label and no truncation — the value side wraps instead of ellipsing so
+          // the primary identity stays prominent above the labelled detail rows.
+          td:first-child {
+            justify-content: flex-start;
+            text-align: start;
+            padding-top: 0;
+            padding-bottom: _.unit(2);
+
+            &::before {
+              display: none;
+            }
+
+            // Let the name unwrap from its desktop nowrap+ellipsis in card mode.
+            :global(.title),
+            :global(.subtitle) {
+              white-space: normal;
+              overflow: visible;
+              text-overflow: clip;
             }
           }
         }
