@@ -52,7 +52,7 @@ function Markdown({ className, children }: Props) {
   };
 
   return (
-    // react-markdown v10 removed the `className` prop; wrap in a styled element instead.
+    // React-markdown v10 removed the `className` prop; wrap in a styled element instead.
     <div className={classNames(styles.markdown, className)}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}

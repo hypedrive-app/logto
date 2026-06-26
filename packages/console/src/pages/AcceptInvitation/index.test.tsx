@@ -38,6 +38,7 @@ vi.mock('@/hooks/use-redirect-uri', () => ({
 }));
 
 vi.mock('@/contexts/TenantsProvider', async () => {
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   const { createContext } = await vi.importActual<typeof import('react')>('react');
 
   return {
@@ -72,6 +73,7 @@ const mockedUseCloudApi = vi.mocked(useCloudApi);
 const mockedUseSWR = vi.mocked(useSWR);
 
 vi.mock('react-router-dom', async () => ({
+  // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   ...(await vi.importActual<typeof import('react-router-dom')>('react-router-dom')),
   useParams: () => ({ invitationId: 'invitation-id' }),
 }));

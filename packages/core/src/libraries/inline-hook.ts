@@ -218,7 +218,7 @@ export class InlineHookLibrary {
     try {
       const inlineHook = await this.logtoConfigs.getInlineHook(key);
 
-      if (!inlineHook?.enabled) {
+      if (!inlineHook.enabled) {
         return;
       }
 

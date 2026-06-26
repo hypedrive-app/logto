@@ -9,7 +9,7 @@
  */
 
 /** A single item in the rendered pagination sequence: a 1-based page number or an ellipsis gap. */
-export type PaginationItem = number | 'ellipsis';
+type PaginationItem = number | 'ellipsis';
 
 type Options = {
   /** Total number of pages (>= 1). */
@@ -52,38 +52,33 @@ export const getPaginationRange = ({
     return [];
   }
 
-  // The set of pages to keep: both margins + a window centered on the active page.
-  const visible = new Set<number>();
+  // Margin pages: the first and last `marginPagesDisplayed` pages.
+  const marginCount = Math.min(marginPagesDisplayed, pageCount);
+  const marginPages = Array.from({ length: marginCount }, (_, index) => index + 1).flatMap(
+    (index) => [index, pageCount - index + 1]
+  );
 
-  for (let index = 1; index <= Math.min(marginPagesDisplayed, pageCount); index += 1) {
-    visible.add(index);
-    visible.add(pageCount - index + 1);
-  }
-
-  // Center a window of `pageRangeDisplayed` pages on the active page (extra page goes after the
-  // active one for even ranges, matching react-paginate's bias toward later pages).
+  // A window of `pageRangeDisplayed` pages centered on the active page (the extra page goes after
+  // the active one for even ranges, matching react-paginate's bias toward later pages). The active
+  // page itself is always kept, even when `pageRangeDisplayed` is 0.
   const before = Math.floor((pageRangeDisplayed - 1) / 2);
   const after = Math.ceil((pageRangeDisplayed - 1) / 2);
-  for (let index = page - before; index <= page + after; index += 1) {
-    if (index >= 1 && index <= pageCount) {
-      visible.add(index);
-    }
-  }
-  // Ensure the active page itself is always present even when `pageRangeDisplayed` is 0.
-  visible.add(page);
+  const windowPages = Array.from(
+    { length: before + after + 1 },
+    (_, index) => page - before + index
+  ).filter((index) => index >= 1 && index <= pageCount);
 
-  const result: PaginationItem[] = [];
-  let previous = 0;
-  for (const pageNumber of allPages) {
-    if (!visible.has(pageNumber)) {
-      continue;
-    }
-    if (previous && pageNumber - previous > 1) {
-      result.push('ellipsis');
-    }
-    result.push(pageNumber);
-    previous = pageNumber;
-  }
+  // The set of pages to keep: both margins + the centered window + the active page.
+  const visible = new Set<number>([...marginPages, ...windowPages, page]);
 
-  return result;
+  // Build the ordered sequence, inserting a single 'ellipsis' for each skipped span.
+  return allPages
+    .filter((pageNumber) => visible.has(pageNumber))
+    .reduce<PaginationItem[]>((result, pageNumber, index, kept) => {
+      const previous = kept[index - 1];
+      const gap: PaginationItem[] =
+        previous !== undefined && pageNumber - previous > 1 ? ['ellipsis'] : [];
+
+      return [...result, ...gap, pageNumber];
+    }, []);
 };

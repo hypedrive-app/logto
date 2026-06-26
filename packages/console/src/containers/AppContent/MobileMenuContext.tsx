@@ -1,3 +1,4 @@
+import { noop } from '@silverhand/essentials';
 import { createContext } from 'react';
 
 /**
@@ -5,7 +6,7 @@ import { createContext } from 'react';
  * is always visible and this state is ignored; on mobile the topbar hamburger
  * toggles it and the backdrop / navigation closes it.
  */
-export type MobileMenuContextType = {
+type MobileMenuContextType = {
   readonly isOpen: boolean;
   readonly open: () => void;
   readonly close: () => void;
@@ -13,6 +14,6 @@ export type MobileMenuContextType = {
 
 export const MobileMenuContext = createContext<MobileMenuContextType>({
   isOpen: false,
-  open: () => {},
-  close: () => {},
+  open: noop,
+  close: noop,
 });

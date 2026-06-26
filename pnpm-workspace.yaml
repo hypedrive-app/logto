@@ -4,6 +4,12 @@ packages:
   - packages/connectors/*
   - "!packages/connectors/templates"
 
+# Hoist all eslint packages to the root node_modules so ESLint's legacy
+# (.eslintrc.cjs) plugin resolution can find them. pnpm 10+ no longer reads
+# `public-hoist-pattern` from .npmrc — it must live here.
+publicHoistPattern:
+  - '*eslint*'
+
 allowBuilds:
   '@swc/core': true
   core-js: true
@@ -112,6 +118,10 @@ overrides:
   'tar@<=7.5.15': '^7.5.16'
   'tmp@<0.2.6': '^0.2.6'
   'uuid@<11.1.1': '^11.1.1'
+  # Dedupe unified: rehype-mdx-code-props pins 11.0.3 while @mdx-js/* pull 11.0.5,
+  # producing two incompatible `Plugin`/`unified` types so the rehype plugin no
+  # longer matches @mdx-js/rollup's rehypePlugins param (console vite.config.ts).
+  'unified@11.0.3': '11.0.5'
   'vite@<=6.4.2': '^6.4.3'
   # Pin vite to a single exact version so dependency upgrades (`pnpm update <pkg>`)
   # cannot pull a second vite minor into the tree — a second vite changed the

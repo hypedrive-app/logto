@@ -1,6 +1,7 @@
 import classNames from 'classnames';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useLocation } from 'react-router-dom';
 
 import { isDevFeaturesEnabled } from '@/consts/env';
 import { MobileMenuContext } from '@/containers/AppContent/MobileMenuContext';
@@ -24,19 +25,27 @@ function Sidebar() {
   const { sections } = useSidebarMenuItems();
   const { match } = useMatchTenantPath();
   const { isOpen: isMobileOpen, close: closeMobileMenu } = useContext(MobileMenuContext);
+  const { t: tGeneral } = useTranslation(undefined, { keyPrefix: 'admin_console.general' });
+  const { pathname } = useLocation();
+
+  // Close the mobile drawer whenever the route changes (e.g. a nav item is
+  // tapped). On desktop the drawer is always open and close() is a no-op.
+  useEffect(() => {
+    closeMobileMenu();
+  }, [pathname, closeMobileMenu]);
 
   return (
     <>
       {/* Backdrop for the mobile drawer. Hidden on desktop via CSS. */}
-      <div
-        aria-hidden
+      <button
+        type="button"
+        aria-label={tGeneral('close')}
         className={classNames(styles.backdrop, isMobileOpen && styles.backdropVisible)}
         onClick={closeMobileMenu}
       />
       <div className={classNames(styles.sidebar, isMobileOpen && styles.sidebarOpen)}>
         <OverlayScrollbar className={styles.menu}>
-          {/* Navigating closes the drawer on mobile; on desktop close() is a no-op. */}
-          <div className={styles.menuContent} onClick={closeMobileMenu}>
+          <div className={styles.menuContent}>
             {sections.map(({ title, items }) => (
               <Section key={title} title={t(title)}>
                 {items.map(

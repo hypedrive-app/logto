@@ -46,11 +46,12 @@ type GenerateWebAuthnRegistrationOptionsParameters = {
 export const deriveRpName = (rpId: string): string => {
   const labels = rpId.split('.').filter(Boolean);
   // Strip a known auth-style subdomain prefix.
-  if (labels.length > 2 && ['auth', 'www', 'login', 'id', 'account'].includes(labels[0] ?? '')) {
-    labels.shift();
-  }
+  const registrableLabels =
+    labels.length > 2 && ['auth', 'www', 'login', 'id', 'account'].includes(labels[0] ?? '')
+      ? labels.slice(1)
+      : labels;
   // The registrable name is the first remaining label (before the TLD).
-  const brand = labels[0] ?? rpId;
+  const brand = registrableLabels[0] ?? rpId;
   return brand.charAt(0).toUpperCase() + brand.slice(1);
 };
 

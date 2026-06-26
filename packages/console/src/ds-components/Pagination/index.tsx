@@ -123,7 +123,11 @@ function Pagination({
           item === 'ellipsis' ? (
             // eslint-disable-next-line react/no-array-index-key
             <li key={`ellipsis-${index}`} className={styles.disabled}>
-              <Button className={styles.button} size="small" title={<DangerousRaw>...</DangerousRaw>} />
+              <Button
+                className={styles.button}
+                size="small"
+                title={<DangerousRaw>...</DangerousRaw>}
+              />
             </li>
           ) : (
             <li key={item}>

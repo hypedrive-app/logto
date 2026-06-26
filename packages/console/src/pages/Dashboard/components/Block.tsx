@@ -46,9 +46,7 @@ function Block({ variant = 'default', count, delta, title, tip, icon, caption }:
   // is no meaningful baseline (e.g. growth from 0) so the trend is still shown.
   const pct = delta === undefined ? undefined : percentLabel(count, delta);
   const deltaLabel =
-    delta === undefined
-      ? undefined
-      : (pct ?? `${conditionalString(delta >= 0 && '+')}${delta}`);
+    delta === undefined ? undefined : (pct ?? `${conditionalString(delta >= 0 && '+')}${delta}`);
 
   return (
     <Card className={classNames(styles.block, styles[variant])}>
