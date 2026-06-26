@@ -7,6 +7,11 @@
   overflow-y: auto;
   padding: _.unit(3) 0;
   @include _.z-index(modal);
+
+  // Phones: drop the outer padding so the modal can fill the screen edge-to-edge.
+  @media screen and (max-width: 640px) {
+    padding: 0;
+  }
 }
 
 .content {

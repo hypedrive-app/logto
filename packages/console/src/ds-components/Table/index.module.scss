@@ -209,3 +209,70 @@
 .pagination {
   margin-top: _.unit(4);
 }
+
+// Phones: turn the table into a stack of cards. Each row becomes a bordered
+// card and each cell stacks vertically with its column title as a leading
+// label, so wide multi-column tables stay readable without horizontal scroll.
+// Applies to every table in the console since they all share this component.
+@media screen and (max-width: 640px) {
+  .container {
+    min-width: 0;
+  }
+
+  .tableContainer {
+    // The header row is folded into each cell's label, so hide the header table.
+    .headerTable {
+      display: none;
+    }
+
+    table {
+      table-layout: auto;
+    }
+
+    .bodyTable {
+      padding: _.unit(3);
+
+      tbody {
+        // Reset the table-ish display so rows/cells can flow as blocks.
+        display: block;
+
+        tr {
+          display: block;
+          padding: _.unit(2) 0;
+          border-top: 1px solid var(--color-divider);
+
+          &:first-child {
+            border-top: none;
+          }
+
+          td {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: _.unit(4);
+            border-top: none;
+            padding: _.unit(1.5) 0;
+            text-align: end;
+
+            // Column title from the header, shown as a muted leading label.
+            &[data-label]::before {
+              content: attr(data-label);
+              flex-shrink: 0;
+              font: var(--font-label-2);
+              color: var(--color-text-secondary);
+              text-align: start;
+            }
+          }
+        }
+      }
+    }
+
+    // Borders on the card itself rather than per-cell on small screens.
+    &.hasBorder .bodyTable {
+      tr td:first-child,
+      tr td:last-child {
+        padding-inline: 0;
+      }
+    }
+  }
+}

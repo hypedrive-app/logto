@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import ContactIcon from '@/assets/icons/contact-us.svg?react';
 import CubeIcon from '@/assets/icons/cube.svg?react';
 import DocumentIcon from '@/assets/icons/document-nav-button.svg?react';
+import HamburgerIcon from '@/assets/icons/hamburger.svg?react';
 import CloudLogo from '@/assets/images/cloud-logo.svg?react';
 import Logo from '@/assets/images/logo.svg?react';
 import { githubReleasesLink } from '@/consts';
@@ -30,15 +31,27 @@ type Props = {
   readonly hideTenantSelector?: boolean;
   readonly hideTitle?: boolean;
   /* eslint-enable react/boolean-prop-naming */
+  /** Opens the mobile sidebar drawer. Only rendered (via CSS) on narrow viewports. */
+  readonly onMenuClick?: () => void;
 };
 
-function Topbar({ className, hideTenantSelector, hideTitle }: Props) {
+function Topbar({ className, hideTenantSelector, hideTitle, onMenuClick }: Props) {
   const { t } = useTranslation(undefined, { keyPrefix: 'admin_console' });
   const { navigate } = useTenantPathname();
   const LogtoLogo = isCloud ? CloudLogo : Logo;
 
   return (
     <div className={classNames(styles.topbar, className)}>
+      {onMenuClick && (
+        <button
+          type="button"
+          className={styles.menuButton}
+          aria-label={t('topbar.open_menu')}
+          onClick={onMenuClick}
+        >
+          <HamburgerIcon />
+        </button>
+      )}
       <LogtoLogo
         className={styles.logo}
         onClick={() => {

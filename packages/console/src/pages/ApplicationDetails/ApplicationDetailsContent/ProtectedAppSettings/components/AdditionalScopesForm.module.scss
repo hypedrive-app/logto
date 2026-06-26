@@ -27,6 +27,12 @@
   grid-template-columns: minmax(260px, 1fr) minmax(260px, 1.4fr);
   align-items: center;
   column-gap: _.unit(4);
+
+  // The two 260px-min columns overflow a phone; stack and let them shrink.
+  @media screen and (max-width: 640px) {
+    grid-template-columns: 1fr;
+    row-gap: _.unit(2);
+  }
 }
 
 .headerRow {

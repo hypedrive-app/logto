@@ -18,6 +18,11 @@
   border-top: 1px solid var(--color-divider);
   cursor: pointer;
 
+  @media screen and (max-width: 640px) {
+    grid-template-columns: 1fr;
+    gap: _.unit(1);
+  }
+
   &:hover {
     background-color: var(--color-hover);
     border-radius: 10px;

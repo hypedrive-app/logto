@@ -14,6 +14,31 @@
     gap: _.unit(2);
   }
 
+  // Hamburger that opens the mobile sidebar drawer. Hidden on desktop, where the
+  // sidebar is permanently visible.
+  .menuButton {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin-inline-start: _.unit(-1);
+    padding: 0;
+    border: none;
+    border-radius: var(--radius-md);
+    background: none;
+    color: var(--color-text);
+    cursor: pointer;
+
+    &:hover {
+      background: var(--color-hover);
+    }
+
+    @media screen and (max-width: 768px) {
+      display: flex;
+    }
+  }
+
   .logo {
     width: auto;
     height: 28px;

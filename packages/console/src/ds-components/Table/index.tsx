@@ -202,8 +202,15 @@ function Table<
                               })
                           )}
                         >
-                          {columns.map(({ dataIndex, colSpan, className, render }) => (
-                            <td key={dataIndex} colSpan={colSpan} className={className}>
+                          {columns.map(({ dataIndex, colSpan, className, title, render }) => (
+                            <td
+                              key={dataIndex}
+                              colSpan={colSpan}
+                              className={className}
+                              // On mobile each row renders as a stacked card and the cell
+                              // shows its column title as a leading label (see index.module.scss).
+                              data-label={typeof title === 'string' ? title : undefined}
+                            >
                               {render(row, rowIndex)}
                             </td>
                           ))}

@@ -1,5 +1,5 @@
 import { conditional, joinPath } from '@silverhand/essentials';
-import { useContext, useRef } from 'react';
+import { useCallback, useContext, useMemo, useRef, useState } from 'react';
 import { Navigate, Outlet, useParams } from 'react-router-dom';
 
 import { type SubscriptionCountBasedUsage } from '@/cloud/types/router';
@@ -20,6 +20,7 @@ import { shouldEnforcePaywallInUI } from '@/utils/paywall';
 import { getPath } from '../ConsoleContent/Sidebar';
 import { useSidebarMenuItems } from '../ConsoleContent/Sidebar/hook';
 
+import { MobileMenuContext } from './MobileMenuContext';
 import TenantNotificationContainer from './TenantNotificationContainer';
 import TenantSuspendedPage from './TenantSuspendedPage';
 import styles from './index.module.scss';
@@ -34,6 +35,18 @@ export default function AppContent() {
 
   const scrollableContent = useRef<HTMLDivElement>(null);
   const { scrollTop } = useScroll(scrollableContent.current);
+
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const openMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(true);
+  }, []);
+  const closeMobileMenu = useCallback(() => {
+    setIsMobileMenuOpen(false);
+  }, []);
+  const mobileMenu = useMemo(
+    () => ({ isOpen: isMobileMenuOpen, open: openMobileMenu, close: closeMobileMenu }),
+    [isMobileMenuOpen, openMobileMenu, closeMobileMenu]
+  );
 
   const isLoading = isLoadingPreference || isLoadingSubscriptionData;
 
@@ -77,13 +90,18 @@ export default function AppContent() {
         },
       }}
     >
-      <div className={styles.app}>
-        <Topbar className={conditional(scrollTop && styles.topbarShadow)} />
-        {isTenantSuspended && <TenantSuspendedPage />}
-        {!isTenantSuspended && (
-          <Outlet context={{ scrollableContent } satisfies AppContentOutletContext} />
-        )}
-      </div>
+      <MobileMenuContext.Provider value={mobileMenu}>
+        <div className={styles.app}>
+          <Topbar
+            className={conditional(scrollTop && styles.topbarShadow)}
+            onMenuClick={openMobileMenu}
+          />
+          {isTenantSuspended && <TenantSuspendedPage />}
+          {!isTenantSuspended && (
+            <Outlet context={{ scrollableContent } satisfies AppContentOutletContext} />
+          )}
+        </div>
+      </MobileMenuContext.Provider>
       <TenantNotificationContainer />
     </SubscriptionDataProvider>
   );
