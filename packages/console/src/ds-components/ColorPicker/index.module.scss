@@ -31,4 +31,6 @@
 
 .palette {
   width: 400px;
+  // Never exceed the viewport on small phones.
+  max-width: calc(100vw - _.unit(8));
 }

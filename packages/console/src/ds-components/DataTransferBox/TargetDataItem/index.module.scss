@@ -20,6 +20,13 @@
       border-radius: 8px;
       background: var(--color-neutral-95);
       @include _.text-ellipsis;
+
+      // Phones: the panel is narrow, so let the name shrink and cap it well
+      // below 204px to leave room for the group label.
+      @media screen and (max-width: 640px) {
+        flex-shrink: 1;
+        max-width: 50%;
+      }
     }
 
     .groupName {

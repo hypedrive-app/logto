@@ -6,6 +6,12 @@
   display: flex;
   align-items: stretch;
   overflow: hidden;
+
+  // Tablets and phones: stack the source/target panels vertically instead of
+  // side-by-side so neither panel gets squeezed below a usable width.
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .box {
@@ -42,4 +48,12 @@
 
 .verticalBar {
   @include _.vertical-bar;
+
+  // When the panels stack vertically, the divider must run horizontally.
+  @media screen and (max-width: 768px) {
+    width: auto;
+    height: 0;
+    border-left: unset;
+    border-top: 1px solid var(--color-border);
+  }
 }

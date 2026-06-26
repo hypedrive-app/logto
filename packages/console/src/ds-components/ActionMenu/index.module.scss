@@ -3,6 +3,12 @@
 .content {
   padding: _.unit(1);
   min-width: 200px;
+
+  // Never force the dropdown wider than the viewport on small phones.
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+    max-width: calc(100vw - _.unit(8));
+  }
 }
 
 .dropdownTitle {

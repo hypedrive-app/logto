@@ -48,6 +48,12 @@
   padding: _.unit(2);
   border-radius: 10px;
 
+  // Never let the popup calendar exceed the viewport on small phones.
+  @media screen and (max-width: 640px) {
+    max-width: calc(100vw - _.unit(8));
+    overflow-x: auto;
+  }
+
   // react-day-picker re-declares `--rdp-*` on `.rdp` itself, so overrides
   // must live at that same scope to win the cascade.
   :global(.rdp) {

@@ -8,7 +8,7 @@
   box-shadow: var(--shadow-2);
   padding: _.unit(2) _.unit(3);
   font: var(--font-body-2);
-  max-width: 300px;
+  max-width: min(300px, calc(100vw - _.unit(8)));
   white-space: pre-wrap;
   @include _.z-index(tooltip);
 
