@@ -166,11 +166,16 @@ jobs:
       - name: Copy lockfile # Make setup workflow happy
         run: cp ./fresh/pnpm-lock.yaml ./
 
+      # This job installs BOTH the current tree and an old release tag. pnpm 10 +
+      # Node 22 satisfies both engines ranges (current `^9||^10||^11`, old
+      # `^9||^10`); the rest of CI runs pnpm 11 / Node 24, which the old tag's
+      # `engines` rejects. Match upstream here (it pins pnpm 10 / Node 22) so the
+      # historical install just works — no engine-strict workaround needed.
       - name: Setup Node and pnpm
         uses: silverhand-io/actions-node-pnpm-run-steps@v5
         with:
-          pnpm-version: 11
-          node-version: ^24.0.0
+          pnpm-version: 10
+          node-version: ^22.14.0
           run-install: false
 
       # ** Prepack packages **
@@ -180,17 +185,7 @@ jobs:
 
       - name: Prepack alteration
         working-directory: ./alteration
-        # The alteration tree is an old release tag whose package.json pins an
-        # engines range (e.g. `pnpm: ^9 || ^10`, `node: ^22`) the current runner's
-        # pnpm 11 / Node 24 no longer satisfies. pnpm 11 ignores both the
-        # `--config.engine-strict=false` flag and `npm_config_engine_strict` for
-        # the `engines` field (pnpm/pnpm#8869), so strip `engines` from every
-        # manifest in this historical tree before installing. This affects only
-        # the throwaway alteration checkout; the fresh tree above stays strict.
-        run: |
-          find . -name package.json -not -path '*/node_modules/*' -print0 \
-            | xargs -0 -I{} node -e "const f='{}';const fs=require('fs');const p=JSON.parse(fs.readFileSync(f));delete p.engines;fs.writeFileSync(f,JSON.stringify(p,null,2)+'\n')"
-          pnpm i && pnpm prepack
+        run: pnpm i && pnpm prepack
       # ** End **
 
       - name: Setup Postgres
