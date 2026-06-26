@@ -50,6 +50,11 @@
   justify-content: center;
   align-items: center;
   gap: _.unit(2);
+
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    padding: _.unit(6) _.unit(4);
+  }
 }
 
 .card {
@@ -93,6 +98,10 @@
   color: var(--color-text-secondary);
   transform: translateY(_.unit(-4));
   flex-shrink: 0;
+
+  @media screen and (max-width: 640px) {
+    transform: none;
+  }
 }
 
 .convertLine {

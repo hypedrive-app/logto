@@ -29,6 +29,12 @@
     }
   }
 
+  @container (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
   @container (min-width: 681px) and (max-width: 1080px) {
     .grid {
       grid-template-columns: repeat(3, 1fr);

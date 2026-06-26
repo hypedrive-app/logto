@@ -16,6 +16,13 @@
   .label {
     font: var(--font-title-3);
     white-space: nowrap;
+
+    @media screen and (max-width: 640px) {
+      // On narrow screens the 4 equally-divided role cards can't keep their
+      // labels on one line without overflowing; allow the label to wrap.
+      white-space: normal;
+      text-align: center;
+    }
   }
 
   .permissions {
