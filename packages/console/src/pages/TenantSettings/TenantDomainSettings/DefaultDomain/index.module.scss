@@ -6,9 +6,12 @@
   border-radius: 10px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: _.unit(6);
 
   .domain {
     font: var(--font-title-2);
+    overflow-wrap: anywhere;
+    min-width: 0;
   }
 }

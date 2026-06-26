@@ -25,3 +25,9 @@
     margin-inline: _.unit(62.5) 0;
   }
 }
+
+@media screen and (max-width: 640px) {
+  .container .footerInnerWrapper {
+    margin-inline: 0;
+  }
+}

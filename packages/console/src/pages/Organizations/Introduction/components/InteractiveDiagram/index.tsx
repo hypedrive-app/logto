@@ -17,7 +17,7 @@ function InteractiveDiagram() {
   const [activeRole, setActiveRole] = useState<'Admin' | 'Member' | 'Guest'>();
 
   return (
-    <FlexBox type="column" gap={32} style={{ padding: '12px 0' }}>
+    <FlexBox type="column" gap={32} className={styles.diagram} style={{ padding: '12px 0' }}>
       <FlexBox style={{ alignItems: 'center' }}>
         <User
           variant="blue"

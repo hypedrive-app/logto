@@ -13,6 +13,9 @@
   justify-content: space-between;
   align-items: center;
   gap: _.unit(6);
+  // Allow the title block and the primary action button to wrap onto separate
+  // lines on narrow viewports instead of overflowing the page width.
+  flex-wrap: wrap;
 }
 
 .table {

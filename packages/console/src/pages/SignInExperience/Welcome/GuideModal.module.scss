@@ -15,6 +15,10 @@
     padding-block: 0;
     padding-inline: _.unit(2) _.unit(21);
 
+    @media screen and (max-width: 640px) {
+      padding-inline: _.unit(2) _.unit(4);
+    }
+
     button {
       margin-inline-start: _.unit(4);
     }
@@ -39,6 +43,7 @@
 
     .reminder {
       width: 550px;
+      max-width: 100%;
       margin: _.unit(2) auto _.unit(8);
     }
 
@@ -47,6 +52,10 @@
       padding: _.unit(6) _.unit(17);
       // Space for footer
       padding-bottom: 108px;
+
+      @media screen and (max-width: 640px) {
+        padding-inline: _.unit(4);
+      }
     }
   }
 
@@ -54,6 +63,10 @@
     display: flex;
     align-items: flex-start;
     @include _.main-content-width;
+
+    @media screen and (max-width: 640px) {
+      flex-direction: column;
+    }
 
     .form {
       flex: 1;
@@ -68,6 +81,10 @@
       margin-inline-start: _.unit(8);
       position: sticky;
       top: _.unit(4);
+
+      @media screen and (max-width: 640px) {
+        display: none;
+      }
     }
   }
 

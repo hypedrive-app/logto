@@ -17,6 +17,19 @@
       flex: 7;
     }
   }
+
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+
+    > * {
+      &:first-child {
+        margin-inline-end: 0;
+        margin-bottom: _.unit(4);
+        // ScriptSection uses an absolutely-positioned editor; give it a height when stacked.
+        min-height: 400px;
+      }
+    }
+  }
 }
 
 .submitActionBar {

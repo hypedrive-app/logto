@@ -12,6 +12,11 @@
   justify-content: flex-end;
   align-items: center;
 
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+
   .title {
     color: var(--color-text-secondary);
     font: var(--font-body-2);
@@ -20,6 +25,12 @@
   .eventSelector {
     width: 300px;
     margin-inline-start: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      width: 100%;
+      margin-inline-start: 0;
+      margin-top: _.unit(2);
+    }
   }
 }
 

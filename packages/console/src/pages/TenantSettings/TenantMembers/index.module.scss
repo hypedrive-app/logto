@@ -8,6 +8,7 @@
   .tabButtons {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
     gap: _.unit(4);
 
     .button {

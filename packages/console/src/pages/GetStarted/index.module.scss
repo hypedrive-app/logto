@@ -245,6 +245,21 @@
       gap: _.unit(4);
     }
   }
+
+  // On phone-width cards the icon + text + trailing action can't share one row;
+  // stack the borderBox vertically and tighten its generous padding.
+  @container (max-width: 480px) {
+    .borderBox {
+      flex-direction: column;
+      align-items: stretch;
+      padding: _.unit(5) _.unit(4);
+      gap: _.unit(4);
+    }
+
+    .buttons {
+      align-items: stretch;
+    }
+  }
 }
 
 .privateCloudIcon {

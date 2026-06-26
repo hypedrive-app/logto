@@ -18,6 +18,16 @@
   &.dark {
     background-image: url('../../assets/images/welcome-dark.svg');
   }
+
+  @media screen and (max-width: 640px) {
+    // The decorative right-bottom artwork assumes a wide canvas; on phones we
+    // drop the fixed min-width and let the content stack fluidly.
+    min-width: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+    background-size: cover;
+    background-position: right -120px bottom;
+  }
 }
 
 .header {
@@ -26,6 +36,10 @@
   left: 0;
   width: 100%;
   padding: _.unit(12);
+
+  @media screen and (max-width: 640px) {
+    padding: _.unit(6);
+  }
 }
 
 .logo {
@@ -51,6 +65,13 @@ main {
 .content {
   margin-inline-start: 98px;
   width: 585px;
+  max-width: calc(100% - 196px);
+
+  @media screen and (max-width: 640px) {
+    margin-inline: _.unit(6);
+    width: auto;
+    max-width: none;
+  }
 }
 
 .title {
@@ -60,6 +81,11 @@ main {
   letter-spacing: -0.25px;
   color: var(--color-text);
   margin: _.unit(2) 0 _.unit(3);
+
+  @media screen and (max-width: 640px) {
+    font-size: 36px;
+    line-height: 44px;
+  }
 }
 
 .description {
@@ -70,4 +96,5 @@ main {
 
 .button {
   width: 400px;
+  max-width: 100%;
 }

@@ -30,6 +30,17 @@
   &:not(:last-child) {
     border-bottom: 1px solid var(--color-divider);
   }
+
+  // Let the event-name side shrink/truncate and keep the trailing date intact
+  // so a long event key can't push the row past the viewport width.
+  > :first-child {
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  > :last-child {
+    flex-shrink: 0;
+  }
 }
 
 .empty {

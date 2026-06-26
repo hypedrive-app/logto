@@ -47,6 +47,11 @@
     border: 1px solid var(--color-border);
     font: var(--font-body-2);
 
+    // Allow wide guide tables to scroll horizontally instead of widening the page.
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+
     tr {
       width: 100%;
     }
@@ -70,6 +75,13 @@
     font: var(--font-body-2);
     padding: _.unit(1);
     border-radius: 6px;
+    overflow-wrap: break-word;
+    word-break: break-word;
+  }
+
+  pre {
+    max-width: 100%;
+    overflow-x: auto;
   }
 
   img {

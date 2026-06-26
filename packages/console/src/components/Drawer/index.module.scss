@@ -14,6 +14,12 @@ $offset: 100%;
   background: var(--color-base);
   transition: transform 0.3s ease-in-out;
 
+  @media screen and (max-width: 960px) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100%;
+  }
+
   .wrapper {
     display: flex;
     flex-direction: column;

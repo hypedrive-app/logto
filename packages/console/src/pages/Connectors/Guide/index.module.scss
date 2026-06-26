@@ -38,10 +38,21 @@
     min-width: min-content;
     padding: _.unit(2) _.unit(6) _.unit(6);
 
+    @media screen and (max-width: 640px) {
+      flex-direction: column;
+      min-width: 0;
+      padding: _.unit(2) _.unit(4) _.unit(6);
+    }
+
     > * {
       flex: 1;
       max-width: 800px;
       min-width: 400px;
+
+      @media screen and (max-width: 640px) {
+        max-width: 100%;
+        min-width: 0;
+      }
     }
 
     .readme {
@@ -54,6 +65,11 @@
       overflow-y: auto;
       position: sticky;
       top: 0;
+
+      @media screen and (max-width: 640px) {
+        margin: 0 0 _.unit(4);
+        position: static;
+      }
 
       .readmeTitle {
         font: var(--font-title-2);

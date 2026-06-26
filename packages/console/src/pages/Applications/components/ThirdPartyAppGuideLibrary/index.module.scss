@@ -20,6 +20,10 @@
   .library {
     padding: 0 _.unit(32);
 
+    @media screen and (max-width: 640px) {
+      padding: 0 _.unit(4);
+    }
+
     > label {
       align-self: flex-start;
     }

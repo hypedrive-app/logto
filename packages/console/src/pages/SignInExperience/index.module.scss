@@ -42,6 +42,18 @@
         top: _.unit(4);
         align-self: flex-start;
       }
+
+      @media screen and (max-width: 640px) {
+        flex-direction: column;
+
+        > * {
+          min-width: unset;
+        }
+
+        .preview {
+          display: none;
+        }
+      }
     }
   }
 }

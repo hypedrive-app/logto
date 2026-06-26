@@ -8,6 +8,10 @@
   min-width: 540px;
   gap: _.unit(4);
 
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+  }
+
   &.withSubmitActionBar {
     padding-bottom: 0;
     margin-bottom: 0;

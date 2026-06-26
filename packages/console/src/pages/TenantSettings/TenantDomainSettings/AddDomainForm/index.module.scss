@@ -6,6 +6,7 @@
 
   .textInput {
     flex: 1;
+    min-width: 0;
     margin-inline-end: _.unit(3);
   }
 

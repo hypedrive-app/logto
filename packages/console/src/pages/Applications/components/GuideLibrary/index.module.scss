@@ -111,3 +111,25 @@
     max-width: calc(dim.$guide-main-content-max-width + dim.$guide-sidebar-width + dim.$guide-panel-gap + 2 * dim.$guide-content-padding);
   }
 }
+
+@media screen and (max-width: 640px) {
+  .wrapper.hasFilters {
+    // Drop the desktop sidebar gutter so content fills the phone width.
+    padding-inline: dim.$guide-content-padding;
+  }
+
+  // Render the filter panel in-flow above the groups instead of in the off-canvas left gutter.
+  .filterAnchor,
+  .wrapper.rtl .filterAnchor {
+    position: static;
+    transform: none;
+    inset: auto;
+  }
+
+  .filters {
+    position: static;
+    width: 100%;
+    margin-inline-end: 0;
+    margin-bottom: _.unit(4);
+  }
+}

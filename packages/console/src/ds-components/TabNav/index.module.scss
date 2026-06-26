@@ -5,4 +5,18 @@
   display: flex;
   margin-top: _.unit(1);
   gap: _.unit(6);
+
+  @media screen and (max-width: 640px) {
+    overflow-x: auto;
+    // Avoid clipping focus outlines / active underline while still allowing horizontal scroll.
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+
+    > * {
+      flex-shrink: 0;
+    }
+  }
 }

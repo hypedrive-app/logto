@@ -31,6 +31,11 @@
         width: calc((100% - #{_.unit(8)}) / 3);
         min-width: 220px;
         margin-block: 0 _.unit(4);
+
+        @media screen and (max-width: 640px) {
+          width: 100%;
+          min-width: 0;
+        }
       }
     }
 
