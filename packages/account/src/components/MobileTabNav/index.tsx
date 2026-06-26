@@ -32,9 +32,7 @@ const MobileTabNav = ({ items }: Props) => {
             classNames(
               'relative py-3 text-sm font-medium no-underline whitespace-nowrap',
               'after:content-[""] after:absolute after:left-0 after:right-0 after:-bottom-px after:h-0.5 after:rounded-t-sm',
-              isActive
-                ? 'text-primary after:bg-primary'
-                : 'text-ink after:bg-transparent',
+              isActive ? 'text-primary after:bg-primary' : 'text-ink after:bg-transparent',
               layoutClassNames.mobileTabNavItem
             )
           }

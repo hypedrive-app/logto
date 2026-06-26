@@ -99,8 +99,10 @@ const DateField = ({
         data-date-input-wrapper
         className={classNames(
           'relative flex items-center gap-1.5 h-12 px-4 rounded-[11px] border bg-inherit text-ink shadow-[var(--sh-input)] transition-[border-color,box-shadow] duration-150 ease-out',
-          isFocused && 'border-primary shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-brand-focused)]',
-          errorMessage && 'border-danger shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-danger-focused)]',
+          isFocused &&
+            'border-primary shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-brand-focused)]',
+          errorMessage &&
+            'border-danger shadow-[var(--sh-input),0_0_0_3px_var(--color-overlay-danger-focused)]',
           !isFocused && !errorMessage && 'border-line-strong'
         )}
       >

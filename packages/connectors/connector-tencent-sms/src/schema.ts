@@ -17,23 +17,26 @@ export const SmsConfigGuard = z.object({
   signName: z.string(),
   sdkAppId: z.string(),
   region: z.string(),
-  templates: z.array(SingleSmsConfig).refine(
-    (templates) =>
-      requiredTemplateUsageTypes.every((requiredType) =>
-        templates.map((template) => template.usageType).includes(requiredType)
-      ),
-    {
-      // eslint-disable-next-line no-restricted-syntax
-      error: (issue) => {
-        const templates = issue.input as Array<{ usageType: string }>;
-        return `Template with UsageType (${requiredTemplateUsageTypes
-        .filter(
-          (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
-        )
-        .join(', ')}) should be provided!`;
-      },
-    }
-  ),
+  templates: z
+    .array(SingleSmsConfig)
+    .refine(
+      (templates) =>
+        requiredTemplateUsageTypes.every((requiredType) =>
+          templates.map((template) => template.usageType).includes(requiredType)
+        ),
+      {
+        error: (issue) => {
+          // eslint-disable-next-line no-restricted-syntax
+          const templates = issue.input as Array<{ usageType: string }>;
+          return `Template with UsageType (${requiredTemplateUsageTypes
+            .filter(
+              (requiredType) =>
+                !templates.map((template) => template.usageType).includes(requiredType)
+            )
+            .join(', ')}) should be provided!`;
+        },
+      }
+    ),
 });
 
 export type TencentSmsConfig = z.infer<typeof SmsConfigGuard>;

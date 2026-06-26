@@ -7,15 +7,20 @@ import type { TencentErrorResponse, TencentSuccessResponse } from './schema.js';
 
 const endpoint = 'sms.tencentcloudapi.com';
 
-// With an `encoding`, Node's `digest()` returns an encoded string; without one it returns a Buffer.
-// `secret` accepts a Buffer too so the HMAC-chaining below (date -> service -> request) type-checks.
-function sha256Hmac(message: string, secret: string | Buffer): Buffer;
-function sha256Hmac(message: string, secret: string | Buffer, encoding: BinaryToTextEncoding): string;
+// With an `encoding`, Node's `digest()` returns an encoded string; without one it returns a Buffer
+// (a `Uint8Array`). `secret` accepts that too so the HMAC-chaining below (date -> service ->
+// request) type-checks.
+function sha256Hmac(message: string, secret: string | Uint8Array): Uint8Array;
 function sha256Hmac(
   message: string,
-  secret: string | Buffer,
+  secret: string | Uint8Array,
+  encoding: BinaryToTextEncoding
+): string;
+function sha256Hmac(
+  message: string,
+  secret: string | Uint8Array,
   encoding?: BinaryToTextEncoding
-): Buffer | string {
+): Uint8Array | string {
   const hmac = crypto.createHmac('sha256', secret);
 
   return encoding ? hmac.update(message).digest(encoding) : hmac.update(message).digest();

@@ -11,6 +11,8 @@
     color: var(--color-text);
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
+    gap: _.unit(2);
 
     .languageInfo {
       display: flex;

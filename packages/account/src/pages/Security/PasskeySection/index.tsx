@@ -75,7 +75,7 @@ const PasskeySection = () => {
   const navigateTo = useCallback(
     (route: string) => {
       setPendingReturn(getPendingReturn() ?? window.location.href);
-      navigate(route);
+      void navigate(route);
     },
     [navigate]
   );

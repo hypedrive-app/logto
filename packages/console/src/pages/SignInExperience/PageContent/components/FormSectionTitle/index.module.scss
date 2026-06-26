@@ -7,4 +7,9 @@
   align-items: center;
   gap: _.unit(2);
   white-space: nowrap;
+
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+    white-space: normal;
+  }
 }

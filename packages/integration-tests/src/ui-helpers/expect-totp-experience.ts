@@ -30,6 +30,8 @@ export default class ExpectTotpExperience extends ExpectMfaExperience {
 
     const secretDiv = await expect(this.page).toMatchElement(dcls('rawSecret'));
 
+    // `textContent` is `string | null` at runtime; default to '' so `generate` gets a string.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     const secret = (await secretDiv.evaluate((element) => element.textContent)) ?? '';
 
     const code = authenticator.generate(secret);

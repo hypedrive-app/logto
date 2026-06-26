@@ -19,9 +19,7 @@ const AccountPageHeader = ({ titleKey, descriptionKey }: Props) => {
 
   return (
     <div className="mb-5 mobile:mb-4">
-      <div
-        className={classNames('text-xl font-semibold text-ink', layoutClassNames.pageTitle)}
-      >
+      <div className={classNames('text-xl font-semibold text-ink', layoutClassNames.pageTitle)}>
         <DynamicT forKey={titleKey} />
       </div>
       <div

@@ -101,7 +101,7 @@ const SocialSection = () => {
   const navigateTo = useCallback(
     (route: string) => {
       setPendingReturn(getPendingReturn() ?? window.location.href);
-      navigate(route);
+      void navigate(route);
     },
     [navigate]
   );
@@ -196,7 +196,10 @@ const SocialSection = () => {
           {t('account_center.security.social_sign_in')}
         </div>
         <div
-          className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+          className={classNames(
+            'bg-elevated rounded-[16px] [overflow:clip]',
+            layoutClassNames.card
+          )}
         >
           {items.map(({ connector, connectorName, identity }) => {
             const profile = identity && getDisplayProfile(identity, connectorName);
@@ -265,7 +268,7 @@ const SocialSection = () => {
                           className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                           onClick={() => {
                             setPendingReturn(getPendingReturn() ?? currentPageUrl);
-                            navigate(getSocialChangeRoute(connector.id));
+                            void navigate(getSocialChangeRoute(connector.id));
                           }}
                         >
                           {t('account_center.security.change')}
@@ -286,7 +289,7 @@ const SocialSection = () => {
                         className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                         onClick={() => {
                           setPendingReturn(getPendingReturn() ?? currentPageUrl);
-                          navigate(getSocialAddRoute(connector.id));
+                          void navigate(getSocialAddRoute(connector.id));
                         }}
                       >
                         {t('account_center.security.add')}

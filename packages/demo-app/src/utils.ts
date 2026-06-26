@@ -65,7 +65,7 @@ const safeJsonParse = (value: string): unknown => {
   }
 };
 
-const safeZodParse = (guard: z.ZodType<unknown>, value: unknown) => {
+const safeZodParse = (guard: z.ZodType, value: unknown) => {
   const result = guard.safeParse(value);
   return result.success ? result.data : {};
 };

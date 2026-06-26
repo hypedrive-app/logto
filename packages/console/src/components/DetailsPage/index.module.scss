@@ -6,6 +6,13 @@
   flex-direction: column;
   min-width: min-content;
 
+  // `min-content` keeps wide desktop tables intact, but on phones it expands the
+  // page to the widest unbreakable child and forces horizontal scroll. Let the
+  // page shrink to the viewport instead (inner scroll containers handle overflow).
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+  }
+
   > *:not(:first-child) {
     margin-top: _.unit(4);
   }

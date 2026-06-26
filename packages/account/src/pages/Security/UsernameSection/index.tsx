@@ -36,7 +36,7 @@ const UsernameSection = () => {
   const navigateTo = useCallback(
     (route: string) => {
       setPendingReturn(getPendingReturn() ?? window.location.href);
-      navigate(route);
+      void navigate(route);
     },
     [navigate]
   );
@@ -98,7 +98,10 @@ const UsernameSection = () => {
           {t('input.username')}
         </div>
         <div
-          className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+          className={classNames(
+            'bg-elevated rounded-[16px] [overflow:clip]',
+            layoutClassNames.card
+          )}
         >
           <div
             className={classNames(

@@ -8,6 +8,16 @@
   padding: _.unit(6) _.unit(8);
   gap: _.unit(6);
 
+  // On phones the icon + nowrap metadata + operations can't share one row;
+  // stack them and collapse the generous inline padding so the header never
+  // forces the page wider than the viewport.
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    padding: _.unit(5) _.unit(4);
+    gap: _.unit(4);
+  }
+
   .copyId {
     flex: 1;
   }
@@ -23,6 +33,10 @@
     display: flex;
     align-items: center;
     gap: _.unit(3);
+
+    @media screen and (max-width: 640px) {
+      flex-wrap: wrap;
+    }
 
     svg {
       color: var(--color-text-secondary);
@@ -44,6 +58,13 @@
       align-items: baseline;
       white-space: nowrap;
       gap: _.unit(2);
+
+      // Let the id/date metadata wrap on phones instead of forcing a nowrap
+      // row wider than the viewport.
+      @media screen and (max-width: 640px) {
+        flex-wrap: wrap;
+        white-space: normal;
+      }
 
       .text {
         font: var(--font-label-2);

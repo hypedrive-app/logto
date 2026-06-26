@@ -73,9 +73,7 @@ const SetPassword = ({
 
   return (
     <form
-      className={
-        className ?? 'flex flex-col items-center justify-center [&>*]:w-full'
-      }
+      className={className ?? 'flex flex-col items-center justify-center [&>*]:w-full'}
       onSubmit={handleSubmit}
     >
       {beforeFields}

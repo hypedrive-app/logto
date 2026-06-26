@@ -3,16 +3,34 @@
 .timeRangePicker {
   display: flex;
   align-items: center;
+
+  // The select + two date fields cannot fit on a phone-width row. Stack them.
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: _.unit(2);
+  }
 }
 
 .selectWrapper {
   width: 180px;
+
+  @media screen and (max-width: 640px) {
+    width: 100%;
+  }
 }
 
 .customRange {
   display: flex;
   align-items: center;
   margin-inline-start: _.unit(2);
+
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    margin-inline-start: 0;
+    gap: _.unit(2);
+  }
 }
 
 .dateField {
@@ -21,6 +39,17 @@
 
   + .dateField {
     margin-inline-start: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      margin-inline-start: 0;
+    }
+  }
+
+  // Let the DatePicker trigger grow to fill the stacked column.
+  @media screen and (max-width: 640px) {
+    > :last-child {
+      flex: 1;
+    }
   }
 }
 

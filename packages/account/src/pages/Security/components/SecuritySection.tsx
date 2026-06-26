@@ -21,7 +21,9 @@ const SecuritySection = ({ title, notification, children }: Props) => (
       {title}
     </div>
     {notification}
-    <div className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}>
+    <div
+      className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+    >
       {children}
     </div>
   </div>

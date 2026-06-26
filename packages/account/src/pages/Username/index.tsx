@@ -124,7 +124,7 @@ const Username = () => {
     }
 
     await refreshUserInfo();
-    navigate(usernameSuccessRoute, { replace: true });
+    void navigate(usernameSuccessRoute, { replace: true });
   };
 
   return (
@@ -153,12 +153,7 @@ const Username = () => {
             setPendingUsername(inputValue.value);
           }}
         />
-        <Button
-          className="self-start"
-          title="action.save"
-          htmlType="submit"
-          isLoading={loading}
-        />
+        <Button className="self-start" title="action.save" htmlType="submit" isLoading={loading} />
       </form>
     </SecondaryPageLayout>
   );

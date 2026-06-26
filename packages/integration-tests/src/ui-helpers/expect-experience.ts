@@ -305,6 +305,8 @@ export default class ExpectExperience extends ExpectPage {
       text: 'User ID: ',
     });
     const userIdSpan = await expect(userIdDiv).toMatchElement('span');
+    // `textContent` is `string | null` at runtime; default to '' for a stable string return.
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     return (await userIdSpan.evaluate((element) => element.textContent)) ?? '';
   }
 

@@ -17,9 +17,7 @@ const GlobalLoading = () => {
 
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center gap-6 bg-bg mobile:bg-elevated">
-      {logoUrl && (
-        <img className="max-h-10 w-auto object-contain" src={logoUrl} alt="logo" />
-      )}
+      {logoUrl && <img className="max-h-10 w-auto object-contain" src={logoUrl} alt="logo" />}
       <LoadingIcon className="text-ink animate-[rotating_1s_steps(12,end)_infinite]" />
     </div>
   );

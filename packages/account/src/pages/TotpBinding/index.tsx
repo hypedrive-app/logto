@@ -174,9 +174,12 @@ const TotpBinding = ({ isReplace }: Props) => {
       // Clear code input to prevent duplicate submission
       setCodeInput([]);
 
-      navigate(isReplace ? authenticatorAppReplaceSuccessRoute : authenticatorAppSuccessRoute, {
-        replace: true,
-      });
+      void navigate(
+        isReplace ? authenticatorAppReplaceSuccessRoute : authenticatorAppSuccessRoute,
+        {
+          replace: true,
+        }
+      );
     },
     [
       codeInput,
@@ -246,7 +249,11 @@ const TotpBinding = ({ isReplace }: Props) => {
             {isQrCodeFormat &&
               (secretQrCode ? (
                 <div className="border border-line rounded-[13px] [overflow:hidden] h-[136px] w-[136px]">
-                  <img className="w-full h-full block object-center" src={secretQrCode} alt="QR code" />
+                  <img
+                    className="w-full h-full block object-center"
+                    src={secretQrCode}
+                    alt="QR code"
+                  />
                 </div>
               ) : secret ? (
                 <CopySecretButton secret={secret} onCopy={copySecret} />

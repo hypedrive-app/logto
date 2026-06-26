@@ -16,4 +16,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: _.unit(2);
+
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+
+    > * {
+      flex: 1 1 100%;
+    }
+  }
 }

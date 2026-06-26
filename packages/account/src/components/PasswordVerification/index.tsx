@@ -70,11 +70,7 @@ const PasswordVerification = ({ onBack, onSwitchMethod, hasAlternativeMethod }: 
       description="account_center.password_verification.description"
       onBack={onBack}
     >
-      <form
-        noValidate
-        className="flex flex-col gap-4 w-full max-w-[400px]"
-        onSubmit={handleVerify}
-      >
+      <form noValidate className="flex flex-col gap-4 w-full max-w-[400px]" onSubmit={handleVerify}>
         <PasswordIdentifierInput />
         <PasswordInputField
           // eslint-disable-next-line jsx-a11y/no-autofocus

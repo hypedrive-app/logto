@@ -134,7 +134,7 @@ const Password = () => {
     }
 
     await refreshUserInfo();
-    navigate(passwordSuccessRoute, { replace: true });
+    void navigate(passwordSuccessRoute, { replace: true });
   };
 
   const description =

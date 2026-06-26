@@ -19,7 +19,7 @@ export const getPhrases = async ({
   ky
     .extend({
       hooks: {
-        // ky v2: hooks receive a single state object.
+        // Ky v2: hooks receive a single state object.
         beforeRequest: [
           ({ request }) => {
             if (localLanguage) {

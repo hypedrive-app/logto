@@ -88,23 +88,26 @@ export const smtpConfigGuard = z.object({
   auth: authGuard,
   fromEmail: z.string(),
   replyTo: z.string().optional(),
-  templates: z.array(templateGuard).refine(
-    (templates) =>
-      requiredTemplateUsageTypes.every((requiredType) =>
-        templates.map((template) => template.usageType).includes(requiredType)
-      ),
-    {
-      // eslint-disable-next-line no-restricted-syntax
-      error: (issue) => {
-        const templates = issue.input as Array<{ usageType: string }>;
-        return `Template with UsageType (${requiredTemplateUsageTypes
-        .filter(
-          (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
-        )
-        .join(', ')}) should be provided!`;
-      },
-    }
-  ),
+  templates: z
+    .array(templateGuard)
+    .refine(
+      (templates) =>
+        requiredTemplateUsageTypes.every((requiredType) =>
+          templates.map((template) => template.usageType).includes(requiredType)
+        ),
+      {
+        error: (issue) => {
+          // eslint-disable-next-line no-restricted-syntax
+          const templates = issue.input as Array<{ usageType: string }>;
+          return `Template with UsageType (${requiredTemplateUsageTypes
+            .filter(
+              (requiredType) =>
+                !templates.map((template) => template.usageType).includes(requiredType)
+            )
+            .join(', ')}) should be provided!`;
+        },
+      }
+    ),
   ...debuggingGuardObject,
   ...securityGuardObject,
   /**

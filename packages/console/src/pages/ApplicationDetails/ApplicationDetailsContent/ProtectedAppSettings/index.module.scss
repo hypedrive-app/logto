@@ -11,6 +11,11 @@
   font: var(--font-body-2);
   gap: _.unit(4);
 
+  // The nowrap launcher row pushes the button off-screen on a phone; let it wrap.
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+  }
+
   span {
     white-space: pre-wrap;
   }
@@ -55,9 +60,22 @@
   background: var(--color-layer-1);
   padding: _.unit(5) _.unit(6);
 
+  // A long host + status + copy icon overflow a phone row; wrap and tighten padding.
+  @media screen and (max-width: 640px) {
+    flex-wrap: wrap;
+    gap: _.unit(3);
+    padding: _.unit(4);
+  }
+
   .host {
     font: var(--font-label-1);
     white-space: nowrap;
+
+    // Allow a long host to wrap instead of forcing horizontal scroll.
+    @media screen and (max-width: 640px) {
+      white-space: normal;
+      word-break: break-all;
+    }
   }
 
   .status {

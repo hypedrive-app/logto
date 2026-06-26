@@ -9,6 +9,15 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      flex-wrap: wrap;
+
+      > * {
+        flex: 1 1 100%;
+      }
+    }
   }
 
   tbody {

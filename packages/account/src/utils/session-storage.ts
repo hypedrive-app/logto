@@ -72,13 +72,13 @@ const storedSocialFlowRecordGuard = z.union([
     verificationRecordId: z.string(),
     expiresAt: z.string(),
     state: z.string(),
-    mode: (z.union([z.literal('add'), z.literal('change')])).optional(),
+    mode: z.union([z.literal('add'), z.literal('change')]).optional(),
   }),
   z.object({
     status: z.literal('verified'),
     verificationRecordId: z.string(),
     expiresAt: z.string(),
-    mode: (z.union([z.literal('add'), z.literal('change')])).optional(),
+    mode: z.union([z.literal('add'), z.literal('change')]).optional(),
   }),
 ]);
 

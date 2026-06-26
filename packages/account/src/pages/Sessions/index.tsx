@@ -1,3 +1,4 @@
+/* eslint-disable max-lines -- pre-existing large page; splitting risks behaviour change. */
 import classNames from 'classnames';
 import { HTTPError } from 'ky';
 import { useCallback, useContext, useEffect, useRef, useState } from 'react';
@@ -119,7 +120,7 @@ const Sessions = () => {
   const navigateTo = useCallback(
     (route: string) => {
       setPendingReturn(getPendingReturn() ?? window.location.href);
-      navigate(route);
+      void navigate(route);
     },
     [navigate]
   );
@@ -370,3 +371,5 @@ const Sessions = () => {
 };
 
 export default Sessions;
+
+/* eslint-enable max-lines */

@@ -10,6 +10,11 @@ form {
   display: flex;
   gap: _.unit(9);
 
+  // Reclaim the wide step-indicator gutter so the field fits a phone width.
+  @media screen and (max-width: 640px) {
+    gap: _.unit(4);
+  }
+
   .index {
     display: flex;
     width: 24px;

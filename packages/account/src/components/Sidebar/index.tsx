@@ -32,9 +32,7 @@ const Sidebar = ({ items }: Props) => {
             className={({ isActive }) =>
               classNames(
                 'flex items-center gap-2 py-2 px-3 rounded-[11px] text-sm font-medium no-underline cursor-pointer transition-colors duration-200',
-                isActive
-                  ? 'bg-surface text-ink font-medium'
-                  : 'text-muted overlay-hover',
+                isActive ? 'bg-surface text-ink font-medium' : 'text-muted overlay-hover',
                 layoutClassNames.sidebarItem
               )
             }

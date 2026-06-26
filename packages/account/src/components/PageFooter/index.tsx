@@ -32,7 +32,12 @@ const PageFooter = () => {
           </a>
         )}
         {privacyPolicyUrl && (
-          <a className={linkClass} href={privacyPolicyUrl} target="_blank" rel="noopener noreferrer">
+          <a
+            className={linkClass}
+            href={privacyPolicyUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             {t('description.privacy_policy')}
           </a>
         )}

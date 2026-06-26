@@ -1,6 +1,6 @@
 import { type Json, type JsonObject } from '@withtyped/server';
 import ky, { HTTPError } from 'ky';
-import { z, type ZodType } from 'zod';
+import { type z, type ZodType } from 'zod';
 
 import {
   ConnectorError,

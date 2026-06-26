@@ -69,12 +69,8 @@ import VerifiedAction from './pages/VerifiedAction';
 import { useAuthRedirect } from './use-auth-redirect';
 import { accountCenterBasePath, handleAccountCenterRoute } from './utils/account-center-route';
 import { getAccountTabSettings } from './utils/account-tabs';
-import {
-  hasVisibleProfilePage,
-  hasVisibleSecuritySection,
-  hasVisibleSessionsPage,
-} from './utils/security-page';
-// normalized.scss removed — normalization handled by experience panda.config globalCss
+
+// Normalized.scss removed — normalization handled by experience panda.config globalCss
 
 handleAccountCenterRoute();
 void initI18n();
@@ -227,7 +223,12 @@ const Layout = () => {
   const showsSidebar = platform !== 'mobile' && showsMultiPageNav;
 
   return (
-    <div className={classNames('mobile:flex mobile:min-h-screen mobile:flex-col', layoutClassNames.app)}>
+    <div
+      className={classNames(
+        'mobile:flex mobile:min-h-screen mobile:flex-col',
+        layoutClassNames.app
+      )}
+    >
       <div
         className={classNames(
           'absolute inset-0 overflow-auto mobile:static mobile:flex mobile:flex-1 mobile:flex-col',
@@ -245,8 +246,7 @@ const Layout = () => {
             isFullPage && 'items-start',
             'mobile:flex-col mobile:items-stretch mobile:justify-start mobile:[padding-bottom:env(safe-area-inset-bottom)]',
             // Card mode (home/error/not-found): centre the card both axes
-            !isFullPage &&
-              'min-h-full flex-col items-center justify-center desktop:p-5',
+            !isFullPage && 'min-h-full flex-col items-center justify-center desktop:p-5',
             !isFullPage && layoutClassNames.cardContainer,
             showsSidebar &&
               'grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-start gap-6 px-6 max-[1060px]:flex max-[1060px]:justify-center'
@@ -284,31 +284,31 @@ const Layout = () => {
 const App = () => (
   <HelmetProvider>
     <BrowserRouter basename={accountCenterBasePath}>
-    <LogtoProvider
-      config={{
-        endpoint: window.location.origin,
-        appId: accountCenterApplicationId,
-        includeReservedScopes: false,
-        scopes: [
-          ReservedScope.OpenId,
-          UserScope.Profile,
-          UserScope.Email,
-          UserScope.Phone,
-          UserScope.Address,
-          UserScope.Identities,
-          UserScope.CustomData,
-          UserScope.Sessions,
-        ],
-      }}
-    >
-      <LoadingContextProvider>
-        <PageContextProvider>
-          <AppBoundary>
-            <Layout />
-          </AppBoundary>
-        </PageContextProvider>
-      </LoadingContextProvider>
-    </LogtoProvider>
+      <LogtoProvider
+        config={{
+          endpoint: window.location.origin,
+          appId: accountCenterApplicationId,
+          includeReservedScopes: false,
+          scopes: [
+            ReservedScope.OpenId,
+            UserScope.Profile,
+            UserScope.Email,
+            UserScope.Phone,
+            UserScope.Address,
+            UserScope.Identities,
+            UserScope.CustomData,
+            UserScope.Sessions,
+          ],
+        }}
+      >
+        <LoadingContextProvider>
+          <PageContextProvider>
+            <AppBoundary>
+              <Layout />
+            </AppBoundary>
+          </PageContextProvider>
+        </LoadingContextProvider>
+      </LogtoProvider>
     </BrowserRouter>
   </HelmetProvider>
 );

@@ -5,6 +5,15 @@
   justify-content: flex-end;
   align-items: center;
 
+  // On narrow screens the three filter controls cannot sit on one row without
+  // overflowing. Stack them vertically and let each control fill the width.
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: _.unit(2);
+  }
+
   .title {
     color: var(--color-text-secondary);
     font: var(--font-body-2);
@@ -13,15 +22,29 @@
   .eventSelector {
     width: 300px;
     margin-inline-start: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      width: 100%;
+      margin-inline-start: 0;
+    }
   }
 
   .applicationSelector {
     width: 250px;
     margin-inline-start: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      width: 100%;
+      margin-inline-start: 0;
+    }
   }
 
   .timeRangePicker {
     margin-inline-start: _.unit(2);
+
+    @media screen and (max-width: 640px) {
+      margin-inline-start: 0;
+    }
   }
 
   // When the time-range picker is part of the filter row (especially in its
@@ -31,10 +54,18 @@
   &:has(.timeRangePicker) {
     .eventSelector {
       width: _.unit(60);
+
+      @media screen and (max-width: 640px) {
+        width: 100%;
+      }
     }
 
     .applicationSelector {
       width: _.unit(50);
+
+      @media screen and (max-width: 640px) {
+        width: 100%;
+      }
     }
   }
 }

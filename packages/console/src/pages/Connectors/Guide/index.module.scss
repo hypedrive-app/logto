@@ -14,6 +14,11 @@
     height: 64px;
     padding: 0 _.unit(21) 0 _.unit(2);
 
+    // The 84px right padding wastes the narrow phone header; trim it.
+    @media screen and (max-width: 640px) {
+      padding-inline-end: _.unit(4);
+    }
+
     button {
       margin-inline-start: _.unit(4);
     }

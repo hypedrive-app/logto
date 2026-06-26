@@ -1,6 +1,10 @@
 import Button from '@experience/shared/components/Button';
 import InputField from '@experience/shared/components/InputFields/InputField';
-import { AccountCenterControlValue, MfaFactor, type WebAuthnRegistrationOptions } from '@logto/schemas';
+import {
+  AccountCenterControlValue,
+  MfaFactor,
+  type WebAuthnRegistrationOptions,
+} from '@logto/schemas';
 import { trySafe } from '@silverhand/essentials';
 import { browserSupportsWebAuthn, startRegistration, WebAuthnError } from '@simplewebauthn/browser';
 import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -184,7 +188,7 @@ const PasskeyBinding = () => {
       return;
     }
 
-    navigate(passkeySuccessRoute, { replace: true });
+    void navigate(passkeySuccessRoute, { replace: true });
   }, [
     addWebAuthnRequest,
     handleError,

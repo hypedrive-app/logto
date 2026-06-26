@@ -32,7 +32,9 @@ const PasswordSection = () => {
       >
         {t('account_center.security.password')}
       </div>
-      <div className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}>
+      <div
+        className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+      >
         <div
           className={classNames(
             'items-center',
@@ -51,7 +53,7 @@ const PasswordSection = () => {
                 className="text-sm font-medium text-primary cursor-pointer bg-none border-none whitespace-nowrap hover:underline desktop:col-start-3 desktop:py-0.5 mobile:p-0 mobile:whitespace-normal mobile:text-start"
                 onClick={() => {
                   setPendingReturn(getPendingReturn() ?? window.location.href);
-                  navigate(passwordRoute);
+                  void navigate(passwordRoute);
                 }}
               >
                 {t('account_center.security.change')}

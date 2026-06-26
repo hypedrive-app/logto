@@ -23,6 +23,7 @@ const getI18nEmailTemplate = vi.fn().mockResolvedValue(undefined);
 const sendMail = vi.fn();
 
 // @ts-expect-error for testing
+// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 vi.spyOn(nodemailer, 'createTransport').mockReturnValue({ sendMail } as Transporter);
 
 describe('SMTP connector', () => {

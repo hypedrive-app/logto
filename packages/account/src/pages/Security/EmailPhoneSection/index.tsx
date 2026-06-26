@@ -65,7 +65,7 @@ const EmailPhoneSection = () => {
   const navigateTo = useCallback(
     (route: string) => {
       setPendingReturn(getPendingReturn() ?? window.location.href);
-      navigate(route);
+      void navigate(route);
     },
     [navigate]
   );
@@ -160,7 +160,10 @@ const EmailPhoneSection = () => {
           {t('account_center.security.email_phone')}
         </div>
         <div
-          className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+          className={classNames(
+            'bg-elevated rounded-[16px] [overflow:clip]',
+            layoutClassNames.card
+          )}
         >
           {showEmail && (
             <div className={classNames(rowClass, layoutClassNames.row)}>

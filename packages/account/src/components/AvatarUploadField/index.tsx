@@ -21,8 +21,7 @@ const actionsClass =
   'col-start-3 flex items-center gap-6 flex-shrink-0 mobile:flex-wrap mobile:justify-end mobile:gap-4';
 const changeButtonClass =
   'text-sm font-medium text-primary cursor-pointer bg-none border-none py-0.5 whitespace-nowrap hover:underline mobile:p-0 mobile:whitespace-normal mobile:text-start';
-const valueClass =
-  'col-start-2 min-w-0 text-sm text-ink [overflow-wrap:anywhere] break-words';
+const valueClass = 'col-start-2 min-w-0 text-sm text-ink [overflow-wrap:anywhere] break-words';
 const avatarClass = 'w-8 h-8 rounded-[8px] object-cover block';
 
 type Props = {

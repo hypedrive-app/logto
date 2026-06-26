@@ -26,7 +26,9 @@ const DeleteAccountSection = () => {
       >
         {t('account_center.security.account_removal')}
       </div>
-      <div className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}>
+      <div
+        className={classNames('bg-elevated rounded-[16px] [overflow:clip]', layoutClassNames.card)}
+      >
         <div
           className={classNames(
             'flex items-center gap-6 px-6 py-5 h-16 mobile:flex-col mobile:items-stretch mobile:gap-1.5 mobile:h-auto mobile:min-h-0 mobile:p-4',

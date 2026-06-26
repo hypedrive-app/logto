@@ -151,7 +151,11 @@ const getUserInfo =
         // runtimes. Use the pre-parsed body instead; when the response had no JSON content type
         // `error.data` is the raw text, so parse it to match the previous `response.json()` behavior.
         const errorBody: unknown =
-          typeof error.data === 'string' ? trySafe(() => JSON.parse(error.data as string)) : error.data;
+          typeof error.data === 'string'
+            ? // `error.data` is `any` (from ky); it's narrowed to string above, so this parse is safe.
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unsafe-argument
+              trySafe(() => JSON.parse(error.data))
+            : error.data;
         const parsedError = getUserInfoErrorGuard.safeParse(errorBody);
 
         if (!parsedError.success) {

@@ -269,10 +269,7 @@ const CodeVerification = ({
           )}
         </form>
       ) : (
-        <form
-          className="flex flex-col gap-4 w-full max-w-[400px]"
-          onSubmit={handleSendCode}
-        >
+        <form className="flex flex-col gap-4 w-full max-w-[400px]" onSubmit={handleSendCode}>
           <SmartInputField
             readOnly
             className="w-full"

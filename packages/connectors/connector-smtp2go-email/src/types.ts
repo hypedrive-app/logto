@@ -44,33 +44,36 @@ export const smtp2goEmailConfigGuard = z.object({
   apiKey: z.string(),
   sender: z.string().email(),
   senderName: z.string().optional(),
-  templates: z.array(templateGuard).refine(
-    (templates) =>
-      [
-        TemplateType.Register,
-        TemplateType.SignIn,
-        TemplateType.ForgotPassword,
-        TemplateType.Generic,
-      ].every((requiredType) =>
-        templates.map((template) => template.usageType).includes(requiredType)
-      ),
-    {
-      // eslint-disable-next-line no-restricted-syntax
-      error: (issue) => {
-        const templates = issue.input as Array<{ usageType: string }>;
-        return `Template with UsageType (${[
-        TemplateType.Register,
-        TemplateType.SignIn,
-        TemplateType.ForgotPassword,
-        TemplateType.Generic,
-      ]
-        .filter(
-          (requiredType) => !templates.map((template) => template.usageType).includes(requiredType)
-        )
-        .join(', ')}) should be provided!`;
-      },
-    }
-  ),
+  templates: z
+    .array(templateGuard)
+    .refine(
+      (templates) =>
+        [
+          TemplateType.Register,
+          TemplateType.SignIn,
+          TemplateType.ForgotPassword,
+          TemplateType.Generic,
+        ].every((requiredType) =>
+          templates.map((template) => template.usageType).includes(requiredType)
+        ),
+      {
+        error: (issue) => {
+          // eslint-disable-next-line no-restricted-syntax
+          const templates = issue.input as Array<{ usageType: string }>;
+          return `Template with UsageType (${[
+            TemplateType.Register,
+            TemplateType.SignIn,
+            TemplateType.ForgotPassword,
+            TemplateType.Generic,
+          ]
+            .filter(
+              (requiredType) =>
+                !templates.map((template) => template.usageType).includes(requiredType)
+            )
+            .join(', ')}) should be provided!`;
+        },
+      }
+    ),
 });
 
 export type Smtp2goEmailConfig = z.infer<typeof smtp2goEmailConfigGuard>;

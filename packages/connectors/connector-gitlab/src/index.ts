@@ -156,7 +156,9 @@ const getUserInfo =
         // `ky` consumes the response body to populate `error.data`, so re-reading it via
         // `response.text()` throws `Body is unusable: Body has already been read` on current
         // runtimes. Read the pre-parsed body instead, preserving the previous text semantics
-        // (an empty body yields an empty string).
+        // (an empty body yields an empty string). `error.data` is typed `any` by ky, so the
+        // destructure is flagged as an unsafe assignment; narrow with the typeof checks below.
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
         const { data } = error;
         throw new ConnectorError(
           ConnectorErrorCodes.General,

@@ -3,6 +3,11 @@
 .roleTypes {
   display: flex;
   gap: _.unit(6);
+
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    gap: _.unit(3);
+  }
 }
 
 .trailingIcon {
