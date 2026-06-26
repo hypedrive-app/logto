@@ -26,6 +26,9 @@ const MobileModal = ({
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
       role="dialog"
       isOpen={isOpen}
+      // Drop react-modal's inline default styles (white overlay bg) so the
+      // `--color-bg-mask` scrim from `overlayClassName` actually shows. See AcModal.
+      style={{ overlay: {}, content: {} }}
       className={classNames(
         'absolute left-5 right-5 top-1/2 max-w-[var(--max-width)] mx-auto -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none',
         className

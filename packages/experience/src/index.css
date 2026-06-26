@@ -121,6 +121,9 @@
   --color-alert-60:                #fbbf24;
   --color-alert-70:                #fcd34d;
   --color-alert-90:                #3a2e12;
+  /* Dev-tenant banner (white text) on dark: keep a saturated amber surface. */
+  --color-container-on-alert:      #92400e;
+  --color-container-alert:         #fbbf24;
 }
 
 /* ── Tailwind theme ── */
@@ -290,6 +293,12 @@
     --color-alert-60:                #d97706;
     --color-alert-70:                #b45309;
     --color-alert-90:                #fef3c7;
+    /* Dev-tenant banner surface + icon. The rebrand dropped the legacy Logto
+       container-alert palette; these two are referenced by
+       DevelopmentTenantNotification (white text → needs a solid dark amber
+       surface for contrast). */
+    --color-container-on-alert:      #b45309;
+    --color-container-alert:         #fbbf24;
     --color-neutral-variant-60:      var(--text-muted);
     --color-neutral-variant-70:      var(--border-strong);
     --color-neutral-variant-80:      var(--border);

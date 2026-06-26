@@ -29,6 +29,9 @@ const IframeModal = ({ className, title = '', href = '', onClose }: ModalProps) 
       id="iframe-modal"
       role="dialog"
       isOpen={Boolean(href)}
+      // Drop react-modal's inline default styles (white overlay bg) — this modal
+      // is a full-screen iframe surface, the inline white tint shows through. See AcModal.
+      style={{ overlay: {}, content: {} }}
       className={classNames(
         'z-[var(--z-modal)] absolute inset-0 overflow-auto focus-visible:outline-none',
         className

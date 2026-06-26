@@ -35,6 +35,9 @@ const Toast = ({ message, duration = 3000, callback }: Props) => {
       // eslint-disable-next-line jsx-a11y/aria-role
       role="toast"
       isOpen={Boolean(message)}
+      // Drop react-modal's inline default styles — the inline white overlay bg
+      // paints a band across the screen behind the toast. See AcModal.
+      style={{ overlay: {}, content: {} }}
       overlayClassName="fixed top-1/2 left-0 right-0 -translate-y-1/2 flex flex-col items-center justify-center pointer-events-none z-[var(--z-toast)]"
       className="mx-auto py-2 px-4 max-w-[min(295px,calc(100vw-32px))] text-base text-white rounded-[13px] bg-[var(--color-bg-toast)] text-center break-words pointer-events-auto focus-visible:outline-none desktop:py-3 desktop:shadow-[var(--sh-float)]"
       closeTimeoutMS={300}
