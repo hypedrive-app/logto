@@ -3,7 +3,6 @@
   "private": true,
   "license": "MPL-2.0",
   "type": "module",
-  "packageManager": "pnpm@11.3.0",
   "scripts": {
     "preinstall": "npx only-allow pnpm",
     "pnpm:devPreinstall": "cd packages/connectors && node templates/sync-preset.js",
@@ -20,10 +19,10 @@
     "connectors": "pnpm -r --filter \"./packages/connectors/connector-*\"",
     "//": "# `changeset version` won't run version lifecycle scripts, see https://github.com/changesets/changesets/issues/860",
     "ci:version": "changeset version && pnpm -r version",
-    "ci:build": "turbo run build",
-    "ci:lint": "turbo run lint",
-    "ci:stylelint": "turbo run stylelint",
-    "ci:test": "turbo run test:ci && pnpm test:scripts",
+    "ci:build": "turbo run build --dangerously-disable-package-manager-check",
+    "ci:lint": "turbo run lint --dangerously-disable-package-manager-check",
+    "ci:stylelint": "turbo run stylelint --dangerously-disable-package-manager-check",
+    "ci:test": "turbo run test:ci --dangerously-disable-package-manager-check && pnpm test:scripts",
     "test:scripts": "node .scripts/compare-database.test.js",
     "test:integration": "./.scripts/integration/run.sh"
   },
