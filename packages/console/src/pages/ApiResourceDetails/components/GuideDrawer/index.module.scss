@@ -28,10 +28,18 @@
 .cardGroup {
   flex: 1;
   padding: _.unit(6);
+
+  @media screen and (max-width: 640px) {
+    padding: _.unit(4);
+  }
 }
 
 .guide {
   flex: 1;
   overflow: hidden;
   padding: _.unit(6);
+
+  @media screen and (max-width: 640px) {
+    padding: _.unit(4);
+  }
 }

@@ -5,6 +5,10 @@
   display: flex;
   margin-top: _.unit(1);
   gap: _.unit(6);
+  // When used as a row in a flex-column page (list pages place it between the
+  // headline and the `flex: 1` table), keep it from being compressed on short
+  // viewports so the tab bar can't be squeezed onto the content below it.
+  flex-shrink: 0;
 
   @media screen and (max-width: 640px) {
     overflow-x: auto;

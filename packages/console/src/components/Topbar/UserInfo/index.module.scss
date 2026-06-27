@@ -36,6 +36,12 @@
 .dropdown {
   min-width: 320px;
 
+  // Never force the menu wider than a phone viewport (320px + gutters > 375px).
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+    max-width: calc(100vw - _.unit(8));
+  }
+
   .userInfo {
     padding: _.unit(4) _.unit(5);
   }

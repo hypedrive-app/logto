@@ -9,6 +9,11 @@
 .claimsContainer {
   columns: 280px auto;
   column-gap: _.unit(6);
+
+  // Force a single column on phones so the 280px tracks can't get squeezed.
+  @media screen and (max-width: 640px) {
+    columns: 1;
+  }
 }
 
 .scopeGroup {

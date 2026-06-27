@@ -8,6 +8,17 @@
 .uploader {
   display: flex;
 
+  // The two frames are joined into one horizontal pair (shared seam). On phones
+  // they get too narrow side-by-side, so stack them and restore full radii.
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+
+    .frame,
+    .frameDark {
+      border-radius: 10px;
+    }
+  }
+
   .logoUploader {
     flex: 1;
 

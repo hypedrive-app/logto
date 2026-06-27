@@ -12,5 +12,12 @@
     align-items: center;
     flex-direction: row-reverse;
     justify-content: space-between;
+
+    // 68px side padding leaves ~239px for the buttons on a 375px phone and
+    // crowds/overflows them — pull the gutters in to match the page content.
+    @media screen and (max-width: 640px) {
+      padding: 0 _.unit(4);
+      gap: _.unit(2);
+    }
   }
 }

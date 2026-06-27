@@ -70,6 +70,12 @@ $dropdown-item-height: 40px;
   max-width: 500px;
   min-width: 320px;
 
+  // Never force the menu wider than a phone viewport (320px + gutters > 375px).
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+    max-width: calc(100vw - _.unit(8));
+  }
+
   .scrollableContent {
     max-height: calc(100vh - ($topbar-height - $topbar-tenant-card-margin + $dropdown-top-margin) - $dropdown-bottom-margin - ($dropdown-item-height + $dropdown-item-margin * 2)); // Secure 24px bottom safe margin.
   }

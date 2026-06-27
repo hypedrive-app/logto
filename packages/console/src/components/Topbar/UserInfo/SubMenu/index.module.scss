@@ -38,11 +38,23 @@
   &.visible {
     visibility: visible;
   }
+
+  // On phones the left-flyout would escape the viewport, so anchor it to the
+  // parent item's start edge and drop it just below instead of beside.
+  @media screen and (max-width: 640px) {
+    inset-inline: 0 auto;
+    top: calc(100% + 4px);
+    max-width: calc(100vw - _.unit(8));
+  }
 }
 
 .menuOption {
   position: relative;
   min-width: 200px;
+
+  @media screen and (max-width: 640px) {
+    min-width: 0;
+  }
   padding-block: _.unit(2.5);
   padding-inline: _.unit(8) _.unit(5.5);
   margin: _.unit(1);

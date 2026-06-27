@@ -8,6 +8,14 @@
   border: 1px solid var(--color-divider);
   background: var(--color-layer-1);
   padding: _.unit(5) _.unit(6);
+
+  // Stack the price block and the action on phones instead of cramming them
+  // onto opposite ends of one narrow row.
+  @media screen and (max-width: 640px) {
+    flex-direction: column;
+    align-items: stretch;
+    gap: _.unit(4);
+  }
 }
 
 .billInfo {
