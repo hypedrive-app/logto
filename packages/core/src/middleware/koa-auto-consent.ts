@@ -71,6 +71,22 @@ export default function koaAutoConsent<
       const { missingOIDCScope: missingOIDCScopes, missingResourceScopes: resourceScopesToGrant } =
         getMissingScopes(prompt);
 
+      // TEMP-DEBUG (step-up grant investigation): log the requested vs missing scopes
+      // and the reused grant id so we can see why prompt=login step-up issues a
+      // reduced grant (no offline_access / no resource). Remove after the fix lands.
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[STEPUP-DEBUG] auto-consent',
+        JSON.stringify({
+          promptName: prompt.name,
+          requestedScope: interactionDetails.params.scope,
+          requestedResource: interactionDetails.params.resource,
+          missingOIDCScopes,
+          resourceScopesToGrant,
+          grantId: interactionDetails.grantId,
+        })
+      );
+
       const redirectTo = await consent({
         ctx,
         provider,
