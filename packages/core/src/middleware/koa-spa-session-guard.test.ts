@@ -134,4 +134,85 @@ describe('koaSpaSessionGuard', () => {
     expect(ctx.redirect).toBeCalledWith('https://test.com/unknown-session');
     stub.restore();
   });
+
+  describe('app login recovery (originating-app redirect)', () => {
+    const findApplicationById = jest.fn();
+    const recoveryQueries = new MockQueries({
+      logtoConfigs: { getRowsByKeys },
+      signInExperiences: { findDefaultSignInExperience },
+      applications: { findApplicationById },
+    });
+
+    it('redirects to the originating app login entry (resolved from the _logto cookie) on a protocol match', async () => {
+      interactionDetails.mockRejectedValue(new Error('session not found'));
+      findApplicationById.mockResolvedValueOnce({
+        oidcClientMetadata: {
+          postLogoutRedirectUris: ['http://localhost:3002/login', 'https://app.example.com/login'],
+        },
+      });
+
+      const ctx = createContextWithRouteParameters({
+        url: '/sign-in/foo',
+        cookies: { _logto: '{ "appId": "test-app-id" }' },
+      });
+      await koaSpaSessionGuard(provider, recoveryQueries)(ctx, next);
+
+      // The mock request protocol is `http`, so the http entry is selected.
+      expect(findApplicationById).toBeCalledWith('test-app-id');
+      expect(ctx.redirect).toBeCalledWith('http://localhost:3002/login');
+    });
+
+    it('falls back to the first post-logout URI when no protocol matches', async () => {
+      interactionDetails.mockRejectedValue(new Error('session not found'));
+      findApplicationById.mockResolvedValueOnce({
+        oidcClientMetadata: { postLogoutRedirectUris: ['https://app.example.com/login'] },
+      });
+
+      const ctx = createContextWithRouteParameters({
+        url: '/sign-in/foo',
+        cookies: { _logto: '{ "appId": "test-app-id" }' },
+      });
+      await koaSpaSessionGuard(provider, recoveryQueries)(ctx, next);
+
+      expect(ctx.redirect).toBeCalledWith('https://app.example.com/login');
+    });
+
+    it('falls through to /unknown-session when the cookie has no appId', async () => {
+      interactionDetails.mockRejectedValue(new Error('session not found'));
+
+      const ctx = createContextWithRouteParameters({
+        url: '/sign-in/foo',
+        cookies: { _logto: '{ "uiLocales": "en" }' },
+      });
+      await koaSpaSessionGuard(provider, recoveryQueries)(ctx, next);
+
+      expect(findApplicationById).not.toBeCalled();
+      expect(ctx.redirect).toBeCalledWith('https://logto.test/unknown-session');
+    });
+
+    it('falls through to /unknown-session when the app cannot be resolved', async () => {
+      interactionDetails.mockRejectedValue(new Error('session not found'));
+      findApplicationById.mockRejectedValueOnce(new Error('entity.not_exists_with_id'));
+
+      const ctx = createContextWithRouteParameters({
+        url: '/sign-in/foo',
+        cookies: { _logto: '{ "appId": "stale-app-id" }' },
+      });
+      await koaSpaSessionGuard(provider, recoveryQueries)(ctx, next);
+
+      expect(ctx.redirect).toBeCalledWith('https://logto.test/unknown-session');
+    });
+
+    it('falls through to a configured unknownSessionRedirectUrl when there is no app cookie', async () => {
+      interactionDetails.mockRejectedValue(new Error('session not found'));
+      findDefaultSignInExperience.mockResolvedValueOnce({
+        unknownSessionRedirectUrl: 'https://configured.example/redirect',
+      });
+
+      const ctx = createContextWithRouteParameters({ url: '/sign-in/foo' });
+      await koaSpaSessionGuard(provider, recoveryQueries)(ctx, next);
+
+      expect(ctx.redirect).toBeCalledWith('https://configured.example/redirect');
+    });
+  });
 });
