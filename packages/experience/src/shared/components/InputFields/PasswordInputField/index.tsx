@@ -1,4 +1,4 @@
-import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
+import { ArrowUpCircleIcon, EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import type { Nullable } from '@silverhand/essentials';
 import type { KeyboardEvent, Ref } from 'react';
 import { forwardRef, useRef, useImperativeHandle, useState } from 'react';
@@ -56,10 +56,11 @@ const PasswordInputField = (props: Props, forwardRef: Ref<Nullable<HTMLInputElem
       />
       {isCapsLockOn && (
         <div
-          className="text-sm text-[var(--color-alert-70)] pt-1 mb-3 ms-0.5"
+          className="flex items-center gap-1.5 text-sm text-[var(--color-alert-70)] pt-1 mb-3 ms-0.5 animate-[content-enter_0.2s_var(--ease-out)_both] motion-reduce:animate-none"
           role="status"
           aria-live="polite"
         >
+          <ArrowUpCircleIcon className="w-4 h-4 shrink-0" />
           {t('input.caps_lock_on')}
         </div>
       )}

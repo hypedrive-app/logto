@@ -56,6 +56,7 @@ const Button = ({
   return (
     <button
       disabled={isDisabled || isLoading}
+      aria-busy={isLoadingActive}
       className={classNames(baseClass, typeClass[type], sizeClass(size), className)}
       type={htmlType}
       onClick={onClick}

@@ -8,18 +8,23 @@ import ErrorMessage from '@/shared/components/ErrorMessage';
 // container with no awkward right-edge gap), while staying ≥44px tall/wide for Apple HIG.
 // Desktop keeps fixed 44×52 boxes. 18px font throughout keeps iOS from zoom-on-focus.
 const passcodeClass =
-  'flex items-center gap-2.5 mobile:gap-2 mobile:w-full ' +
+  'flex items-center gap-2.5 mobile:gap-1.5 mobile:w-full ' +
   '[&_input]:w-11 [&_input]:h-[52px] [&_input]:rounded-[12px] [&_input]:border [&_input]:border-line-strong [&_input]:bg-elevated ' +
   '[&_input]:text-center [&_input]:text-lg [&_input]:font-semibold [&_input]:text-ink [&_input]:[caret-color:var(--color-brand-default)] ' +
   '[&_input]:[font-variant-numeric:tabular-nums] [&_input]:tracking-wide [&_input]:shadow-[var(--sh-input)] ' +
-  '[&_input]:transition-[outline-color,border-color,background-color] [&_input]:duration-100 [&_input]:ease-in-out motion-reduce:[&_input]:transition-none ' +
+  '[&_input]:transition-[outline-color,border-color,background-color,box-shadow] [&_input]:duration-100 [&_input]:ease-in-out motion-reduce:[&_input]:transition-none ' +
   '[&_input:focus]:border-[var(--color-brand-default)] [&_input:focus]:outline-none ' +
   '[&_input::placeholder]:text-muted ' +
-  // Mobile: each cell flexes to share the row equally, clamped to a comfortable ≥44px min.
-  'mobile:[&_input]:flex-1 mobile:[&_input]:min-w-[44px] mobile:[&_input]:w-auto mobile:[&_input]:h-[52px] mobile:[&_input]:min-h-[44px] ' +
+  // Mobile: each cell flexes to share the row equally. min-w-0 lets the cells shrink to
+  // fit a 320px screen (6×~40px + 5×6px gap ≈ 270px fits the card), w-0 basis avoids the
+  // 44px floor overflowing. Height stays ≥44px (HIG); only width compresses on tiny screens.
+  'mobile:[&_input]:flex-1 mobile:[&_input]:basis-0 mobile:[&_input]:min-w-0 mobile:[&_input]:w-auto mobile:[&_input]:h-[52px] mobile:[&_input]:min-h-[44px] mobile:[&_input]:px-0 ' +
   'desktop:[&_input]:text-lg desktop:[&_input]:outline desktop:[&_input]:outline-[3px] desktop:[&_input]:outline-transparent ' +
   'desktop:[&_input:focus]:outline-[var(--color-overlay-brand-focused)] ' +
   '[&_input:focus]:outline [&_input:focus]:outline-[3px] [&_input:focus]:outline-[var(--color-overlay-brand-focused)] ' +
+  // Filled cells get an accent border so progress is visible; error cells turn red (paired with .shake).
+  '[&_input:not(:placeholder-shown)]:border-[var(--color-brand-default)] ' +
+  '[&.is-error_input]:border-[var(--color-danger-default)] [&.is-error_input]:[caret-color:var(--color-danger-default)] ' +
   'desktop:[&_input:hover:not(:focus)]:bg-[var(--color-overlay-neutral-hover)]';
 
 export const defaultLength = 6;
@@ -213,7 +218,7 @@ const VerificationCode = ({
         // CSS animation only fires when the element is (re)mounted with the class). The
         // .shake utility is reduced-motion-guarded and Safari-safe (pure transform).
         key={error ? `err-${error}` : 'ok'}
-        className={classNames(passcodeClass, error && 'shake')}
+        className={classNames(passcodeClass, error && 'is-error shake')}
         role="group"
         aria-label="Verification code"
       >

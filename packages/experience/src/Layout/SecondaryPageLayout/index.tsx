@@ -51,11 +51,11 @@ const SecondaryPageLayout = ({
       )}
       <div className="mx-auto my-2 w-full max-w-[var(--max-w)] animate-[content-enter_0.35s_ease-out_both] desktop:my-12">
         <div className="mb-7 desktop:mb-5">
-          <div className="tracking-[-0.022em] text-balance text-ink mobile:text-[26px]/[32px] mobile:font-semibold desktop:text-2xl desktop:font-semibold">
+          <div className="tracking-[-0.022em] text-balance text-ink mobile:text-[26px]/[32px] desktop:text-2xl [font-weight:650]">
             <DynamicT forKey={title} interpolation={titleProps} />
           </div>
           {description && (
-            <div className="mt-2 text-sm text-muted [overflow-wrap:anywhere]">
+            <div className="mt-2 text-sm text-ink-2 [overflow-wrap:anywhere]">
               {typeof description === 'string' ? (
                 <DynamicT forKey={description} interpolation={descriptionProps} />
               ) : (

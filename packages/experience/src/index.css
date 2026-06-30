@@ -46,10 +46,14 @@
   --primary-soft-text: oklch(0.488 0.217 264);
   --primary-wash:     oklch(0.546 0.215 263 / 0.05);
   --primary-tint:     oklch(0.546 0.215 263 / 0.16);
+  --primary-shadow:   oklch(0.546 0.215 263 / 0.28);  /* coloured ambient cast for the hovered primary button */
+  --focus-ring:       var(--primary);                 /* keyboard focus outline (brighter on dark — see dark block) */
   --danger:           oklch(0.58 0.21 25);   /* red-600, hue far from the accent */
   --danger-soft:      oklch(0.97 0.013 25);
   --success:          oklch(0.62 0.17 150);  /* green-600 */
   --amber:            oklch(0.55 0.13 75);
+  --warning:          var(--amber);          /* semantic alias — use for alerts/notices */
+  --warning-soft:     color-mix(in oklch, var(--amber) 12%, var(--bg-elevated));
   --sh-xs:    0 1px 2px rgba(24,24,27,0.05);
   --sh-soft:  0 1px 1px rgba(24,24,27,0.04), 0 8px 24px rgba(24,24,27,0.06);
   --sh-float: 0 1px 1px rgba(24,24,27,0.04), 0 8px 24px rgba(24,24,27,0.06), 0 0 0 1px rgba(24,24,27,0.04);
@@ -99,10 +103,14 @@
   --primary-soft-text: oklch(0.809 0.096 252);  /* blue-300 #93c5fd */
   --primary-wash:      oklch(0.623 0.188 260 / 0.10);
   --primary-tint:      oklch(0.623 0.188 260 / 0.22);
+  --primary-shadow:    oklch(0.623 0.188 260 / 0.40);  /* brighter cast — coloured shadows need more weight on near-black */
+  --focus-ring:        oklch(0.82 0.13 250);            /* brighter/desaturated blue so the ring stays visible on light-blue dark controls */
   --danger:        oklch(0.68 0.18 25);
   --danger-soft:   oklch(0.27 0.06 25);
   --success:       oklch(0.78 0.16 158);
   --amber:         oklch(0.80 0.14 80);
+  --warning:       var(--amber);
+  --warning-soft:  color-mix(in oklch, var(--amber) 16%, var(--bg-elevated));
   /* Depth on dark = subtle top highlight + deeper ambient shadow. */
   --sh-xs:    0 1px 2px rgba(0,0,0,0.4);
   --sh-soft:  0 1px 1px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.45);
@@ -230,7 +238,12 @@
   ul, ol { list-style: none; }
   img, svg, video { display: block; max-width: 100%; }
   button { cursor: pointer; background: none; border: none; padding: 0; font: inherit; }
+  /* Links inherit by default (so styled link components stay in control), but a bare
+     <a> with no class gets the brand colour + a smooth hover so stray links never
+     render as raw underlined browser-blue. */
   a { color: inherit; text-decoration: none; }
+  a[href]:not([class]) { color: var(--color-type-link); transition: color 0.16s ease; }
+  a[href]:not([class]):hover { color: var(--primary-hover); }
   /* Brand-tint native form controls (checkboxes/radios that aren't custom-rendered).
      Safari 15.4+; older engines ignore it and use the default tint — no breakage. */
   :root { accent-color: var(--primary); }
@@ -243,11 +256,11 @@
      ring (.input-base:focus), and adding this hard 2px outline on top would draw a
      second line over the accent ring. */
   :focus-visible:not(input):not(textarea):not(select) {
-    outline: 2px solid var(--primary);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
     border-radius: 4px;
   }
-  ::selection { background: color-mix(in oklab, var(--primary) 20%, transparent); }
+  ::selection { background: color-mix(in oklch, var(--primary) 20%, transparent); }
   * { scrollbar-width: thin; }
 
   /* Legacy CSS vars consumed by existing Logto components */
@@ -415,10 +428,14 @@
     background:
       linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 52%),
       var(--primary-hover);
+    /* Real layered drop shadow (a coloured ambient cast + a hairline depth line)
+       reads as "elevated", where the old single tinted glow read as muddy. The
+       button still doesn't translate — depth comes from the shadow, not position. */
     box-shadow:
       inset 0 0 0 1px rgba(0,0,0,0.06),
       inset 0 1px 0 var(--btn-edge),
-      0 4px 14px var(--color-overlay-brand-focused);
+      0 8px 24px var(--primary-shadow),
+      0 1px 3px rgba(0,0,0,0.16);
   }
   /* No hover-lift by design — hover changes colour/shadow only, not vertical
      position (translate lifts read as jumpy and were explicitly dropped). The
@@ -432,6 +449,9 @@
     box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-xs);
   }
   .btn-ghost:hover:not(:disabled) {
+    /* A neutral background wash makes the secondary button read as interactive —
+       border + shadow alone were too quiet to register as a hover. */
+    background: var(--color-overlay-neutral-hover);
     border-color: var(--color-line-border-transparent);
     box-shadow: inset 0 1px 0 var(--btn-edge), var(--sh-soft);
   }
@@ -456,13 +476,17 @@
     color: var(--text);
     outline: none;
     box-shadow: var(--sh-input);
-    transition: border-color 0.16s ease, box-shadow 0.16s ease;
+    transition: border-color 0.16s ease, box-shadow 0.16s ease, background-color 0.12s ease;
     caret-color: var(--primary);
   }
   .input-base::placeholder { color: var(--text-faint); }
-  .input-base:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-tint); }
+  /* Desktop hover: a whisper of accent wash signals the field is interactive. */
+  body.desktop .input-base:hover:not(:focus):not(:disabled) { border-color: var(--border-strong); background: var(--primary-wash); }
+  /* Focus ring keeps the inset depth UNDER the accent ring so the field stays
+     dimensional instead of looking like a flat outline floating on the surface. */
+  .input-base:focus { border-color: var(--primary); box-shadow: var(--sh-input), 0 0 0 3px var(--primary-tint); }
   .input-base.is-danger { border-color: var(--danger); caret-color: var(--danger); }
-  .input-base.is-danger:focus { box-shadow: 0 0 0 3px var(--danger-soft); }
+  .input-base.is-danger:focus { box-shadow: var(--sh-input), 0 0 0 3px var(--danger-soft); }
 
   /* ── Canonical surfaces ──
      Use these instead of ad-hoc bg/border/radius combos so every card, row,
@@ -535,6 +559,34 @@
     color: var(--text-2);
     border-radius: var(--radius);
   }
+
+  /* Modal entrance — scale + lift, used by ReactModal-based dialogs (confirm,
+     avatar-crop, dropdown). Pair with .modal-overlay for the scrim fade. */
+  .modal-enter { animation: modal-enter 0.26s var(--ease-out) both; }
+  .modal-overlay { background: var(--color-bg-mask); animation: overlay-fade 0.22s ease-out both; }
+  @media (prefers-reduced-motion: reduce) {
+    .modal-enter, .modal-overlay { animation: none; }
+  }
+
+  /* Skeleton placeholder — a gradient sweep over a quiet surface. Use for
+     loading states instead of a blank screen or a full-page spinner. */
+  .skeleton {
+    background:
+      linear-gradient(90deg, var(--surface-2) 25%, var(--surface) 50%, var(--surface-2) 75%);
+    background-size: 200% 100%;
+    border-radius: var(--radius);
+    animation: shimmer 1.4s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .skeleton { animation: none; background: var(--surface-2); }
+  }
+
+  /* Composable focus ring — replaces the repeated focus-visible:outline-2… chain. */
+  .focus-ring:focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
 }
 
 /* ── Keyframes ── */
@@ -560,6 +612,27 @@
 }
 @keyframes onAutoFillStart { from {} to {} }
 @keyframes onAutoFillCancel { from {} to {} }
+@keyframes modal-enter {
+  from { opacity: 0; transform: scale(0.96) translateY(8px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+@keyframes overlay-fade {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes shimmer {
+  from { background-position: 200% 0; }
+  to   { background-position: -200% 0; }
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(12px) scale(0.98); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+/* Success checkmark stroke draw — pair with stroke-dasharray on the SVG path. */
+@keyframes checkmark-draw {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
 
 /* Cross-fade between auth steps (sign-in → verify → password). @view-transition is a
    progressive enhancement: supporting engines (Chrome, Safari 18+) cross-fade route
@@ -632,6 +705,12 @@
 }
 
 /* ReactModal */
-.ReactModal__Content[role='toast'] { opacity: 0; transition: opacity 0.25s ease; }
-.ReactModal__Content--after-open[role='toast'] { opacity: 1; }
-.ReactModal__Content--before-close[role='toast'] { opacity: 0; }
+/* Toast: slide-up + scale in, fade out. Honours reduced-motion (opacity only). */
+.ReactModal__Content[role='toast'] { opacity: 0; transform: translateY(12px) scale(0.98); transition: opacity 0.25s ease, transform 0.25s var(--ease-out); }
+.ReactModal__Content--after-open[role='toast'] { opacity: 1; transform: translateY(0) scale(1); }
+.ReactModal__Content--before-close[role='toast'] { opacity: 0; transform: translateY(12px) scale(0.98); }
+@media (prefers-reduced-motion: reduce) {
+  .ReactModal__Content[role='toast'],
+  .ReactModal__Content--after-open[role='toast'],
+  .ReactModal__Content--before-close[role='toast'] { transform: none; transition: opacity 0.25s ease; }
+}

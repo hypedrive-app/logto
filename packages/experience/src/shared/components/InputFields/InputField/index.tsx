@@ -25,7 +25,12 @@ const fieldBoxClass =
   '[&_input]:text-base desktop:[&_input]:text-sm [&_input]:text-ink [&_input]:[caret-color:var(--color-brand-default)] ' +
   '[&_input::placeholder]:text-faint ' +
   '[&_input:-webkit-autofill]:[-webkit-text-fill-color:var(--color-type-primary)] ' +
+  // The 999999s transition defers Chrome's yellow/cream autofill paint indefinitely, and the
+  // inset box-shadow fills the input with the elevated surface colour so the field reads
+  // identically to a typed one in BOTH themes (the old rule leaked a pale band on dark).
   '[&_input:-webkit-autofill]:[transition:background-color_999999s_ease-in-out_0s] ' +
+  '[&_input:-webkit-autofill]:[box-shadow:0_0_0_1000px_var(--bg-elevated)_inset] ' +
+  '[&_input:-webkit-autofill]:[caret-color:var(--color-type-primary)] ' +
   '[&_input:-webkit-autofill]:[animation:onAutoFillStart_0.01s_forwards] ' +
   '[&_input:not(:-webkit-autofill)]:[animation:onAutoFillCancel_0.01s_forwards]';
 

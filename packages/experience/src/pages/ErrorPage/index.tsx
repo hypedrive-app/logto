@@ -58,13 +58,13 @@ const ErrorPage = ({
           }}
         />
       )}
-      <div className="flex flex-1 flex-col items-center justify-center w-full mx-auto max-w-[var(--max-w)]">
+      <div className="flex flex-1 flex-col items-center justify-center w-full mx-auto max-w-[var(--max-w)] animate-[content-enter_0.35s_var(--ease-out)_both] motion-reduce:animate-none">
         <ErrorScene />
-        <div className="mt-8 text-center text-ink mobile:text-[28px]/[36px] mobile:font-semibold mobile:mb-4 desktop:text-2xl desktop:font-semibold desktop:mb-2">
+        <div className="mt-8 text-center text-ink text-balance mobile:text-[28px]/[34px] mobile:mb-4 desktop:text-2xl desktop:mb-2 [font-weight:650]">
           <DynamicT forKey={title} />
         </div>
         {errorMessage && (
-          <div className="text-sm text-muted text-center whitespace-pre-wrap">
+          <div className="text-sm text-ink-2 text-center whitespace-pre-wrap">
             {rawMessage ?? <DynamicT forKey={message} />}
           </div>
         )}

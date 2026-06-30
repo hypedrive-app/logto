@@ -49,6 +49,7 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
     trigger,
     handleSubmit,
     control,
+    setFocus,
     formState: { errors, isValid, isSubmitting },
   } = useForm<FormState>({
     reValidateMode: 'onBlur',
@@ -111,6 +112,15 @@ const PasswordSignInForm = ({ className, autoFocus, signInMethods }: Props) => {
       clearErrorMessage();
     }
   }, [clearErrorMessage, isValid]);
+
+  // On a server-side sign-in error (e.g. wrong password), return focus to the password
+  // field so keyboard + screen-reader users land on the input they need to correct.
+  // RHF's setFocus targets the registered field directly — no ref-merging needed.
+  useEffect(() => {
+    if (errorMessage) {
+      setFocus('password');
+    }
+  }, [errorMessage, setFocus]);
 
   return (
     <form

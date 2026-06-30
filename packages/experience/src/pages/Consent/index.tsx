@@ -122,8 +122,19 @@ const Consent = () => {
     return <ErrorPage title="error.invalid_session" />;
   }
 
+  // While the consent info loads, show a skeleton card instead of a blank screen so the
+  // page reads as "loading" rather than broken. Mirrors the final layout's rough shape.
   if (!consentData) {
-    return null;
+    return (
+      <LandingPageLayout title="description.authorize_title">
+        <div className="flex flex-col gap-4" aria-busy="true" aria-label="Loading">
+          <div className="skeleton h-16 w-16 rounded-full mx-auto" />
+          <div className="skeleton h-5 w-3/4 mx-auto" />
+          <div className="skeleton h-24 w-full" />
+          <div className="skeleton h-12 w-full" />
+        </div>
+      </LandingPageLayout>
+    );
   }
 
   const {

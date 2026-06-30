@@ -23,6 +23,11 @@ const checkboxClass = [
   // Checked, enabled -> show child2 + child3
   '[&_input:checked:not(:disabled)~.icon>*:nth-child(2)]:block',
   '[&_input:checked:not(:disabled)~.icon>*:nth-child(3)]:block',
+  // Disabled -> still render the box/marks but faded, and show the not-allowed cursor.
+  '[&_input:disabled~.icon>*:nth-child(1)]:block',
+  '[&_input:disabled:checked~.icon>*:nth-child(2)]:block',
+  '[&_input:disabled:checked~.icon>*:nth-child(3)]:block',
+  '[&:has(input:disabled)]:opacity-50 [&:has(input:disabled)]:cursor-not-allowed',
   // Hidden native input overlay
   '[&_input]:absolute [&_input]:w-4 [&_input]:h-4 [&_input]:inset-inline-start-0 [&_input]:top-0 [&_input]:m-0 [&_input]:opacity-0',
 ].join(' ');

@@ -109,11 +109,11 @@ const AvatarCropModal = ({
       // `--color-bg-mask` scrim from `overlayClassName` actually shows. See AcModal.
       style={{ overlay: {}, content: {} }}
       className="absolute w-[480px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none max-[640px]:w-[calc(100%-40px)]"
-      overlayClassName={classNames('fixed inset-0 bg-[var(--color-bg-mask)]', 'z-[var(--z-modal)]')}
+      overlayClassName={classNames('fixed inset-0 modal-overlay', 'z-[var(--z-modal)]')}
       onAfterClose={resetState}
       onRequestClose={handleCancel}
     >
-      <div className="bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none">
+      <div className="modal-enter bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none">
         <div className="flex items-center justify-between text-base font-semibold text-ink mb-4 [&_svg]:w-6 [&_svg]:h-6">
           {tAvatar('crop_title')}
           <IconButton

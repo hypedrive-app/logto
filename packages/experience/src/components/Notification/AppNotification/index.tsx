@@ -21,6 +21,7 @@ const AppNotification = forwardRef(
         ref={ref}
         className={classNames(
           'flex items-center p-3 text-sm text-ink-2 bg-surface border border-line rounded-[13px] shadow-[var(--sh-float)] z-50',
+          'animate-[content-enter_0.3s_var(--ease-out)_both] motion-reduce:animate-none',
           className
         )}
         style={style}

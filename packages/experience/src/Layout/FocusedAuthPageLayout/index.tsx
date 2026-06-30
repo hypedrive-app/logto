@@ -61,14 +61,15 @@ const FocusedAuthPageLayout = ({
       <BrandingHeader
         className={classNames(
           // Same logo size as the landing page (BrandingHeader's h-8 / 32px) for
-          // consistency, just a tighter reserved header height on the focused screens.
-          'mobile:mt-3 mobile:pb-5 desktop:mb-5 mobile:!h-auto mobile:!min-h-0',
+          // consistency. Tighter header→description gap (pb-3) so the description sits
+          // close under the headline — no negative-margin hack needed.
+          'mobile:mt-3 mobile:pb-3 desktop:mb-3 mobile:!h-auto mobile:!min-h-0',
           layoutClassNames.brandingHeader
         )}
         headline={title}
         logo={logo}
       />
-      <div className="mb-7 -mt-2 text-sm text-muted">{description}</div>
+      <div className="mb-7 text-sm text-ink-2">{description}</div>
       {children}
       {shouldDisplayFooterTerms && (
         <TermsAndPrivacyLinks className="mt-4 text-center text-xs text-muted" />

@@ -95,7 +95,10 @@ const Dropdown = ({
       }}
       onAfterOpen={mutate}
     >
-      <div ref={overlayRef} className="bg-elevated border border-line rounded-[13px]">
+      <div
+        ref={overlayRef}
+        className="modal-enter origin-top bg-elevated border border-line rounded-[13px]"
+      >
         <WrapperComponent
           className={className}
           role="menu"

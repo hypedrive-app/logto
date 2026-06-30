@@ -45,7 +45,7 @@ const AcModal = ({
         'absolute w-[600px] left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 outline-none rounded-[16px] focus-visible:outline-none max-[640px]:w-[calc(100%-40px)]',
         className
       )}
-      overlayClassName={classNames('fixed inset-0 bg-[var(--color-bg-mask)]', 'z-[var(--z-modal)]')}
+      overlayClassName={classNames('fixed inset-0 modal-overlay', 'z-[var(--z-modal)]')}
       onAfterOpen={() => {
         contentRef.current?.focus();
       }}
@@ -53,7 +53,7 @@ const AcModal = ({
     >
       <div
         ref={contentRef}
-        className="bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none"
+        className="modal-enter bg-elevated rounded-[16px] border border-line shadow-[var(--sh-float)] p-6 focus-visible:outline-none"
         role="button"
         tabIndex={0}
         onKeyDown={onKeyDownHandler({
